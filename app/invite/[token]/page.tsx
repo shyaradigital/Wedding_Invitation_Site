@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { generateDeviceFingerprint } from '@/lib/device-fingerprint'
 import PhoneVerificationForm from '@/components/PhoneVerificationForm'
 import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
