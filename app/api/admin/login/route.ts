@@ -73,8 +73,16 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Error during admin login:', error)
+    
+    // Provide more detailed error information in development
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        ...(isDevelopment && { details: errorMessage, stack: error instanceof Error ? error.stack : undefined })
+      },
       { status: 500 }
     )
   }
