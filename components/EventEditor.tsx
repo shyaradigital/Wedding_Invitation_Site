@@ -18,6 +18,8 @@ interface Event {
 export default function EventEditor() {
   const [events, setEvents] = useState<Event[]>([])
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -35,13 +37,21 @@ export default function EventEditor() {
 
   const fetchEvents = async () => {
     try {
+      setIsLoading(true)
+      setError(null)
       const response = await fetch('/api/admin/events')
       if (response.ok) {
         const data = await response.json()
         setEvents(data.events || [])
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        setError(errorData.error || 'Failed to fetch events')
       }
     } catch (err) {
       console.error('Error fetching events:', err)
+      setError('Failed to load events. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -81,17 +91,98 @@ export default function EventEditor() {
     }
   }
 
-  return (
-    <div>
-      <h2 className="text-2xl font-serif text-wedding-navy mb-6">
-        Event Editor
-      </h2>
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-lg shadow p-6 sm:p-8">
+        <h2 className="text-2xl font-serif text-wedding-navy mb-6">
+          Event Editor
+        </h2>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <svg
+              className="animate-spin h-8 w-8 text-wedding-gold mx-auto mb-4"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <p className="text-gray-600">Loading events...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-      <div className="space-y-4">
-        {events.map((event) => (
+  if (error) {
+    return (
+      <div className="bg-white rounded-lg shadow p-6 sm:p-8">
+        <h2 className="text-2xl font-serif text-wedding-navy mb-6">
+          Event Editor
+        </h2>
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+          {error}
+        </div>
+        <button
+          onClick={fetchEvents}
+          className="bg-wedding-gold text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow p-6 sm:p-8">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-serif text-wedding-navy">
+          Event Editor
+        </h2>
+        <button
+          onClick={fetchEvents}
+          className="text-sm text-wedding-gold hover:text-wedding-gold/80 transition-colors"
+        >
+          🔄 Refresh
+        </button>
+      </div>
+
+      {events.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">📅</div>
+          <h3 className="text-xl font-serif text-wedding-navy mb-2">
+            No Events Found
+          </h3>
+          <p className="text-gray-600 mb-6">
+            Events haven't been seeded yet. Please run the seed script to create initial events.
+          </p>
+          <div className="bg-gray-50 rounded-lg p-4 text-left max-w-md mx-auto">
+            <p className="text-sm font-mono text-gray-700 mb-2">
+              Run this command to seed events:
+            </p>
+            <code className="text-xs bg-white px-3 py-2 rounded border block">
+              npm run seed:events
+            </code>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {events.map((event) => (
           <div
             key={event.id}
-            className="bg-white rounded-lg shadow p-6"
+            className="bg-gray-50 rounded-lg shadow-sm border border-gray-200 p-6"
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-serif text-wedding-navy">
@@ -238,7 +329,8 @@ export default function EventEditor() {
             )}
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
