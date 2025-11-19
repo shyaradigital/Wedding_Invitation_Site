@@ -166,7 +166,7 @@ export default function EventEditor() {
             No Events Found
           </h3>
           <p className="text-gray-600 mb-6">
-            Events haven't been seeded yet. Please run the seed script to create initial events.
+            Events have not been seeded yet. Please run the seed script to create initial events.
           </p>
           <div className="bg-gray-50 rounded-lg p-4 text-left max-w-md mx-auto">
             <p className="text-sm font-mono text-gray-700 mb-2">
