@@ -11,6 +11,11 @@ export async function GET() {
     const guestCount = await prisma.guest.count()
     const eventCount = await prisma.event.count()
     
+    // Get admin emails (for debugging - only show in development)
+    const admins = process.env.NODE_ENV === 'development'
+      ? await prisma.admin.findMany({ select: { email: true } })
+      : []
+    
     return NextResponse.json({
       status: 'healthy',
       database: 'connected',
@@ -23,7 +28,12 @@ export async function GET() {
         hasDatabaseUrl: !!process.env.DATABASE_URL,
         hasJwtSecret: !!process.env.JWT_SECRET,
         nodeEnv: process.env.NODE_ENV,
+        adminEmail: process.env.ADMIN_EMAIL || 'admin (default)',
+        hasAdminPassword: !!process.env.ADMIN_PASSWORD,
       },
+      ...(process.env.NODE_ENV === 'development' && {
+        adminEmails: admins.map(a => a.email),
+      }),
     })
   } catch (error) {
     console.error('Health check failed:', error)

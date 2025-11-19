@@ -46,6 +46,14 @@ export async function POST(request: NextRequest) {
     })
 
     if (!admin) {
+      console.error(`Admin login failed: User not found for email: ${email}`)
+      // Log available admins for debugging (only in development)
+      if (process.env.NODE_ENV === 'development') {
+        const allAdmins = await prisma.admin.findMany({
+          select: { email: true },
+        })
+        console.log('Available admin emails:', allAdmins.map(a => a.email))
+      }
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
@@ -55,6 +63,7 @@ export async function POST(request: NextRequest) {
     const isValid = await verifyPassword(password, admin.password)
 
     if (!isValid) {
+      console.error(`Admin login failed: Invalid password for email: ${email}`)
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
