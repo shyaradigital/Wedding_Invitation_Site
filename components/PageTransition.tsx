@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 
+// Page transition component for smooth page loads
+
 interface PageTransitionProps {
   children: ReactNode
 }
