@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      #FAF9F6 0%,
+      #FFFEF7 50%,
+      #F8E8E9 100%
+    );
+  font-family: 'Georgia', serif;
+  min-height: 100vh;
+}
+
+/* Wedding-themed decorative elements */
+.wedding-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #D4AF37, transparent);
+  margin: 2rem 0;
+}
+
+.wedding-divider-thick {
+  height: 3px;
+  background: linear-gradient(to right, transparent, #E8B4B8, #D4AF37, #E8B4B8, transparent);
+  margin: 2rem 0;
+  border-radius: 2px;
+}
+
+/* Elegant card styling */
+.wedding-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Floral decorative border */
+.floral-border {
+  position: relative;
+  padding: 1.5rem;
+}
+
+.floral-border::before {
+  content: '❀';
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: #D4AF37;
+  background: white;
+  padding: 0 0.5rem;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Floating Petals Animation */
+@keyframes float {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.petal {
+  animation: float linear infinite;
+}
+

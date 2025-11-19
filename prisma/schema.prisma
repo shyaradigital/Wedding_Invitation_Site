@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Guest {
+  id                    String    @id @default(cuid())
+  name                  String
+  phone                 String?
+  token                 String    @unique
+  eventAccess           String    @default("[]") // JSON array: ["mehndi", "wedding", "reception"]
+  allowedDevices        String    @default("[]") // JSON array: array of fingerprint hashes
+  tokenUsedFirstTime    DateTime?
+  tokenExpiresAfterFirstUse Boolean @default(false)
+  maxDevicesAllowed     Int       @default(1)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // hashed with bcrypt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  slug        String   @unique // "mehndi", "wedding", "reception"
+  title       String
+  description String?
+  date        DateTime?
+  time        String?
+  venue       String?
+  address     String?
+  dressCode   String?
+  mapEmbedUrl String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Content {
+  id        String   @id @default(cuid())
+  key       String   @unique // "about", "venue-travel", etc.
+  title     String
+  content   String   @default("") // JSON or markdown
+  images    String   @default("[]") // JSON array: array of image URLs
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
