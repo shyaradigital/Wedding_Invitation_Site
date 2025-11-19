@@ -174,20 +174,7 @@ npm run db:studio
 
 ## Production Deployment
 
-See `DEPLOYMENT.md` and `PRODUCTION_SETUP.md` for detailed deployment instructions.
-
-**Quick Steps:**
-1. Update `prisma/schema.prisma` to use PostgreSQL (change from `sqlite` to `postgresql`)
-2. Set up a PostgreSQL database (Supabase, Neon, Railway, or Vercel Postgres)
-3. Configure environment variables (see `.env.example`)
-4. Run database migrations: `npm run db:migrate:deploy`
-5. Seed admin user: `npm run seed:admin` (default: admin/admin123)
-6. Seed events: `npm run seed:events`
-7. Deploy to Vercel, Netlify, or your preferred platform
-
-**Admin Login:**
-- Email: `admin`
-- Password: `admin123`
+Deploy to Vercel, Railway, or your preferred platform. See deployment steps in chat when ready.
 
 ## License
 
