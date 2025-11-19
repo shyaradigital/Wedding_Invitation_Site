@@ -12,6 +12,22 @@ const loginSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Test database connection first
+    try {
+      await prisma.$connect()
+    } catch (dbError) {
+      console.error('Database connection error:', dbError)
+      return NextResponse.json(
+        { 
+          error: 'Database connection failed',
+          details: process.env.NODE_ENV === 'development' 
+            ? (dbError instanceof Error ? dbError.message : String(dbError))
+            : undefined
+        },
+        { status: 500 }
+      )
+    }
+
     const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown'
     const rateLimitResult = rateLimit(`admin-login-${ip}`, 5, 60000)
     
