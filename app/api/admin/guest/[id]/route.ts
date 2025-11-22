@@ -11,6 +11,7 @@ const updateGuestSchema = z.object({
   maxDevicesAllowed: z.number().int().min(1).max(10).optional(),
   regenerateToken: z.boolean().optional(),
   removeDevice: z.string().optional(),
+  allowedDevices: z.string().optional(), // For clearing all devices
 })
 
 export async function PATCH(
@@ -53,6 +54,11 @@ export async function PATCH(
       updateData.allowedDevices = JSON.stringify(
         allowedDevices.filter((d) => d !== data.removeDevice)
       )
+    }
+
+    if (data.allowedDevices !== undefined) {
+      // Allow clearing all devices by passing empty array as string
+      updateData.allowedDevices = data.allowedDevices
     }
 
     const updatedGuest = await prisma.guest.update({
