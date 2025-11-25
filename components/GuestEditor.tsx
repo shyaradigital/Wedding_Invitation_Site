@@ -169,6 +169,18 @@ export default function GuestEditor({
     return 'reception-only'
   }
 
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      phone: '',
+      eventAccess: 'all-events',
+      maxDevicesAllowed: 1,
+    })
+    setEditingGuest(null)
+    setShowCreateForm(false)
+    setError(null)
+  }
+
   const handleClearAllDevices = async (guestId: string) => {
     if (!confirm('Are you sure you want to clear all device access? The guest will need to verify their phone again on all devices.')) {
       return
