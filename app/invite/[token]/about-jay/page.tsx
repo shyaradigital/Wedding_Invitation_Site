@@ -180,7 +180,7 @@ export default function AboutJayPage() {
                 </div>
                 <div className="wedding-divider mb-6"></div>
                 <p className="text-gray-700 text-base sm:text-lg md:text-xl leading-relaxed">
-                  [Placeholder: This section can be used for additional information such as education, career, hobbies, interests, or any other details you'd like to share about Jay.]
+                  [Placeholder: This section can be used for additional information such as education, career, hobbies, interests, or any other details you&apos;d like to share about Jay.]
                 </p>
               </motion.section>
             </div>

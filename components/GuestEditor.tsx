@@ -891,7 +891,7 @@ export default function GuestEditor({
                     <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
                       <li><strong>Column A:</strong> Name (required)</li>
                       <li><strong>Column B:</strong> Phone (optional)</li>
-                      <li><strong>Column C:</strong> Event Access (required: "all-events" or "reception-only")</li>
+                      <li><strong>Column C:</strong> Event Access (required: &quot;all-events&quot; or &quot;reception-only&quot;)</li>
                       <li><strong>Column D:</strong> Max Devices Allowed (optional, default: 1)</li>
                     </ul>
                     <button
