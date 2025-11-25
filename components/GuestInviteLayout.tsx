@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import EventCard from './EventCard'
 import Link from 'next/link'
+import InvitationNavigation from './InvitationNavigation'
 
 interface Guest {
   id: string
@@ -48,6 +49,9 @@ export default function GuestInviteLayout({
         </div>
       </header>
 
+      {/* Navigation */}
+      <InvitationNavigation token={token} eventAccess={guest.eventAccess} />
+
       {/* Hero Image Placeholder */}
       <div className="relative w-full h-64 sm:h-80 md:h-96 bg-gradient-to-br from-wedding-rose-pastel via-wedding-cream to-wedding-gold-light overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
@@ -77,8 +81,8 @@ export default function GuestInviteLayout({
           <div className="flex justify-center mb-4">
             <span className="text-3xl sm:text-4xl">💍</span>
           </div>
-          <h2 className="text-5xl sm:text-6xl md:text-7xl font-display text-wedding-navy mb-4 sm:mb-6 font-bold">
-            Ankita <span className="text-wedding-gold">&</span> Jay
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-display text-wedding-navy mb-4 sm:mb-6 font-bold">
+            Ankita Brijesh Sharma <span className="text-wedding-gold">&</span> Jay Bhavan Mehta
           </h2>
           <div className="wedding-divider-thick max-w-md mx-auto mb-6"></div>
           <p className="text-xl sm:text-2xl md:text-3xl text-wedding-gold mb-6 sm:mb-8 px-2 font-script">
@@ -86,8 +90,8 @@ export default function GuestInviteLayout({
           </p>
           <div className="mb-8 sm:mb-10">
             <div className="inline-block bg-wedding-rose-pastel/50 px-6 py-3 rounded-full border border-wedding-gold/30">
-              <p className="text-xl sm:text-2xl md:text-3xl font-display text-wedding-navy">
-                14th December 2025
+              <p className="text-lg sm:text-xl md:text-2xl font-display text-wedding-navy">
+                March 20-21, 2026
               </p>
             </div>
           </div>
@@ -138,53 +142,6 @@ export default function GuestInviteLayout({
           </div>
         </section>
 
-        {/* Navigation Links */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-16">
-          <Link href={`/invite/${token}/about`}>
-            <motion.div
-              whileHover={{ scale: 1.03, y: -4 }}
-              whileTap={{ scale: 0.98 }}
-              className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
-            >
-              <div className="text-4xl mb-4">💑</div>
-              <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
-                Our Story
-              </h3>
-              <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Learn more about Ankita & Jay</p>
-            </motion.div>
-          </Link>
-
-          <Link href={`/invite/${token}/venue-travel`}>
-            <motion.div
-              whileHover={{ scale: 1.03, y: -4 }}
-              whileTap={{ scale: 0.98 }}
-              className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
-            >
-              <div className="text-4xl mb-4">📍</div>
-              <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
-                Venue & Travel
-              </h3>
-              <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Location details and directions</p>
-            </motion.div>
-          </Link>
-
-          <Link href={`/invite/${token}/gallery`}>
-            <motion.div
-              whileHover={{ scale: 1.03, y: -4 }}
-              whileTap={{ scale: 0.98 }}
-              className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
-            >
-              <div className="text-4xl mb-4">📸</div>
-              <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
-                Gallery
-              </h3>
-              <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Beautiful moments from our celebrations</p>
-            </motion.div>
-          </Link>
-        </section>
       </main>
 
       {/* Footer */}
@@ -199,29 +156,9 @@ export default function GuestInviteLayout({
           <p className="text-base sm:text-lg mb-6">
             Thank you for being a part of our celebration.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6">
-            <Link
-              href={`/invite/${token}/about`}
-              className="text-sm sm:text-base text-wedding-gold-light hover:text-wedding-gold transition-colors"
-            >
-              Our Story
-            </Link>
-            <Link
-              href={`/invite/${token}/venue-travel`}
-              className="text-sm sm:text-base text-wedding-gold-light hover:text-wedding-gold transition-colors"
-            >
-              Venue & Travel
-            </Link>
-            <Link
-              href={`/invite/${token}/gallery`}
-              className="text-sm sm:text-base text-wedding-gold-light hover:text-wedding-gold transition-colors"
-            >
-              Gallery
-            </Link>
-          </div>
           <div className="wedding-divider max-w-xs mx-auto mb-6 opacity-30"></div>
           <p className="text-xs sm:text-sm opacity-75">
-            © {new Date().getFullYear()} Ankita & Jay
+            © {new Date().getFullYear()} Ankita Brijesh Sharma & Jay Bhavan Mehta
           </p>
         </div>
       </footer>

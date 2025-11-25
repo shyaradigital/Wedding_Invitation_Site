@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { formatPhoneForWhatsApp } from '@/lib/utils'
 
 interface WhatsAppShareProps {
   guestName: string
@@ -41,12 +42,29 @@ export default function WhatsAppShare({
       return
     }
 
-    // Remove any non-digit characters except +
-    const cleanPhone = phone.replace(/[^\d+]/g, '')
-    const encodedMessage = encodeURIComponent(message)
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+    // Format phone number for WhatsApp (handles international numbers correctly)
+    // This function already returns only digits
+    const formattedPhone = formatPhoneForWhatsApp(phone)
+    
+    if (!formattedPhone || formattedPhone.length < 8) {
+      alert('Please enter a valid phone number with country code (e.g., +91 8103073510 for India, +1 2345678900 for US)')
+      return
+    }
 
-    window.open(whatsappUrl, '_blank')
+    // Ensure phone number is clean (only digits, no + or spaces)
+    // formatPhoneForWhatsApp already returns digits only, but double-check
+    const cleanPhone = formattedPhone.replace(/\D/g, '')
+    
+    // Encode the message properly for WhatsApp
+    // WhatsApp requires proper URL encoding
+    const encodedMessage = encodeURIComponent(message)
+    
+    // Use api.whatsapp.com format which is more reliable for pre-filled messages
+    // This format works better on both mobile and desktop
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
+    
+    // Open in new tab/window
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -98,9 +116,12 @@ export default function WhatsAppShare({
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+1234567890"
+                    placeholder="+91 8103073510 or 8103073510 (India) or +1 2345678900 (US)"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
                   />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Enter with country code (e.g., +91 for India, +1 for US) or just the number for Indian numbers
+                  </p>
                 </div>
 
                 {/* Message Input */}
@@ -153,6 +174,14 @@ export default function WhatsAppShare({
                     Open WhatsApp
                   </button>
                 </div>
+                
+                {/* Debug info (can be removed in production) */}
+                {phone && (
+                  <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+                    <p><strong>Formatted Phone:</strong> {formatPhoneForWhatsApp(phone)}</p>
+                    <p className="mt-1 break-all"><strong>WhatsApp URL:</strong> https://api.whatsapp.com/send?phone={formatPhoneForWhatsApp(phone).replace(/\D/g, '')}&text={encodeURIComponent(message).substring(0, 50)}...</p>
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>

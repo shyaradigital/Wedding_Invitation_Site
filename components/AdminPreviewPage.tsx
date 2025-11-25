@@ -91,8 +91,8 @@ export default function AdminPreviewPage({
           <div className="flex justify-center mb-4">
             <span className="text-3xl sm:text-4xl">💍</span>
           </div>
-          <h2 className="text-5xl sm:text-6xl md:text-7xl font-display text-wedding-navy mb-4 sm:mb-6 font-bold">
-            Ankita <span className="text-wedding-gold">&</span> Jay
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-display text-wedding-navy mb-4 sm:mb-6 font-bold">
+            Ankita Brijesh Sharma <span className="text-wedding-gold">&</span> Jay Bhavan Mehta
           </h2>
           <div className="wedding-divider-thick max-w-md mx-auto mb-6"></div>
           <p className="text-xl sm:text-2xl md:text-3xl text-wedding-gold mb-6 sm:mb-8 px-2 font-script">
@@ -100,8 +100,8 @@ export default function AdminPreviewPage({
           </p>
           <div className="mb-8 sm:mb-10">
             <div className="inline-block bg-wedding-rose-pastel/50 px-6 py-3 rounded-full border border-wedding-gold/30">
-              <p className="text-xl sm:text-2xl md:text-3xl font-display text-wedding-navy">
-                14th December 2025
+              <p className="text-lg sm:text-xl md:text-2xl font-display text-wedding-navy">
+                March 20-21, 2026
               </p>
             </div>
           </div>
@@ -153,19 +153,34 @@ export default function AdminPreviewPage({
         </section>
 
         {/* Navigation Links */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-16">
-          <Link href={`/admin/preview/${token}/about`}>
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-10 sm:mb-16">
+          <Link href={`/admin/preview/${token}/about-ankita`}>
             <motion.div
               whileHover={{ scale: 1.03, y: -4 }}
               whileTap={{ scale: 0.98 }}
               className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
             >
-              <div className="text-4xl mb-4">💑</div>
+              <div className="text-4xl mb-4">👰</div>
               <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
-                Our Story
+                About Ankita
               </h3>
               <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Learn more about Ankita & Jay</p>
+              <p className="text-sm sm:text-base text-gray-600">Learn more about the bride</p>
+            </motion.div>
+          </Link>
+
+          <Link href={`/admin/preview/${token}/about-jay`}>
+            <motion.div
+              whileHover={{ scale: 1.03, y: -4 }}
+              whileTap={{ scale: 0.98 }}
+              className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
+            >
+              <div className="text-4xl mb-4">🤵</div>
+              <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
+                About Jay
+              </h3>
+              <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
+              <p className="text-sm sm:text-base text-gray-600">Learn more about the groom</p>
             </motion.div>
           </Link>
 
@@ -184,18 +199,18 @@ export default function AdminPreviewPage({
             </motion.div>
           </Link>
 
-          <Link href={`/admin/preview/${token}/gallery`}>
+          <Link href={`/admin/preview/${token}/save-the-date`}>
             <motion.div
               whileHover={{ scale: 1.03, y: -4 }}
               whileTap={{ scale: 0.98 }}
               className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
             >
-              <div className="text-4xl mb-4">📸</div>
+              <div className="text-4xl mb-4">📅</div>
               <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
-                Gallery
+                Save the Date
               </h3>
               <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Beautiful moments from our celebrations</p>
+              <p className="text-sm sm:text-base text-gray-600">Mark your calendar</p>
             </motion.div>
           </Link>
         </section>
@@ -215,10 +230,16 @@ export default function AdminPreviewPage({
           </p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6">
             <Link
-              href={`/admin/preview/${token}/about`}
+              href={`/admin/preview/${token}/about-ankita`}
               className="text-sm sm:text-base text-wedding-gold-light hover:text-wedding-gold transition-colors"
             >
-              Our Story
+              About Ankita
+            </Link>
+            <Link
+              href={`/admin/preview/${token}/about-jay`}
+              className="text-sm sm:text-base text-wedding-gold-light hover:text-wedding-gold transition-colors"
+            >
+              About Jay
             </Link>
             <Link
               href={`/admin/preview/${token}/venue-travel`}
@@ -227,15 +248,15 @@ export default function AdminPreviewPage({
               Venue & Travel
             </Link>
             <Link
-              href={`/admin/preview/${token}/gallery`}
+              href={`/admin/preview/${token}/save-the-date`}
               className="text-sm sm:text-base text-wedding-gold-light hover:text-wedding-gold transition-colors"
             >
-              Gallery
+              Save the Date
             </Link>
           </div>
           <div className="wedding-divider max-w-xs mx-auto mb-6 opacity-30"></div>
           <p className="text-xs sm:text-sm opacity-75">
-            © {new Date().getFullYear()} Ankita & Jay
+            © {new Date().getFullYear()} Ankita Brijesh Sharma & Jay Bhavan Mehta
           </p>
         </div>
       </footer>

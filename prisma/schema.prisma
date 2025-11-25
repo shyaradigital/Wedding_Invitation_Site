@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Guest {
@@ -20,6 +20,11 @@ model Guest {
   tokenUsedFirstTime    DateTime?
   tokenExpiresAfterFirstUse Boolean @default(false)
   maxDevicesAllowed     Int       @default(1)
+  // Guest preferences
+  preferencesSubmitted  Boolean   @default(false)
+  menuPreference        String?   // "veg", "non-veg", "both"
+  dietaryRestrictions   String?   // Free text for allergies, special requirements
+  additionalInfo        String?   // Any other information from guest
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }

@@ -7,7 +7,7 @@ import { z } from 'zod'
 const createGuestSchema = z.object({
   name: z.string().min(1),
   phone: z.string().optional(),
-  eventAccess: z.array(z.enum(['mehndi', 'wedding', 'reception'])),
+  eventAccess: z.enum(['all-events', 'reception-only']), // Only two types now
   maxDevicesAllowed: z.number().int().min(1).max(10).optional().default(1),
 })
 
@@ -20,12 +20,17 @@ export async function POST(request: NextRequest) {
 
     const token = generateSecureToken()
 
+    // Convert eventAccess type to actual event array
+    const actualEventAccess = data.eventAccess === 'all-events' 
+      ? ['mehndi', 'wedding', 'reception']
+      : ['reception']
+
     const guest = await prisma.guest.create({
       data: {
         name: data.name,
         phone: data.phone || null,
         token,
-        eventAccess: JSON.stringify(data.eventAccess),
+        eventAccess: JSON.stringify(actualEventAccess),
         maxDevicesAllowed: data.maxDevicesAllowed,
         allowedDevices: JSON.stringify([]),
       },

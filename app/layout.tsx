@@ -4,7 +4,7 @@ import ClientLayout from "@/components/ClientLayout";
 
 export const metadata: Metadata = {
   title: "Ankita & Jay's Wedding",
-  description: "You're invited to celebrate our special day",
+  description: "Join us in celebrating the union of Ankita Brijesh Sharma & Jay Bhavan Mehta",
 };
 
 export default function RootLayout({

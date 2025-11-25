@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import PageTransition from '@/components/PageTransition'
+import InvitationPageLayout from '@/components/InvitationPageLayout'
 
 const eventInfo: Record<
   string,
@@ -33,7 +34,7 @@ function getDefaultDescription(slug: string): string {
     case 'mehndi':
       return 'A vibrant celebration filled with colors, music, fun, and beautiful traditions. Join us as we begin the wedding festivities with mehndi, haldi, laughter, and joyful rituals.'
     case 'wedding':
-      return 'Join us as Ankita and Jay tie the knot in a traditional Hindu ceremony surrounded by family, friends, mantras, blessings, and love.'
+      return 'Join us as Ankita Brijesh Sharma and Jay Bhavan Mehta tie the knot in a traditional Hindu ceremony surrounded by family, friends, mantras, blessings, and love.'
     case 'reception':
       return 'An evening filled with celebration, music, good food, dancing, and unforgettable memories. We can\'t wait to celebrate our happiness with you!'
     default:
@@ -44,11 +45,11 @@ function getDefaultDescription(slug: string): string {
 function getDefaultDate(slug: string): string | null {
   switch (slug) {
     case 'mehndi':
-      return '12th December 2025'
+      return 'March 20, 2026'
     case 'wedding':
-      return '13th December 2025'
+      return 'March 21, 2026'
     case 'reception':
-      return '14th December 2025'
+      return 'March 21, 2026'
     default:
       return null
   }
@@ -57,11 +58,11 @@ function getDefaultDate(slug: string): string | null {
 function getDefaultTime(slug: string): string | null {
   switch (slug) {
     case 'mehndi':
-      return '4:00 PM onwards'
+      return '6:00 PM'
     case 'wedding':
-      return '7:15 AM'
+      return '10:00 AM'
     case 'reception':
-      return '7:30 PM onwards'
+      return '5:30 PM'
     default:
       return null
   }
@@ -70,11 +71,11 @@ function getDefaultTime(slug: string): string | null {
 function getDefaultVenue(slug: string): string | null {
   switch (slug) {
     case 'mehndi':
-      return 'The Garden Courtyard'
+      return 'DoubleTree by Hilton Hotel Irvine - Spectrum'
     case 'wedding':
-      return 'The Grand Lotus Palace'
+      return 'DoubleTree by Hilton Hotel Irvine - Spectrum'
     case 'reception':
-      return 'Royal Orchid Ballroom'
+      return 'DoubleTree by Hilton Hotel Irvine - Spectrum'
     default:
       return null
   }
@@ -83,11 +84,11 @@ function getDefaultVenue(slug: string): string | null {
 function getDefaultAddress(slug: string): string | null {
   switch (slug) {
     case 'mehndi':
-      return 'Sunrise Boulevard, Ahmedabad'
+      return '90 Pacifica, Irvine, CA 92618'
     case 'wedding':
-      return 'Ring Road, Ahmedabad'
+      return '90 Pacifica, Irvine, CA 92618'
     case 'reception':
-      return 'Near Riverfront, Ahmedabad'
+      return '90 Pacifica, Irvine, CA 92618'
     default:
       return null
   }
@@ -188,9 +189,24 @@ export default function EventDetailsPage() {
     )
   }
 
+  if (!guest) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-gold mx-auto mb-4"></div>
+          <p className="text-wedding-navy">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-wedding">
+    <InvitationPageLayout
+      token={token}
+      eventAccess={guest.eventAccess}
+      guestName={guest.name}
+    >
+      <PageTransition>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
           <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -372,18 +388,10 @@ export default function EventDetailsPage() {
             )}
           </div>
 
-          <div className="mt-10 sm:mt-12 text-center">
-            <Link
-              href={`/invite/${token}`}
-              className="inline-flex items-center bg-gradient-gold text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:shadow-lg transition-all duration-300 text-base sm:text-lg"
-            >
-              <span className="mr-2">←</span> Return Home
-            </Link>
-          </div>
         </motion.div>
       </div>
-    </div>
-    </PageTransition>
+      </PageTransition>
+    </InvitationPageLayout>
   )
 }
 

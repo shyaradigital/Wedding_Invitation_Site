@@ -7,6 +7,7 @@ import { generateDeviceFingerprint } from '@/lib/device-fingerprint'
 import PhoneVerificationForm from '@/components/PhoneVerificationForm'
 import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
 import GuestInviteLayout from '@/components/GuestInviteLayout'
+import GuestPreferencesForm from '@/components/GuestPreferencesForm'
 
 interface Guest {
   id: string
@@ -38,11 +39,32 @@ export default function InvitePage() {
   const [error, setError] = useState<string | null>(null)
   const [showRestrictedPopup, setShowRestrictedPopup] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
+  const [showPreferencesForm, setShowPreferencesForm] = useState(false)
+  const [preferencesSubmitted, setPreferencesSubmitted] = useState(false)
 
   useEffect(() => {
     checkAccess()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
+
+  const checkPreferencesStatus = async () => {
+    try {
+      const response = await fetch(`/api/guest/preferences?token=${token}`)
+      const data = await response.json()
+      if (!data.preferencesSubmitted) {
+        setShowPreferencesForm(true)
+      } else {
+        setPreferencesSubmitted(true)
+      }
+    } catch (err) {
+      console.error('Error checking preferences:', err)
+    }
+  }
+
+  const handlePreferencesSubmitted = () => {
+    setShowPreferencesForm(false)
+    setPreferencesSubmitted(true)
+  }
 
   const checkAccess = async () => {
     try {
@@ -84,6 +106,8 @@ export default function InvitePage() {
         if (allowedDevices.includes(fingerprint)) {
           // Device is allowed
           setAccessState('granted')
+          // Check if preferences need to be collected
+          checkPreferencesStatus()
         } else {
           // New device - require phone verification
           setAccessState('phone-verification')
@@ -153,10 +177,15 @@ export default function InvitePage() {
 
           // Grant access
           setAccessState('granted')
+          
+          // Check if preferences need to be collected
+          checkPreferencesStatus()
         } catch (err) {
           console.error('Error saving device:', err)
           // Still grant access if phone is verified
           setAccessState('granted')
+          // Check if preferences need to be collected
+          checkPreferencesStatus()
         }
       }
     } catch (err) {
@@ -233,7 +262,18 @@ export default function InvitePage() {
   }
 
   if (accessState === 'granted' && guest) {
-    return <GuestInviteLayout guest={guest} token={token} />
+    return (
+      <>
+        {showPreferencesForm && (
+          <GuestPreferencesForm
+            token={token}
+            guestName={guest.name}
+            onSubmitted={handlePreferencesSubmitted}
+          />
+        )}
+        <GuestInviteLayout guest={guest} token={token} />
+      </>
+    )
   }
 
   return null

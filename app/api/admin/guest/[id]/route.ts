@@ -7,7 +7,7 @@ import { z } from 'zod'
 const updateGuestSchema = z.object({
   name: z.string().min(1).optional(),
   phone: z.string().optional().nullable(),
-  eventAccess: z.array(z.enum(['mehndi', 'wedding', 'reception'])).optional(),
+  eventAccess: z.enum(['all-events', 'reception-only']).optional(), // Only two types now
   maxDevicesAllowed: z.number().int().min(1).max(10).optional(),
   regenerateToken: z.boolean().optional(),
   removeDevice: z.string().optional(),
@@ -40,7 +40,13 @@ export async function PATCH(
 
     if (data.name !== undefined) updateData.name = data.name
     if (data.phone !== undefined) updateData.phone = data.phone
-    if (data.eventAccess !== undefined) updateData.eventAccess = JSON.stringify(data.eventAccess)
+    if (data.eventAccess !== undefined) {
+      // Convert eventAccess type to actual event array
+      const actualEventAccess = data.eventAccess === 'all-events' 
+        ? ['mehndi', 'wedding', 'reception']
+        : ['reception']
+      updateData.eventAccess = JSON.stringify(actualEventAccess)
+    }
     if (data.maxDevicesAllowed !== undefined) updateData.maxDevicesAllowed = data.maxDevicesAllowed
 
     if (data.regenerateToken) {

@@ -35,19 +35,19 @@ export default function GuestEditor({
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    eventAccess: [] as string[],
+    eventAccess: 'all-events' as 'all-events' | 'reception-only',
     maxDevicesAllowed: 1,
   })
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [showImportModal, setShowImportModal] = useState(false)
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [isImporting, setIsImporting] = useState(false)
+  const [importResults, setImportResults] = useState<any>(null)
 
   const handleCreateGuest = async () => {
     if (!formData.name.trim()) {
       setError('Name is required')
-      return
-    }
-    if (formData.eventAccess.length === 0) {
-      setError('Please select at least one event')
       return
     }
 
@@ -71,7 +71,7 @@ export default function GuestEditor({
         setFormData({
           name: '',
           phone: '',
-          eventAccess: [],
+          eventAccess: 'all-events',
           maxDevicesAllowed: 1,
         })
         setTimeout(() => setSuccess(null), 3000)
@@ -139,7 +139,7 @@ export default function GuestEditor({
     setFormData({
       name: guest.name,
       phone: guest.phone || '',
-      eventAccess: guest.eventAccess,
+      eventAccess: getEventAccessType(guest.eventAccess),
       maxDevicesAllowed: guest.maxDevicesAllowed,
     })
     setShowCreateForm(false)
@@ -152,10 +152,6 @@ export default function GuestEditor({
       setError('Name is required')
       return
     }
-    if (formData.eventAccess.length === 0) {
-      setError('Please select at least one event')
-      return
-    }
 
     await handleUpdateGuest(editingGuest.id, {
       name: formData.name,
@@ -163,6 +159,14 @@ export default function GuestEditor({
       eventAccess: formData.eventAccess,
       maxDevicesAllowed: formData.maxDevicesAllowed,
     })
+  }
+
+  // Helper function to get event access type from event array
+  const getEventAccessType = (events: string[]): 'all-events' | 'reception-only' => {
+    if (events.length === 3 && events.includes('mehndi') && events.includes('wedding') && events.includes('reception')) {
+      return 'all-events'
+    }
+    return 'reception-only'
   }
 
   const handleClearAllDevices = async (guestId: string) => {
@@ -235,10 +239,16 @@ export default function GuestEditor({
     }
 
     // Event filter
-    if (filterEvent !== 'all') {
-      filtered = filtered.filter(guest =>
-        guest.eventAccess.includes(filterEvent)
-      )
+    if (filterEvent === 'all-events') {
+      filtered = filtered.filter(guest => {
+        const events = guest.eventAccess
+        return events.includes('mehndi') && events.includes('wedding') && events.includes('reception')
+      })
+    } else if (filterEvent === 'reception-only') {
+      filtered = filtered.filter(guest => {
+        const events = guest.eventAccess
+        return events.length === 1 && events.includes('reception')
+      })
     }
 
     return filtered
@@ -265,25 +275,86 @@ export default function GuestEditor({
     setTimeout(() => setSuccess(null), 3000)
   }
 
-  const toggleEventAccess = (event: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      eventAccess: prev.eventAccess.includes(event)
-        ? prev.eventAccess.filter((e) => e !== event)
-        : [...prev.eventAccess, event],
-    }))
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await fetch('/api/admin/guest/import')
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'guest-import-template.xlsx'
+      a.click()
+      URL.revokeObjectURL(url)
+      setSuccess('Template downloaded successfully!')
+      setTimeout(() => setSuccess(null), 3000)
+    } catch (err) {
+      console.error('Error downloading template:', err)
+      setError('Failed to download template')
+    }
   }
 
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      phone: '',
-      eventAccess: [],
-      maxDevicesAllowed: 1,
-    })
-    setEditingGuest(null)
-    setShowCreateForm(false)
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (
+        file.name.endsWith('.xlsx') ||
+        file.name.endsWith('.xls')
+      ) {
+        setImportFile(file)
+        setError(null)
+      } else {
+        setError('Please select an Excel file (.xlsx or .xls)')
+        setImportFile(null)
+      }
+    }
+  }
+
+  const handleImport = async () => {
+    if (!importFile) {
+      setError('Please select a file')
+      return
+    }
+
+    setIsImporting(true)
     setError(null)
+    setImportResults(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', importFile)
+
+      const response = await fetch('/api/admin/guest/import', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setImportResults(data)
+        setSuccess(
+          `Import completed! ${data.summary.successful} guests added, ${data.summary.errors} errors, ${data.summary.skipped} skipped.`
+        )
+        onGuestsChange()
+        setImportFile(null)
+        // Reset file input
+        const fileInput = document.getElementById('import-file') as HTMLInputElement
+        if (fileInput) fileInput.value = ''
+        setTimeout(() => {
+          setSuccess(null)
+          setShowImportModal(false)
+          setImportResults(null)
+        }, 5000)
+      } else {
+        setError(data.error || 'Failed to import guests')
+      }
+    } catch (err) {
+      console.error('Error importing guests:', err)
+      setError('An error occurred while importing. Please try again.')
+    } finally {
+      setIsImporting(false)
+    }
   }
 
   if (isLoading) {
@@ -304,6 +375,18 @@ export default function GuestEditor({
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <button
+              onClick={handleDownloadTemplate}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
+            >
+              📋 Download Template
+            </button>
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base"
+            >
+              📤 Import Excel
+            </button>
             <button
               onClick={handleExportGuests}
               className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base"
@@ -404,17 +487,34 @@ export default function GuestEditor({
                   Event Access
                 </label>
                 <div className="space-y-2">
-                  {['mehndi', 'wedding', 'reception'].map((event) => (
-                    <label key={event} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={formData.eventAccess.includes(event)}
-                        onChange={() => toggleEventAccess(event)}
-                        className="mr-2"
-                      />
-                      <span className="capitalize">{event}</span>
-                    </label>
-                  ))}
+                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="eventAccess"
+                      value="all-events"
+                      checked={formData.eventAccess === 'all-events'}
+                      onChange={(e) => setFormData({ ...formData, eventAccess: e.target.value as 'all-events' | 'reception-only' })}
+                      className="mr-3"
+                    />
+                    <div>
+                      <span className="font-semibold">All Events</span>
+                      <p className="text-xs text-gray-500">Mehndi, Wedding & Reception</p>
+                    </div>
+                  </label>
+                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="eventAccess"
+                      value="reception-only"
+                      checked={formData.eventAccess === 'reception-only'}
+                      onChange={(e) => setFormData({ ...formData, eventAccess: e.target.value as 'all-events' | 'reception-only' })}
+                      className="mr-3"
+                    />
+                    <div>
+                      <span className="font-semibold">Reception Only</span>
+                      <p className="text-xs text-gray-500">Reception event only</p>
+                    </div>
+                  </label>
                 </div>
               </div>
               <div>
@@ -742,6 +842,129 @@ export default function GuestEditor({
                   >
                     Delete Guest
                   </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Import Modal */}
+      <AnimatePresence>
+        {showImportModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => !isImporting && setShowImportModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-serif text-wedding-navy">
+                    Import Guests from Excel
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setShowImportModal(false)
+                      setImportFile(null)
+                      setImportResults(null)
+                      setError(null)
+                    }}
+                    disabled={isImporting}
+                    className="text-gray-500 hover:text-gray-700 text-2xl disabled:opacity-50"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h4 className="font-semibold text-blue-900 mb-2">Excel Format:</h4>
+                    <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                      <li><strong>Column A:</strong> Name (required)</li>
+                      <li><strong>Column B:</strong> Phone (optional)</li>
+                      <li><strong>Column C:</strong> Event Access (required: "all-events" or "reception-only")</li>
+                      <li><strong>Column D:</strong> Max Devices Allowed (optional, default: 1)</li>
+                    </ul>
+                    <button
+                      onClick={handleDownloadTemplate}
+                      className="mt-3 text-blue-600 hover:text-blue-800 underline text-sm"
+                    >
+                      Download Template File
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Excel File (.xlsx or .xls)
+                    </label>
+                    <input
+                      id="import-file"
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={handleFileSelect}
+                      disabled={isImporting}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50"
+                    />
+                    {importFile && (
+                      <p className="mt-2 text-sm text-gray-600">
+                        Selected: {importFile.name} ({(importFile.size / 1024).toFixed(2)} KB)
+                      </p>
+                    )}
+                  </div>
+
+                  {importResults && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                      <h4 className="font-semibold mb-2">Import Results:</h4>
+                      <div className="text-sm space-y-1">
+                        <p>✅ Successful: {importResults.summary.successful}</p>
+                        <p>❌ Errors: {importResults.summary.errors}</p>
+                        <p>⏭️ Skipped: {importResults.summary.skipped}</p>
+                      </div>
+                      {importResults.results.errors.length > 0 && (
+                        <div className="mt-3">
+                          <p className="font-semibold text-red-700 mb-1">Errors:</p>
+                          <div className="max-h-32 overflow-y-auto text-xs">
+                            {importResults.results.errors.map((err: any, idx: number) => (
+                              <p key={idx} className="text-red-600">
+                                Row {err.row} ({err.name}): {err.error}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      onClick={handleImport}
+                      disabled={!importFile || isImporting}
+                      className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isImporting ? 'Importing...' : 'Import Guests'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowImportModal(false)
+                        setImportFile(null)
+                        setImportResults(null)
+                        setError(null)
+                      }}
+                      disabled={isImporting}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
