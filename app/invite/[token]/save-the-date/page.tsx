@@ -90,10 +90,10 @@ export default function SaveTheDatePage() {
   // Filter events based on guest access
   const events = guest.eventAccess
     .map((slug: string) => eventData[slug as keyof typeof eventData])
-    .filter(Boolean)
+    .filter(Boolean) as Array<{ name: string; date: string; time: string; icon: string; slug: string }>
 
   // Sort events by date
-  const sortedEvents = events.sort((a, b) => {
+  const sortedEvents = events.sort((a: { slug: string }, b: { slug: string }) => {
     const dateOrder: Record<string, number> = {
       'mehndi': 1,
       'wedding': 2,
