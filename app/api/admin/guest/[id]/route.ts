@@ -74,6 +74,17 @@ export async function PATCH(
       data: updateData,
     })
 
+    let rsvpStatus = null
+    if (updatedGuest.rsvpStatus) {
+      try {
+        rsvpStatus = typeof updatedGuest.rsvpStatus === 'string' 
+          ? JSON.parse(updatedGuest.rsvpStatus) 
+          : updatedGuest.rsvpStatus
+      } catch {
+        rsvpStatus = null
+      }
+    }
+
     return NextResponse.json({
       success: true,
       guest: {
@@ -85,6 +96,13 @@ export async function PATCH(
         allowedDevices: ensureJsonArray(updatedGuest.allowedDevices),
         maxDevicesAllowed: updatedGuest.maxDevicesAllowed,
         numberOfAttendees: updatedGuest.numberOfAttendees,
+        rsvpSubmitted: updatedGuest.rsvpSubmitted,
+        rsvpStatus,
+        rsvpSubmittedAt: updatedGuest.rsvpSubmittedAt,
+        preferencesSubmitted: updatedGuest.preferencesSubmitted,
+        menuPreference: updatedGuest.menuPreference,
+        dietaryRestrictions: updatedGuest.dietaryRestrictions,
+        additionalInfo: updatedGuest.additionalInfo,
       },
     })
   } catch (error) {

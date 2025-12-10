@@ -17,11 +17,20 @@ export default function RSVPPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
+  const [existingRsvp, setExistingRsvp] = useState<any>(null)
   const [formData, setFormData] = useState({
+    rsvpStatus: {} as Record<string, 'yes' | 'no' | 'pending'>,
     menuPreference: '' as 'veg' | 'non-veg' | 'both' | '',
     dietaryRestrictions: '',
     additionalInfo: '',
   })
+
+  // Event name mapping
+  const eventNames: Record<string, string> = {
+    mehndi: 'Mehndi & Pithi',
+    wedding: 'Hindu Wedding',
+    reception: 'Reception',
+  }
 
   useEffect(() => {
     // Verify access
@@ -51,6 +60,26 @@ export default function RSVPPage() {
       .then((data) => {
         if (data && data.preferencesSubmitted) {
           setSubmitted(true)
+          if (data.rsvpStatus) {
+            setExistingRsvp(data.rsvpStatus)
+          }
+          // Pre-populate form with existing data
+          if (data.preferences) {
+            setFormData(prev => ({
+              ...prev,
+              menuPreference: data.preferences.menuPreference || '',
+              dietaryRestrictions: data.preferences.dietaryRestrictions || '',
+              additionalInfo: data.preferences.additionalInfo || '',
+              rsvpStatus: data.rsvpStatus || {},
+            }))
+          }
+        } else if (data && data.rsvpStatus) {
+          // RSVP already submitted but show existing status
+          setExistingRsvp(data.rsvpStatus)
+          setFormData(prev => ({
+            ...prev,
+            rsvpStatus: data.rsvpStatus || {},
+          }))
         }
       })
       .catch((err) => {
@@ -62,6 +91,15 @@ export default function RSVPPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+
+    // Validate RSVP status for all accessible events
+    const eventAccess = guest?.eventAccess || []
+    const missingRsvp = eventAccess.filter((event: string) => !formData.rsvpStatus[event])
+    
+    if (missingRsvp.length > 0) {
+      setError(`Please provide RSVP status for all events: ${missingRsvp.map((e: string) => eventNames[e] || e).join(', ')}`)
+      return
+    }
 
     if (!formData.menuPreference) {
       setError('Please select a menu preference')
@@ -76,6 +114,7 @@ export default function RSVPPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token,
+          rsvpStatus: formData.rsvpStatus,
           menuPreference: formData.menuPreference,
           dietaryRestrictions: formData.dietaryRestrictions.trim() || undefined,
           additionalInfo: formData.additionalInfo.trim() || undefined,
@@ -169,6 +208,80 @@ export default function RSVPPage() {
 
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+                    {/* RSVP Section - Dynamic based on eventAccess */}
+                    {guest.eventAccess && guest.eventAccess.length > 0 && (
+                      <div>
+                        <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
+                          Will you be attending? <span className="text-red-500">*</span>
+                        </label>
+                        <OrnamentalDivider variant="simple" className="mb-4" />
+                        <div className="space-y-6">
+                          {guest.eventAccess.map((eventSlug: string) => {
+                            const eventName = eventNames[eventSlug] || eventSlug
+                            const currentStatus = formData.rsvpStatus[eventSlug] || (existingRsvp?.[eventSlug] || '')
+                            
+                            return (
+                              <div key={eventSlug} className="border-2 border-wedding-gold/30 rounded-xl p-4 sm:p-5 bg-white/50">
+                                <h3 className="text-base sm:text-lg font-display text-wedding-navy mb-3 sm:mb-4">
+                                  {eventName}
+                                </h3>
+                                <div className="space-y-2">
+                                  <label className="flex items-center p-3 sm:p-4 border-2 border-wedding-gold/30 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation bg-white/70">
+                                    <input
+                                      type="radio"
+                                      name={`rsvp-${eventSlug}`}
+                                      value="yes"
+                                      checked={currentStatus === 'yes'}
+                                      onChange={() =>
+                                        setFormData({
+                                          ...formData,
+                                          rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'yes' },
+                                        })
+                                      }
+                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                                    />
+                                    <span className="text-base sm:text-lg font-serif text-gray-700">✓ Attending</span>
+                                  </label>
+                                  <label className="flex items-center p-3 sm:p-4 border-2 border-wedding-gold/30 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation bg-white/70">
+                                    <input
+                                      type="radio"
+                                      name={`rsvp-${eventSlug}`}
+                                      value="no"
+                                      checked={currentStatus === 'no'}
+                                      onChange={() =>
+                                        setFormData({
+                                          ...formData,
+                                          rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'no' },
+                                        })
+                                      }
+                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                                    />
+                                    <span className="text-base sm:text-lg font-serif text-gray-700">✗ Not Attending</span>
+                                  </label>
+                                  <label className="flex items-center p-3 sm:p-4 border-2 border-wedding-gold/30 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation bg-white/70">
+                                    <input
+                                      type="radio"
+                                      name={`rsvp-${eventSlug}`}
+                                      value="pending"
+                                      checked={currentStatus === 'pending'}
+                                      onChange={() =>
+                                        setFormData({
+                                          ...formData,
+                                          rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'pending' },
+                                        })
+                                      }
+                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                                    />
+                                    <span className="text-base sm:text-lg font-serif text-gray-700">⏳ Pending</span>
+                                  </label>
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Menu Preference */}
                     <div>
                       <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">

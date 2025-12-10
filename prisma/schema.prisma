@@ -26,6 +26,10 @@ model Guest {
   menuPreference        String?   // "veg", "non-veg", "both"
   dietaryRestrictions   String?   // Free text for allergies, special requirements
   additionalInfo        String?   // Any other information from guest
+  // RSVP fields
+  rsvpSubmitted         Boolean   @default(false)
+  rsvpStatus            String?   // JSON: {"mehndi": "yes"|"no"|"pending", "wedding": "yes"|"no"|"pending", "reception": "yes"|"no"|"pending"}
+  rsvpSubmittedAt       DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }

@@ -15,6 +15,13 @@ interface Guest {
   tokenUsedFirstTime: string | null
   maxDevicesAllowed: number
   numberOfAttendees: number
+  rsvpSubmitted?: boolean
+  rsvpStatus?: Record<string, 'yes' | 'no' | 'pending'> | null
+  rsvpSubmittedAt?: string | null
+  preferencesSubmitted?: boolean
+  menuPreference?: string | null
+  dietaryRestrictions?: string | null
+  additionalInfo?: string | null
   createdAt: string
 }
 
@@ -34,6 +41,7 @@ export default function GuestEditor({
   const [viewingGuest, setViewingGuest] = useState<Guest | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterEvent, setFilterEvent] = useState<string>('all')
+  const [filterRsvp, setFilterRsvp] = useState<string>('all')
   const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set())
   const [quickAddMode, setQuickAddMode] = useState(false)
   const [lastEventAccess, setLastEventAccess] = useState<'all-events' | 'reception-only'>('all-events')
@@ -309,19 +317,44 @@ export default function GuestEditor({
     }
 
     const selectedGuestList = guests.filter(g => selectedGuests.has(g.id))
+    const eventNames: Record<string, string> = {
+      mehndi: 'Mehndi',
+      wedding: 'Wedding',
+      reception: 'Reception',
+    }
+    
     const csv = [
-      ['Name', 'Phone', 'Events', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
-      ...selectedGuestList.map(guest => [
-        `"${guest.name}"`,
-        guest.phone || '',
-        guest.eventAccess.join('; '),
-        guest.allowedDevices.length,
-        guest.maxDevicesAllowed,
-        guest.numberOfAttendees || 1,
-        guest.tokenUsedFirstTime ? new Date(guest.tokenUsedFirstTime).toLocaleString() : 'Never',
-        new Date(guest.createdAt).toLocaleString(),
-        `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
-      ].join(','))
+      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
+      ...selectedGuestList.map(guest => {
+        const rsvpStatus = guest.rsvpStatus || {}
+        const overallStatus = getOverallRsvpStatus(guest)
+        const rsvpStatusLabels: Record<string, string> = {
+          'attending': 'Attending',
+          'not-attending': 'Not Attending',
+          'pending': 'Pending',
+          'not-submitted': 'Not Submitted',
+        }
+        
+        return [
+          `"${guest.name}"`,
+          guest.phone || '',
+          guest.eventAccess.join('; '),
+          rsvpStatusLabels[overallStatus] || 'Not Submitted',
+          rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : rsvpStatus.mehndi === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
+          rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : rsvpStatus.wedding === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
+          rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : rsvpStatus.reception === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
+          guest.menuPreference ? (guest.menuPreference === 'veg' ? 'Vegetarian' : guest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both') : '',
+          guest.dietaryRestrictions ? `"${guest.dietaryRestrictions.replace(/"/g, '""')}"` : '',
+          guest.additionalInfo ? `"${guest.additionalInfo.replace(/"/g, '""')}"` : '',
+          guest.rsvpSubmittedAt ? new Date(guest.rsvpSubmittedAt).toLocaleString() : '',
+          guest.allowedDevices.length,
+          guest.maxDevicesAllowed,
+          guest.numberOfAttendees || 1,
+          guest.tokenUsedFirstTime ? new Date(guest.tokenUsedFirstTime).toLocaleString() : 'Never',
+          new Date(guest.createdAt).toLocaleString(),
+          `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
+        ].join(',')
+      })
     ].join('\n')
 
     const blob = new Blob([csv], { type: 'text/csv' })
@@ -451,23 +484,66 @@ export default function GuestEditor({
     setNewMaxDevices(guest.maxDevicesAllowed)
   }
 
+  // Helper function to get overall RSVP status
+  const getOverallRsvpStatus = (guest: Guest): 'attending' | 'not-attending' | 'pending' | 'not-submitted' => {
+    if (!guest.rsvpSubmitted || !guest.rsvpStatus) return 'not-submitted'
+    
+    const rsvpStatus = guest.rsvpStatus
+    const eventAccess = guest.eventAccess || []
+    
+    // Check if attending any event
+    const hasAttending = eventAccess.some(event => rsvpStatus[event] === 'yes')
+    const hasNotAttending = eventAccess.some(event => rsvpStatus[event] === 'no')
+    const hasPending = eventAccess.some(event => rsvpStatus[event] === 'pending')
+    
+    if (hasAttending) return 'attending'
+    if (hasNotAttending && !hasAttending && !hasPending) return 'not-attending'
+    if (hasPending) return 'pending'
+    return 'not-submitted'
+  }
+
   const handleExportGuests = () => {
     const guestsToExport = selectedGuests.size > 0 
       ? guests.filter(g => selectedGuests.has(g.id))
       : filteredGuests
+    const eventNames: Record<string, string> = {
+      mehndi: 'Mehndi',
+      wedding: 'Wedding',
+      reception: 'Reception',
+    }
+    
     const csv = [
-      ['Name', 'Phone', 'Events', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
-      ...guestsToExport.map(guest => [
-        `"${guest.name}"`,
-        guest.phone || '',
-        guest.eventAccess.join('; '),
-        guest.allowedDevices.length,
-        guest.maxDevicesAllowed,
-        guest.numberOfAttendees || 1,
-        guest.tokenUsedFirstTime ? new Date(guest.tokenUsedFirstTime).toLocaleString() : 'Never',
-        new Date(guest.createdAt).toLocaleString(),
-        `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
-      ].join(','))
+      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
+      ...guestsToExport.map(guest => {
+        const rsvpStatus = guest.rsvpStatus || {}
+        const overallStatus = getOverallRsvpStatus(guest)
+        const rsvpStatusLabels: Record<string, string> = {
+          'attending': 'Attending',
+          'not-attending': 'Not Attending',
+          'pending': 'Pending',
+          'not-submitted': 'Not Submitted',
+        }
+        
+        return [
+          `"${guest.name}"`,
+          guest.phone || '',
+          guest.eventAccess.join('; '),
+          rsvpStatusLabels[overallStatus] || 'Not Submitted',
+          rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : rsvpStatus.mehndi === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
+          rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : rsvpStatus.wedding === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
+          rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : rsvpStatus.reception === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
+          guest.menuPreference ? (guest.menuPreference === 'veg' ? 'Vegetarian' : guest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both') : '',
+          guest.dietaryRestrictions ? `"${guest.dietaryRestrictions.replace(/"/g, '""')}"` : '',
+          guest.additionalInfo ? `"${guest.additionalInfo.replace(/"/g, '""')}"` : '',
+          guest.rsvpSubmittedAt ? new Date(guest.rsvpSubmittedAt).toLocaleString() : '',
+          guest.allowedDevices.length,
+          guest.maxDevicesAllowed,
+          guest.numberOfAttendees || 1,
+          guest.tokenUsedFirstTime ? new Date(guest.tokenUsedFirstTime).toLocaleString() : 'Never',
+          new Date(guest.createdAt).toLocaleString(),
+          `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
+        ].join(',')
+      })
     ].join('\n')
 
     const blob = new Blob([csv], { type: 'text/csv' })
@@ -493,6 +569,12 @@ export default function GuestEditor({
     }).length
     const totalAttendees = guests.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
     const notAccessedCount = guests.filter(g => !g.tokenUsedFirstTime).length
+    
+    // RSVP stats
+    const rsvpAttending = guests.filter(g => getOverallRsvpStatus(g) === 'attending').length
+    const rsvpNotAttending = guests.filter(g => getOverallRsvpStatus(g) === 'not-attending').length
+    const rsvpPending = guests.filter(g => getOverallRsvpStatus(g) === 'pending').length
+    const rsvpNotSubmitted = guests.filter(g => getOverallRsvpStatus(g) === 'not-submitted').length
 
     return {
       total: guests.length,
@@ -500,6 +582,10 @@ export default function GuestEditor({
       receptionOnly: receptionOnlyCount,
       totalAttendees,
       notAccessed: notAccessedCount,
+      rsvpAttending,
+      rsvpNotAttending,
+      rsvpPending,
+      rsvpNotSubmitted,
     }
   }, [guests])
 
@@ -537,8 +623,16 @@ export default function GuestEditor({
       filtered = filtered.filter(guest => guest.tokenUsedFirstTime === null)
     }
 
+    // RSVP filter
+    if (filterRsvp !== 'all') {
+      filtered = filtered.filter(guest => {
+        const status = getOverallRsvpStatus(guest)
+        return status === filterRsvp
+      })
+    }
+
     return filtered
-  }, [guests, searchQuery, filterEvent, filterHasAccessed])
+  }, [guests, searchQuery, filterEvent, filterHasAccessed, filterRsvp])
 
   const handleRegenerateToken = async (guestId: string) => {
     if (
@@ -673,6 +767,26 @@ export default function GuestEditor({
         </div>
       </div>
 
+      {/* RSVP Stats Dashboard */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow p-4 border border-green-200">
+          <div className="text-2xl font-bold text-green-600">{stats.rsvpAttending}</div>
+          <div className="text-sm text-gray-600">✓ Attending</div>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4 border border-red-200">
+          <div className="text-2xl font-bold text-red-600">{stats.rsvpNotAttending}</div>
+          <div className="text-sm text-gray-600">✗ Not Attending</div>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4 border border-yellow-200">
+          <div className="text-2xl font-bold text-yellow-600">{stats.rsvpPending}</div>
+          <div className="text-sm text-gray-600">⏳ Pending</div>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
+          <div className="text-2xl font-bold text-gray-600">{stats.rsvpNotSubmitted}</div>
+          <div className="text-sm text-gray-600">❓ Not Submitted</div>
+        </div>
+      </div>
+
       {/* Header with Actions */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4">
@@ -804,9 +918,20 @@ export default function GuestEditor({
               <option value="accessed">Has Accessed</option>
               <option value="not-accessed">Not Accessed</option>
             </select>
+            <select
+              value={filterRsvp}
+              onChange={(e) => setFilterRsvp(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
+            >
+              <option value="all">All RSVP</option>
+              <option value="attending">✓ Attending</option>
+              <option value="not-attending">✗ Not Attending</option>
+              <option value="pending">⏳ Pending</option>
+              <option value="not-submitted">❓ Not Submitted</option>
+            </select>
           </div>
           {/* Active Filter Chips */}
-          {(filterEvent !== 'all' || filterHasAccessed !== 'all' || searchQuery) && (
+          {(filterEvent !== 'all' || filterHasAccessed !== 'all' || filterRsvp !== 'all' || searchQuery) && (
             <div className="flex flex-wrap gap-2">
               {filterEvent !== 'all' && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-wedding-gold/20 text-wedding-navy">
@@ -818,6 +943,12 @@ export default function GuestEditor({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
                   Access: {filterHasAccessed === 'accessed' ? 'Has Accessed' : 'Not Accessed'}
                   <button onClick={() => setFilterHasAccessed('all')} className="ml-2 hover:text-red-600">×</button>
+                </span>
+              )}
+              {filterRsvp !== 'all' && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                  RSVP: {filterRsvp === 'attending' ? '✓ Attending' : filterRsvp === 'not-attending' ? '✗ Not Attending' : filterRsvp === 'pending' ? '⏳ Pending' : '❓ Not Submitted'}
+                  <button onClick={() => setFilterRsvp('all')} className="ml-2 hover:text-red-600">×</button>
                 </span>
               )}
               {searchQuery && (
@@ -1021,6 +1152,9 @@ export default function GuestEditor({
                 Attendees
               </th>
               <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                RSVP Status
+              </th>
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -1118,6 +1252,58 @@ export default function GuestEditor({
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                     {guest.numberOfAttendees || 1}
                   </td>
+                  <td 
+                    className="px-3 sm:px-6 py-4 whitespace-nowrap cursor-pointer hover:bg-gray-50"
+                    onClick={() => setViewingGuest(guest)}
+                    title="Click to view RSVP details"
+                  >
+                    {(() => {
+                      const rsvpStatus = getOverallRsvpStatus(guest)
+                      const eventNames: Record<string, string> = {
+                        mehndi: 'Mehndi',
+                        wedding: 'Wedding',
+                        reception: 'Reception',
+                      }
+                      
+                      if (rsvpStatus === 'not-submitted') {
+                        return (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            ❓ Not Submitted
+                          </span>
+                        )
+                      }
+                      
+                      // Show per-event RSVP badges for accessible events
+                      const eventAccess = guest.eventAccess || []
+                      const rsvpData = guest.rsvpStatus || {}
+                      
+                      return (
+                        <div className="flex flex-col gap-1">
+                          {eventAccess.map((eventSlug: string) => {
+                            const status = rsvpData[eventSlug]
+                            if (!status) return null
+                            
+                            const statusConfig = {
+                              yes: { bg: 'bg-green-100', text: 'text-green-800', icon: '✓' },
+                              no: { bg: 'bg-red-100', text: 'text-red-800', icon: '✗' },
+                              pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: '⏳' },
+                            }[status] || { bg: 'bg-gray-100', text: 'text-gray-800', icon: '❓' }
+                            
+                            return (
+                              <span
+                                key={eventSlug}
+                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}
+                                title={`${eventNames[eventSlug] || eventSlug}: ${status === 'yes' ? 'Attending' : status === 'no' ? 'Not Attending' : 'Pending'}`}
+                              >
+                                <span className="mr-1">{statusConfig.icon}</span>
+                                {eventNames[eventSlug] || eventSlug}
+                              </span>
+                            )
+                          })}
+                        </div>
+                      )
+                    })()}
+                  </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-wrap gap-1 sm:gap-2">
@@ -1175,7 +1361,7 @@ export default function GuestEditor({
         </table>
         {filteredGuests.length === 0 && (
           <div className="text-center py-12 text-gray-500">
-            {searchQuery || filterEvent !== 'all' || filterHasAccessed !== 'all'
+            {searchQuery || filterEvent !== 'all' || filterHasAccessed !== 'all' || filterRsvp !== 'all'
               ? 'No guests found matching your search criteria.'
               : 'No guests yet. Create your first guest to get started!'}
           </div>
@@ -1265,6 +1451,78 @@ export default function GuestEditor({
                     {viewingGuest.numberOfAttendees || 1}
                   </p>
                 </div>
+
+                {/* RSVP Section */}
+                <div className="border-t pt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    RSVP Status
+                  </label>
+                  {!viewingGuest.rsvpSubmitted ? (
+                    <p className="text-gray-500 italic">Not submitted yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {viewingGuest.eventAccess && viewingGuest.eventAccess.map((eventSlug: string) => {
+                        const eventNames: Record<string, string> = {
+                          mehndi: 'Mehndi & Pithi',
+                          wedding: 'Hindu Wedding',
+                          reception: 'Reception',
+                        }
+                        const status = viewingGuest.rsvpStatus?.[eventSlug]
+                        if (!status) return null
+                        
+                        const statusConfig = {
+                          yes: { bg: 'bg-green-100', text: 'text-green-800', icon: '✓', label: 'Attending' },
+                          no: { bg: 'bg-red-100', text: 'text-red-800', icon: '✗', label: 'Not Attending' },
+                          pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: '⏳', label: 'Pending' },
+                        }[status] || { bg: 'bg-gray-100', text: 'text-gray-800', icon: '❓', label: 'Unknown' }
+                        
+                        return (
+                          <div key={eventSlug} className={`${statusConfig.bg} ${statusConfig.text} p-3 rounded-lg`}>
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{statusConfig.icon}</span>
+                              <span className="font-semibold">{eventNames[eventSlug] || eventSlug}</span>
+                              <span className="ml-auto">{statusConfig.label}</span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                      {viewingGuest.rsvpSubmittedAt && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Submitted: {new Date(viewingGuest.rsvpSubmittedAt).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Preferences Section */}
+                {viewingGuest.preferencesSubmitted && (
+                  <div className="border-t pt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Preferences
+                    </label>
+                    <div className="space-y-2">
+                      {viewingGuest.menuPreference && (
+                        <div>
+                          <span className="text-xs text-gray-500">Menu: </span>
+                          <span className="font-medium">{viewingGuest.menuPreference === 'veg' ? 'Vegetarian' : viewingGuest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both'}</span>
+                        </div>
+                      )}
+                      {viewingGuest.dietaryRestrictions && (
+                        <div>
+                          <span className="text-xs text-gray-500">Dietary Restrictions: </span>
+                          <span className="font-medium">{viewingGuest.dietaryRestrictions}</span>
+                        </div>
+                      )}
+                      {viewingGuest.additionalInfo && (
+                        <div>
+                          <span className="text-xs text-gray-500">Additional Info: </span>
+                          <span className="font-medium">{viewingGuest.additionalInfo}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

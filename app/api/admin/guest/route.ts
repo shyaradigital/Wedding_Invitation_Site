@@ -86,16 +86,37 @@ export async function GET(request: NextRequest) {
         tokenUsedFirstTime: true,
         maxDevicesAllowed: true,
         numberOfAttendees: true,
+        rsvpSubmitted: true,
+        rsvpStatus: true,
+        rsvpSubmittedAt: true,
+        preferencesSubmitted: true,
+        menuPreference: true,
+        dietaryRestrictions: true,
+        additionalInfo: true,
         createdAt: true,
       },
     })
 
     return NextResponse.json({
-      guests: guests.map((guest) => ({
-        ...guest,
-        eventAccess: ensureJsonArray(guest.eventAccess),
-        allowedDevices: ensureJsonArray(guest.allowedDevices),
-      })),
+      guests: guests.map((guest) => {
+        let rsvpStatus = null
+        if (guest.rsvpStatus) {
+          try {
+            rsvpStatus = typeof guest.rsvpStatus === 'string' 
+              ? JSON.parse(guest.rsvpStatus) 
+              : guest.rsvpStatus
+          } catch {
+            rsvpStatus = null
+          }
+        }
+
+        return {
+          ...guest,
+          eventAccess: ensureJsonArray(guest.eventAccess),
+          allowedDevices: ensureJsonArray(guest.allowedDevices),
+          rsvpStatus,
+        }
+      }),
     })
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
