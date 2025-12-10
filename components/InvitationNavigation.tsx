@@ -238,7 +238,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                 {/* Menu Footer */}
                 <div className="flex-shrink-0 px-4 py-4 border-t border-wedding-gold/20 bg-white">
                   <p className="text-xs text-center text-gray-500">
-                    Ankita & Jay's Wedding
+                    Ankita & Jay&apos;s Wedding
                   </p>
                 </div>
               </motion.div>

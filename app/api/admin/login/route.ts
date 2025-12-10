@@ -73,14 +73,27 @@ export async function POST(request: NextRequest) {
     const token = generateAdminToken(admin.id)
 
     // Set HTTP-only cookie
-    const cookieStore = await cookies()
-    cookieStore.set('admin_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    })
+    try {
+      const cookieStore = await cookies()
+      cookieStore.set('admin_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: '/',
+      })
+    } catch (cookieError) {
+      console.error('Error setting cookie:', cookieError)
+      // In some edge cases, cookies() might fail, return token in response as fallback
+      return NextResponse.json({
+        success: true,
+        token, // Include token in response if cookie setting fails
+        admin: {
+          id: admin.id,
+          email: admin.email,
+        },
+      })
+    }
 
     return NextResponse.json({
       success: true,
