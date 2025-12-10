@@ -46,11 +46,11 @@ export default function AdminLoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-md w-full wedding-card rounded-2xl shadow-2xl p-6 sm:p-8"
+        className="max-w-md w-full wedding-card rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8"
       >
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="text-5xl sm:text-6xl mb-4">👑</div>
-          <h1 className="text-3xl sm:text-4xl font-display text-wedding-navy mb-3">
+        <div className="text-center mb-5 sm:mb-6 md:mb-8">
+          <div className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">👑</div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display text-wedding-navy mb-2 sm:mb-3">
             Admin Login
           </h1>
           <div className="wedding-divider max-w-32 mx-auto"></div>
@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="admin"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent touch-manipulation"
               disabled={isLoading}
             />
           </div>
@@ -89,13 +89,13 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent touch-manipulation"
               disabled={isLoading}
             />
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-gold text-white py-3.5 sm:py-4 rounded-full font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
+            className="w-full bg-gradient-gold text-white py-3.5 sm:py-4 rounded-full font-semibold hover:shadow-lg active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg touch-manipulation min-h-[48px]"
           >
             {isLoading ? (
               <span className="flex items-center justify-center">

@@ -20,6 +20,7 @@ model Guest {
   tokenUsedFirstTime    DateTime?
   tokenExpiresAfterFirstUse Boolean @default(false)
   maxDevicesAllowed     Int       @default(1)
+  numberOfAttendees     Int       @default(1)
   // Guest preferences
   preferencesSubmitted  Boolean   @default(false)
   menuPreference        String?   // "veg", "non-veg", "both"

@@ -14,14 +14,14 @@ export default function FloatingPetals() {
   const [petals, setPetals] = useState<Petal[]>([])
 
   useEffect(() => {
-    // Generate 8-12 petals
-    const petalCount = Math.floor(Math.random() * 5) + 8
+    // Generate 6-8 petals (fewer, more subtle)
+    const petalCount = Math.floor(Math.random() * 3) + 6
     const newPetals: Petal[] = Array.from({ length: petalCount }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
       delay: Math.random() * 5,
-      duration: Math.random() * 10 + 15, // 15-25 seconds
-      size: Math.random() * 10 + 15, // 15-25px
+      duration: Math.random() * 10 + 20, // 20-30 seconds (slower)
+      size: Math.random() * 8 + 12, // 12-20px (smaller)
     }))
     setPetals(newPetals)
   }, [])
@@ -40,7 +40,7 @@ export default function FloatingPetals() {
             height: `${petal.size}px`,
           }}
         >
-          <div className="w-full h-full opacity-30">
+          <div className="w-full h-full opacity-15">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M12 2C8 2 5 5 5 9C5 13 8 16 12 16C16 16 19 13 19 9C19 5 16 2 12 2Z"

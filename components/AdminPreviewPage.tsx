@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import EventCard from './EventCard'
 import Link from 'next/link'
+import InvitationNavigation from './InvitationNavigation'
 
 interface Guest {
   id: string
@@ -37,37 +38,36 @@ export default function AdminPreviewPage({
     .map((slug) => eventSlugs[slug])
     .filter(Boolean)
 
+  // All event cards take full width and stack vertically
+  const getGridClasses = () => {
+    return 'grid grid-cols-1'
+  }
+
   return (
     <div className="min-h-screen bg-gradient-wedding">
       {/* Admin Preview Banner */}
-      <div className="bg-yellow-500 text-yellow-900 px-4 py-3 text-center font-semibold shadow-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
-          <span className="text-xl">👁️</span>
-          <span>ADMIN PREVIEW MODE - This view does not count as a device</span>
+      <div className="bg-yellow-500 text-yellow-900 px-3 sm:px-4 py-2.5 sm:py-3 text-center font-semibold shadow-md">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2">
+          <span className="text-lg sm:text-xl">👁️</span>
+          <span className="text-xs sm:text-sm md:text-base">ADMIN PREVIEW MODE - This view does not count as a device</span>
           <Link
             href="/admin"
-            className="ml-4 px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm"
+            className="mt-2 sm:mt-0 sm:ml-4 px-3 py-1.5 sm:py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 active:scale-95 transition-colors text-xs sm:text-sm touch-manipulation min-h-[36px]"
           >
             Back to Admin
           </Link>
         </div>
       </div>
 
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-wedding-gold/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display text-wedding-navy text-center">
-            Welcome, {guest.name}! 💐
-          </h1>
-        </div>
-      </header>
+      {/* Navigation with integrated header */}
+      <InvitationNavigation token={token} eventAccess={guest.eventAccess} guestName={guest.name} />
 
       {/* Hero Image Placeholder */}
-      <div className="relative w-full h-64 sm:h-80 md:h-96 bg-gradient-to-br from-wedding-rose-pastel via-wedding-cream to-wedding-gold-light overflow-hidden">
+      <div className="relative w-full h-48 sm:h-64 md:h-80 bg-gradient-to-br from-wedding-rose-pastel via-wedding-cream to-wedding-gold-light overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center z-10">
-            <div className="text-6xl sm:text-7xl md:text-8xl mb-4">💑</div>
-            <p className="text-wedding-navy/60 text-sm sm:text-base italic">Photo Placeholder</p>
+            <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl mb-2 sm:mb-4">💑</div>
+            <p className="text-wedding-navy/60 text-xs sm:text-sm md:text-base italic">Photo Placeholder</p>
           </div>
         </div>
         <div 
@@ -80,59 +80,59 @@ export default function AdminPreviewPage({
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12">
         {/* Welcome Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10 sm:mb-16"
+          className="text-center mb-8 sm:mb-12 md:mb-16"
         >
-          <div className="flex justify-center mb-4">
-            <span className="text-3xl sm:text-4xl">💍</span>
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <span className="text-2xl sm:text-3xl md:text-4xl">💍</span>
           </div>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-display text-wedding-navy mb-4 sm:mb-6 font-bold">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display text-wedding-navy mb-3 sm:mb-4 md:mb-6 font-bold px-2">
             Ankita Brijesh Sharma <span className="text-wedding-gold">&</span> Jay Bhavan Mehta
           </h2>
-          <div className="wedding-divider-thick max-w-md mx-auto mb-6"></div>
-          <p className="text-xl sm:text-2xl md:text-3xl text-wedding-gold mb-6 sm:mb-8 px-2 font-script">
+          <div className="wedding-divider-thick max-w-md mx-auto mb-4 sm:mb-6"></div>
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-wedding-gold mb-4 sm:mb-6 md:mb-8 px-2 font-script">
             Celebrating Love, Laughter, and a Lifetime Together
           </p>
-          <div className="mb-8 sm:mb-10">
-            <div className="inline-block bg-wedding-rose-pastel/50 px-6 py-3 rounded-full border border-wedding-gold/30">
-              <p className="text-lg sm:text-xl md:text-2xl font-display text-wedding-navy">
+          <div className="mb-6 sm:mb-8 md:mb-10">
+            <div className="inline-block bg-wedding-rose-pastel/50 px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-wedding-gold/30">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-display text-wedding-navy">
                 March 20-21, 2026
               </p>
             </div>
           </div>
-          <div className="max-w-3xl mx-auto px-4 space-y-4">
-            <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed">
+          <div className="max-w-3xl mx-auto px-2 sm:px-4 space-y-3 sm:space-y-4">
+            <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
               Welcome to our wedding website!
             </p>
-            <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
               We are so excited to celebrate this beautiful journey with all our family and friends.
             </p>
-            <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
               Here you will find all the details about our ceremonies, venues, timings, and travel information.
             </p>
-            <p className="text-base sm:text-lg md:text-xl text-wedding-navy font-medium leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-wedding-navy font-medium leading-relaxed">
               We can&apos;t wait to make memories with you!
             </p>
           </div>
         </motion.section>
 
         {/* Event Cards */}
-        <section className="mb-10 sm:mb-16">
-          <div className="text-center mb-8 sm:mb-12">
-            <div className="flex justify-center mb-4">
-              <span className="text-2xl sm:text-3xl">🌸</span>
+        <section className="mb-8 sm:mb-12 md:mb-16">
+          <div className="text-center mb-6 sm:mb-8 md:mb-12">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <span className="text-xl sm:text-2xl md:text-3xl">🌸</span>
             </div>
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-display text-wedding-navy mb-4 px-2">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display text-wedding-navy mb-3 sm:mb-4 px-2">
               Our Celebrations
             </h3>
             <div className="wedding-divider max-w-xs mx-auto"></div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className={`${getGridClasses()} gap-4 sm:gap-6 md:gap-8`}>
             {availableEvents.map((event, index) => (
               <motion.div
                 key={event.slug}
@@ -153,64 +153,64 @@ export default function AdminPreviewPage({
         </section>
 
         {/* Navigation Links */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-10 sm:mb-16">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12 md:mb-16">
           <Link href={`/admin/preview/${token}/about-ankita`}>
             <motion.div
-              whileHover={{ scale: 1.03, y: -4 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
+              className="wedding-card rounded-lg sm:rounded-xl p-5 sm:p-6 md:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl touch-manipulation"
             >
-              <div className="text-4xl mb-4">👰</div>
-              <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
+              <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">👰</div>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-display text-wedding-navy mb-2 sm:mb-3">
                 About Ankita
               </h3>
-              <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Learn more about the bride</p>
+              <div className="wedding-divider max-w-24 mx-auto mb-2 sm:mb-3"></div>
+              <p className="text-xs sm:text-sm md:text-base text-gray-600">Learn more about the bride</p>
             </motion.div>
           </Link>
 
           <Link href={`/admin/preview/${token}/about-jay`}>
             <motion.div
-              whileHover={{ scale: 1.03, y: -4 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
+              className="wedding-card rounded-lg sm:rounded-xl p-5 sm:p-6 md:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl touch-manipulation"
             >
-              <div className="text-4xl mb-4">🤵</div>
-              <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
+              <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🤵</div>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-display text-wedding-navy mb-2 sm:mb-3">
                 About Jay
               </h3>
-              <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Learn more about the groom</p>
+              <div className="wedding-divider max-w-24 mx-auto mb-2 sm:mb-3"></div>
+              <p className="text-xs sm:text-sm md:text-base text-gray-600">Learn more about the groom</p>
             </motion.div>
           </Link>
 
           <Link href={`/admin/preview/${token}/venue-travel`}>
             <motion.div
-              whileHover={{ scale: 1.03, y: -4 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
+              className="wedding-card rounded-lg sm:rounded-xl p-5 sm:p-6 md:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl touch-manipulation"
             >
-              <div className="text-4xl mb-4">📍</div>
-              <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
+              <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">📍</div>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-display text-wedding-navy mb-2 sm:mb-3">
                 Venue & Travel
               </h3>
-              <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Location details and directions</p>
+              <div className="wedding-divider max-w-24 mx-auto mb-2 sm:mb-3"></div>
+              <p className="text-xs sm:text-sm md:text-base text-gray-600">Location details and directions</p>
             </motion.div>
           </Link>
 
           <Link href={`/admin/preview/${token}/save-the-date`}>
             <motion.div
-              whileHover={{ scale: 1.03, y: -4 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="wedding-card rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl"
+              className="wedding-card rounded-lg sm:rounded-xl p-5 sm:p-6 md:p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-xl touch-manipulation"
             >
-              <div className="text-4xl mb-4">📅</div>
-              <h3 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-3">
+              <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">📅</div>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-display text-wedding-navy mb-2 sm:mb-3">
                 Save the Date
               </h3>
-              <div className="wedding-divider max-w-24 mx-auto mb-3"></div>
-              <p className="text-sm sm:text-base text-gray-600">Mark your calendar</p>
+              <div className="wedding-divider max-w-24 mx-auto mb-2 sm:mb-3"></div>
+              <p className="text-xs sm:text-sm md:text-base text-gray-600">Mark your calendar</p>
             </motion.div>
           </Link>
         </section>

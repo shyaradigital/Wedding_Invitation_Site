@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { generateDeviceFingerprint } from '@/lib/device-fingerprint'
+import { getStoredPhone, setStoredPhone } from '@/lib/storage'
+import { normalizePhoneNumber } from '@/lib/utils'
 import PhoneVerificationForm from '@/components/PhoneVerificationForm'
 import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
 import GuestInviteLayout from '@/components/GuestInviteLayout'
-import GuestPreferencesForm from '@/components/GuestPreferencesForm'
 
 interface Guest {
   id: string
@@ -39,32 +40,12 @@ export default function InvitePage() {
   const [error, setError] = useState<string | null>(null)
   const [showRestrictedPopup, setShowRestrictedPopup] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
-  const [showPreferencesForm, setShowPreferencesForm] = useState(false)
-  const [preferencesSubmitted, setPreferencesSubmitted] = useState(false)
 
   useEffect(() => {
     checkAccess()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
-  const checkPreferencesStatus = async () => {
-    try {
-      const response = await fetch(`/api/guest/preferences?token=${token}`)
-      const data = await response.json()
-      if (!data.preferencesSubmitted) {
-        setShowPreferencesForm(true)
-      } else {
-        setPreferencesSubmitted(true)
-      }
-    } catch (err) {
-      console.error('Error checking preferences:', err)
-    }
-  }
-
-  const handlePreferencesSubmitted = () => {
-    setShowPreferencesForm(false)
-    setPreferencesSubmitted(true)
-  }
 
   const checkAccess = async () => {
     try {
@@ -96,7 +77,27 @@ export default function InvitePage() {
         return
       }
 
-      // Check device fingerprint
+      // First, check localStorage for stored phone number
+      const storedPhone = getStoredPhone(token)
+      if (storedPhone) {
+        // Phone is stored in localStorage - check if it matches guest's phone
+        const normalizedStoredPhone = normalizePhoneNumber(storedPhone)
+        const normalizedGuestPhone = guestData.phone ? normalizePhoneNumber(guestData.phone) : null
+
+        if (normalizedGuestPhone && normalizedStoredPhone === normalizedGuestPhone) {
+          // Stored phone matches guest's phone - grant unlimited access
+          setAccessState('granted')
+          return
+        } else {
+          // Stored phone doesn't match - someone shared the link with different phone
+          // Block access and show restricted popup (don't allow phone entry)
+          setShowRestrictedPopup(true)
+          setAccessState('phone-verification')
+          return
+        }
+      }
+
+      // No stored phone - check device fingerprint
       try {
         const fingerprint = await generateDeviceFingerprint()
         const allowedDevices = Array.isArray(guestData.allowedDevices)
@@ -104,10 +105,11 @@ export default function InvitePage() {
           : []
 
         if (allowedDevices.includes(fingerprint)) {
-          // Device is allowed
+          // Device is allowed - store phone for future access
+          if (guestData.phone) {
+            setStoredPhone(token, guestData.phone)
+          }
           setAccessState('granted')
-          // Check if preferences need to be collected
-          checkPreferencesStatus()
         } else {
           // New device - require phone verification
           setAccessState('phone-verification')
@@ -147,6 +149,9 @@ export default function InvitePage() {
       const { success, isFirstTime } = await verifyResponse.json()
 
       if (success) {
+        // Store phone in localStorage for future access
+        setStoredPhone(token, phone)
+
         // Save device fingerprint
         try {
           const fingerprint = await generateDeviceFingerprint()
@@ -177,15 +182,10 @@ export default function InvitePage() {
 
           // Grant access
           setAccessState('granted')
-          
-          // Check if preferences need to be collected
-          checkPreferencesStatus()
         } catch (err) {
           console.error('Error saving device:', err)
-          // Still grant access if phone is verified
+          // Still grant access if phone is verified (phone is already stored in localStorage)
           setAccessState('granted')
-          // Check if preferences need to be collected
-          checkPreferencesStatus()
         }
       }
     } catch (err) {
@@ -262,18 +262,7 @@ export default function InvitePage() {
   }
 
   if (accessState === 'granted' && guest) {
-    return (
-      <>
-        {showPreferencesForm && (
-          <GuestPreferencesForm
-            token={token}
-            guestName={guest.name}
-            onSubmitted={handlePreferencesSubmitted}
-          />
-        )}
-        <GuestInviteLayout guest={guest} token={token} />
-      </>
-    )
+    return <GuestInviteLayout guest={guest} token={token} />
   }
 
   return null

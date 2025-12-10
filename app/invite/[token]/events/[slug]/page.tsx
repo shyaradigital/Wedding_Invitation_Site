@@ -2,22 +2,25 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
 import PageTransition from '@/components/PageTransition'
 import InvitationPageLayout from '@/components/InvitationPageLayout'
+import OrnamentalDivider from '@/components/OrnamentalDivider'
+import FloatingPetals from '@/components/FloatingPetals'
+import StarParticles from '@/components/StarParticles'
+import { formatWrittenDate, formatWrittenTime, formatWrittenDateFromString } from '@/lib/date-formatter'
 
 const eventInfo: Record<
   string,
   { title: string; icon: string; color: string }
 > = {
   mehndi: {
-    title: 'Mehndi & Pithi Ceremony',
+    title: 'Mehendi',
     icon: '🎨',
     color: 'wedding-rose',
   },
   wedding: {
-    title: 'Hindu Wedding',
+    title: 'Hindu Wedding Ceremony',
     icon: '💒',
     color: 'wedding-gold',
   },
@@ -28,96 +31,39 @@ const eventInfo: Record<
   },
 }
 
-// Default content functions
-function getDefaultDescription(slug: string): string {
-  switch (slug) {
-    case 'mehndi':
-      return 'A vibrant celebration filled with colors, music, fun, and beautiful traditions. Join us as we begin the wedding festivities with mehndi, haldi, laughter, and joyful rituals.'
-    case 'wedding':
-      return 'Join us as Ankita Brijesh Sharma and Jay Bhavan Mehta tie the knot in a traditional Hindu ceremony surrounded by family, friends, mantras, blessings, and love.'
-    case 'reception':
-      return 'An evening filled with celebration, music, good food, dancing, and unforgettable memories. We can\'t wait to celebrate our happiness with you!'
-    default:
-      return ''
-  }
-}
-
-function getDefaultDate(slug: string): string | null {
-  switch (slug) {
-    case 'mehndi':
-      return 'March 20, 2026'
-    case 'wedding':
-      return 'March 21, 2026'
-    case 'reception':
-      return 'March 21, 2026'
-    default:
-      return null
-  }
-}
-
-function getDefaultTime(slug: string): string | null {
-  switch (slug) {
-    case 'mehndi':
-      return '6:00 PM'
-    case 'wedding':
-      return '10:00 AM'
-    case 'reception':
-      return '5:30 PM'
-    default:
-      return null
-  }
-}
-
-function getDefaultVenue(slug: string): string | null {
-  switch (slug) {
-    case 'mehndi':
-      return 'DoubleTree by Hilton Hotel Irvine - Spectrum'
-    case 'wedding':
-      return 'DoubleTree by Hilton Hotel Irvine - Spectrum'
-    case 'reception':
-      return 'DoubleTree by Hilton Hotel Irvine - Spectrum'
-    default:
-      return null
-  }
-}
-
-function getDefaultAddress(slug: string): string | null {
-  switch (slug) {
-    case 'mehndi':
-      return '90 Pacifica, Irvine, CA 92618'
-    case 'wedding':
-      return '90 Pacifica, Irvine, CA 92618'
-    case 'reception':
-      return '90 Pacifica, Irvine, CA 92618'
-    default:
-      return null
-  }
-}
-
-function getDefaultDressCode(slug: string): string | null {
-  switch (slug) {
-    case 'mehndi':
-      return 'Bright, festive, and colorful traditional wear.'
-    case 'wedding':
-      return 'Traditional Indian wear — ethnic, elegant, and graceful.'
-    case 'reception':
-      return 'Formal / Indo-western evening wear.'
-    default:
-      return null
-  }
-}
-
-function getDefaultNotes(slug: string): string | null {
-  switch (slug) {
-    case 'mehndi':
-      return 'Light snacks will be served.\nOpen dance floor for friends & family!'
-    case 'wedding':
-      return 'Breakfast will be served after the ceremony.'
-    case 'reception':
-      return 'Live music & dinner will be served.\nPhotography booth available for guests.'
-    default:
-      return null
-  }
+// Event-specific content
+const eventContent: Record<string, {
+  date: string
+  time: string
+  programNote?: string
+  note?: string
+  attire: string
+  venue: string
+  address: string
+}> = {
+  mehndi: {
+    date: '20th Day of March, 2026',
+    time: 'Six O\'Clock in the evening',
+    programNote: 'Hand Painting with Henna',
+    attire: 'Casual',
+    venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
+    address: '90 Pacifica, Irvine, CA 92618',
+  },
+  wedding: {
+    date: '21st Day of March, 2026',
+    time: 'Ten O\'Clock in the morning',
+    note: 'Lunch to be served after photo session',
+    attire: 'Formal Indian Attire',
+    venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
+    address: '90 Pacifica, Irvine, CA 92618',
+  },
+  reception: {
+    date: '21st Day of March, 2026',
+    time: 'Five O\'Clock in the evening',
+    attire: 'Formal Indian/Western Attire\nNo boxed gifts / registry',
+    venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
+    address: '90 Pacifica, Irvine, CA 92618',
+  },
 }
 
 export default function EventDetailsPage() {
@@ -200,198 +146,223 @@ export default function EventDetailsPage() {
     )
   }
 
+  const content = eventContent[slug] || eventContent.mehndi
+  const isReception = slug === 'reception'
+  const isMehendi = slug === 'mehndi'
+  const isWedding = slug === 'wedding'
+
+  // Theme-specific background classes
+  const backgroundClass = isMehendi
+    ? 'bg-gradient-mehendi'
+    : isWedding
+    ? 'bg-gradient-wedding-teal'
+    : 'bg-gradient-reception'
+
   return (
     <InvitationPageLayout
       token={token}
       eventAccess={guest.eventAccess}
       guestName={guest.name}
     >
+      {isReception && <StarParticles count={12} />}
+      {!isReception && <FloatingPetals />}
       <PageTransition>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
-          <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="wedding-card rounded-2xl p-6 sm:p-8 md:p-12"
-        >
-          <div className="text-center mb-8 sm:mb-10">
-            <div className="text-5xl sm:text-6xl md:text-7xl mb-4 sm:mb-5">{event.icon}</div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-display text-wedding-navy mb-4 sm:mb-5 font-bold">
-              {event.title}
-            </h1>
-            <div className="wedding-divider-thick max-w-md mx-auto"></div>
-          </div>
-
-          {/* Event Image Placeholder */}
-          <div className="mb-8 sm:mb-10">
-            <div className={`relative w-full h-48 sm:h-64 md:h-80 rounded-xl overflow-hidden ${
-              slug === 'mehndi' ? 'bg-gradient-to-br from-wedding-rose-pastel to-wedding-rose' :
-              slug === 'wedding' ? 'bg-gradient-to-br from-wedding-gold-light to-wedding-gold' :
-              'bg-gradient-to-br from-wedding-burgundy-light to-wedding-burgundy'
-            }`}>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <div className="text-6xl sm:text-7xl md:text-8xl mb-3">{event.icon}</div>
-                  <p className="text-sm sm:text-base opacity-80 italic">Event Photo Placeholder</p>
-                </div>
+        <div className={`min-h-screen ${backgroundClass} relative`}>
+          <div className="max-w-[640px] mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-12 md:py-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="relative"
+            >
+              {/* Title */}
+              <div className="text-center mb-6 sm:mb-8">
+                <h1
+                  className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 ${
+                    isReception
+                      ? 'text-wedding-gold drop-shadow-lg'
+                      : isMehendi
+                      ? 'text-wedding-forest-green'
+                      : 'text-wedding-navy'
+                  }`}
+                  style={
+                    isReception
+                      ? {
+                          textShadow: '0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)',
+                        }
+                      : {}
+                  }
+                >
+                  {event.title}
+                </h1>
+                <OrnamentalDivider variant="ornate" />
               </div>
-            </div>
-          </div>
 
-          <div className="space-y-8 sm:space-y-10">
-            {/* Event Description */}
-            {((event as any).description || getDefaultDescription(slug)) && (
-              <motion.section
+              {/* Date & Time */}
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-wedding-cream-light/50 rounded-xl p-6 sm:p-8 border border-wedding-gold/20"
+                className={`rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 ${
+                  isReception
+                    ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
+                    : 'bg-white/70 border border-wedding-gold/30'
+                }`}
               >
-                <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed text-center">
-                  {(event as any).description || getDefaultDescription(slug)}
-                </p>
-              </motion.section>
-            )}
-
-            {/* Date & Time */}
-            {((event as any).date || (event as any).time || getDefaultDate(slug) || getDefaultTime(slug)) && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white/60 rounded-xl p-6 sm:p-8 border border-wedding-rose/20"
-              >
-                <div className="flex items-center mb-4">
-                  <span className="text-2xl mr-3">📅</span>
-                  <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
-                    Date & Time
-                  </h2>
+                <div className="text-center space-y-3">
+                  <p
+                    className={`text-lg sm:text-xl md:text-2xl font-serif ${
+                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                    }`}
+                  >
+                    On {content.date}
+                  </p>
+                  <p
+                    className={`text-lg sm:text-xl md:text-2xl font-serif ${
+                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                    }`}
+                  >
+                    at {content.time}
+                  </p>
                 </div>
-                <div className="wedding-divider mb-6"></div>
-                <div className="space-y-3">
-                  {((event as any).date || getDefaultDate(slug)) && (
-                    <div className="flex items-start">
-                      <span className="text-wedding-gold mr-3 text-xl">📆</span>
-                      <div>
-                        <p className="text-sm sm:text-base text-gray-600 mb-1">Date</p>
-                        <p className="text-lg sm:text-xl font-semibold text-wedding-navy">
-                          {(event as any).date
-                            ? new Date((event as any).date).toLocaleDateString('en-US', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              })
-                            : getDefaultDate(slug)}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {((event as any).time || getDefaultTime(slug)) && (
-                    <div className="flex items-start">
-                      <span className="text-wedding-gold mr-3 text-xl">🕐</span>
-                      <div>
-                        <p className="text-sm sm:text-base text-gray-600 mb-1">Time</p>
-                        <p className="text-lg sm:text-xl font-semibold text-wedding-navy">
-                          {(event as any).time || getDefaultTime(slug)}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.section>
-            )}
+              </motion.div>
 
-            {/* Venue */}
-            {((event as any).venue || (event as any).address || getDefaultVenue(slug) || getDefaultAddress(slug)) && (
-              <motion.section
+              {/* Program Note or Note */}
+              {(content.programNote || content.note) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center ${
+                    isReception
+                      ? 'bg-wedding-gold/10 border border-wedding-gold/30'
+                      : 'bg-white/60 border border-wedding-gold/20'
+                  }`}
+                >
+                  <p
+                    className={`text-base sm:text-lg md:text-xl font-serif italic ${
+                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                    }`}
+                  >
+                    {content.programNote || content.note}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Attire */}
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-white/60 rounded-xl p-6 sm:p-8 border border-wedding-gold/20"
+                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${
+                  isWedding
+                    ? 'bg-wedding-burgundy/20 border-2 border-wedding-burgundy/40'
+                    : isReception
+                    ? 'bg-wedding-gold/10 border border-wedding-gold/30'
+                    : 'bg-white/60 border border-wedding-gold/20'
+                }`}
               >
-                <div className="flex items-center mb-4">
-                  <span className="text-2xl mr-3">📍</span>
-                  <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
-                    Venue
-                  </h2>
-                </div>
-                <div className="wedding-divider mb-6"></div>
-                {((event as any).venue || getDefaultVenue(slug)) && (
-                  <p className="text-xl sm:text-2xl font-display font-semibold text-wedding-navy mb-2">
-                    {(event as any).venue || getDefaultVenue(slug)}
-                  </p>
-                )}
-                {((event as any).address || getDefaultAddress(slug)) && (
-                  <p className="text-base sm:text-lg text-gray-700 mb-6">
-                    {(event as any).address || getDefaultAddress(slug)}
-                  </p>
-                )}
-                {(event as any).mapEmbedUrl ? (
-                  <div
-                    className="bg-gradient-to-br from-wedding-cream to-wedding-rose-pastel rounded-xl p-2 sm:p-4 h-48 sm:h-64 overflow-hidden border border-wedding-gold/20"
-                    dangerouslySetInnerHTML={{
-                      __html: (event as any).mapEmbedUrl,
-                    }}
-                  />
-                ) : (
-                  <div className="bg-gradient-to-br from-wedding-cream to-wedding-rose-pastel rounded-xl p-4 h-48 sm:h-64 flex items-center justify-center border border-wedding-gold/20">
-                    <div className="text-center">
-                      <span className="text-4xl mb-2 block">🗺️</span>
-                      <p className="text-sm sm:text-base text-gray-600">(Insert map embed)</p>
-                    </div>
-                  </div>
-                )}
-              </motion.section>
-            )}
+                <h2
+                  className={`text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
+                    isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-burgundy' : 'text-wedding-navy'
+                  }`}
+                >
+                  Attire
+                </h2>
+                <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                <p
+                  className={`text-base sm:text-lg md:text-xl font-serif whitespace-pre-line ${
+                    isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                  }`}
+                >
+                  {content.attire}
+                </p>
+              </motion.div>
 
-            {/* Dress Code */}
-            {((event as any).dressCode || getDefaultDressCode(slug)) && (
-              <motion.section
+              {/* Venue */}
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-wedding-rose-pastel/30 rounded-xl p-6 sm:p-8 border border-wedding-rose/20"
+                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${
+                  isReception
+                    ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
+                    : 'bg-white/80 border-2 border-wedding-gold/30'
+                }`}
               >
-                <div className="flex items-center mb-4">
-                  <span className="text-2xl mr-3">👗</span>
-                  <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
-                    Dress Code
-                  </h2>
-                </div>
-                <div className="wedding-divider mb-6"></div>
-                <p className="text-base sm:text-lg md:text-xl text-gray-700">
-                  {(event as any).dressCode || getDefaultDressCode(slug)}
+                <h2
+                  className={`text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
+                    isReception ? 'text-wedding-gold' : 'text-wedding-navy'
+                  }`}
+                >
+                  Venue
+                </h2>
+                <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                <p
+                  className={`text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 ${
+                    isReception ? 'text-wedding-gold-light' : 'text-gray-800'
+                  }`}
+                >
+                  {content.venue}
                 </p>
-              </motion.section>
-            )}
+                <p
+                  className={`text-sm sm:text-base md:text-lg font-serif mb-4 ${
+                    isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
+                  }`}
+                >
+                  {content.address}
+                </p>
+                {/* Google Maps Embed */}
+                <div className="rounded-lg overflow-hidden border-2 border-wedding-gold/30 shadow-lg mt-4">
+                  <iframe
+                    src="https://www.google.com/maps?q=DoubleTree+by+Hilton+Hotel+Irvine+Spectrum+90+Pacifica+Irvine+CA+92618&output=embed"
+                    width="100%"
+                    height="240"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full"
+                    title="Venue Location"
+                  ></iframe>
+                </div>
+              </motion.div>
 
-            {/* Additional Notes */}
-            {getDefaultNotes(slug) && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="bg-wedding-gold-light/20 rounded-xl p-6 sm:p-8 border border-wedding-gold/20"
-              >
-                <div className="flex items-center mb-4">
-                  <span className="text-2xl mr-3">📝</span>
-                  <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
-                    Additional Notes
-                  </h2>
+              {/* Botanical/Decorative elements for Mehendi */}
+              {isMehendi && (
+                <div className="absolute bottom-0 left-0 right-0 h-24 opacity-20 pointer-events-none">
+                  <svg viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M50 80 Q75 40, 100 80 T150 80 T200 80 T250 80 T300 80 T350 80"
+                      stroke="#006400"
+                      strokeWidth="2"
+                      fill="none"
+                    />
+                    <circle cx="100" cy="80" r="4" fill="#006400" />
+                    <circle cx="200" cy="80" r="4" fill="#006400" />
+                    <circle cx="300" cy="80" r="4" fill="#006400" />
+                  </svg>
                 </div>
-                <div className="wedding-divider mb-6"></div>
-                <p className="text-base sm:text-lg md:text-xl text-gray-700 whitespace-pre-line leading-relaxed">
-                  {getDefaultNotes(slug)}
-                </p>
-              </motion.section>
-            )}
+              )}
+
+              {/* Decorative gold dots for Reception */}
+              {isReception && (
+                <div className="absolute top-10 right-10 opacity-30">
+                  <div className="flex space-x-2">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-2 h-2 bg-wedding-gold rounded-full"
+                        style={{ animationDelay: `${i * 0.2}s` }}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
           </div>
-
-        </motion.div>
-      </div>
+        </div>
       </PageTransition>
     </InvitationPageLayout>
   )
 }
-

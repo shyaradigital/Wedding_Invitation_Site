@@ -99,14 +99,14 @@ export default function GuestPreferencesForm({
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto mx-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 sm:p-8">
+              <div className="p-5 sm:p-6 md:p-8">
                 {/* Header */}
-                <div className="text-center mb-6">
-                  <div className="text-4xl mb-3">🍽️</div>
-                  <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-2">
+                <div className="text-center mb-5 sm:mb-6">
+                  <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">🍽️</div>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-display text-wedding-navy mb-2">
                     Help Us Plan Better
                   </h2>
                   <p className="text-gray-600 text-sm sm:text-base">
@@ -115,14 +115,14 @@ export default function GuestPreferencesForm({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                   {/* Menu Preference */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Menu Preference <span className="text-red-500">*</span>
                     </label>
                     <div className="space-y-2">
-                      <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-wedding-cream/30 transition-colors">
+                      <label className="flex items-center p-3 sm:p-3.5 border border-gray-300 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation min-h-[48px]">
                         <input
                           type="radio"
                           name="menuPreference"
@@ -131,11 +131,11 @@ export default function GuestPreferencesForm({
                           onChange={(e) =>
                             setFormData({ ...formData, menuPreference: e.target.value as 'veg' })
                           }
-                          className="mr-3 text-wedding-gold focus:ring-wedding-gold"
+                          className="mr-3 w-5 h-5 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
                         />
-                        <span className="text-gray-700">Vegetarian</span>
+                        <span className="text-sm sm:text-base text-gray-700">Vegetarian</span>
                       </label>
-                      <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-wedding-cream/30 transition-colors">
+                      <label className="flex items-center p-3 sm:p-3.5 border border-gray-300 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation min-h-[48px]">
                         <input
                           type="radio"
                           name="menuPreference"
@@ -144,11 +144,11 @@ export default function GuestPreferencesForm({
                           onChange={(e) =>
                             setFormData({ ...formData, menuPreference: e.target.value as 'non-veg' })
                           }
-                          className="mr-3 text-wedding-gold focus:ring-wedding-gold"
+                          className="mr-3 w-5 h-5 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
                         />
-                        <span className="text-gray-700">Non-Vegetarian</span>
+                        <span className="text-sm sm:text-base text-gray-700">Non-Vegetarian</span>
                       </label>
-                      <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-wedding-cream/30 transition-colors">
+                      <label className="flex items-center p-3 sm:p-3.5 border border-gray-300 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation min-h-[48px]">
                         <input
                           type="radio"
                           name="menuPreference"
@@ -157,9 +157,9 @@ export default function GuestPreferencesForm({
                           onChange={(e) =>
                             setFormData({ ...formData, menuPreference: e.target.value as 'both' })
                           }
-                          className="mr-3 text-wedding-gold focus:ring-wedding-gold"
+                          className="mr-3 w-5 h-5 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
                         />
-                        <span className="text-gray-700">Both (No Preference)</span>
+                        <span className="text-sm sm:text-base text-gray-700">Both (No Preference)</span>
                       </label>
                     </div>
                   </div>
@@ -175,7 +175,7 @@ export default function GuestPreferencesForm({
                         setFormData({ ...formData, dietaryRestrictions: e.target.value })
                       }
                       rows={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold"
+                      className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold touch-manipulation"
                       placeholder="e.g., Nut allergy, Gluten-free, etc."
                     />
                   </div>
@@ -191,7 +191,7 @@ export default function GuestPreferencesForm({
                         setFormData({ ...formData, additionalInfo: e.target.value })
                       }
                       rows={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold"
+                      className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold touch-manipulation"
                       placeholder="Any other information you'd like to share..."
                     />
                   </div>
@@ -208,7 +208,7 @@ export default function GuestPreferencesForm({
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex-1 bg-gradient-gold text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 bg-gradient-gold text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation min-h-[48px]"
                     >
                       {isSubmitting ? 'Saving...' : 'Submit Preferences'}
                     </button>

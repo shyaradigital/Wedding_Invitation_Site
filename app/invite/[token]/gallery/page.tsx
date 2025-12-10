@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import PageTransition from '@/components/PageTransition'
+import InvitationPageLayout from '@/components/InvitationPageLayout'
 
 // High-quality wedding-themed images from Unsplash
 const galleryImages = [
@@ -103,8 +104,32 @@ const galleryImages = [
 
 export default function GalleryPage() {
   const params = useParams()
+  const router = useRouter()
   const token = params.token as string
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
+  const [guest, setGuest] = useState<any>(null)
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    // Verify access
+    fetch('/api/verify-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.guest) {
+          setHasAccess(true)
+          setGuest(data.guest)
+        } else {
+          setHasAccess(false)
+        }
+      })
+      .catch(() => {
+        setHasAccess(false)
+      })
+  }, [token])
 
   const openLightbox = (id: number) => {
     setSelectedImage(id)
@@ -134,31 +159,51 @@ export default function GalleryPage() {
     ? galleryImages.find((img) => img.id === selectedImage)
     : null
 
+  if (hasAccess === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-gold mx-auto mb-4"></div>
+          <p className="text-wedding-navy">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (hasAccess === false || !guest) {
+    router.push(`/invite/${token}`)
+    return null
+  }
+
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-wedding">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
+    <InvitationPageLayout
+      token={token}
+      eventAccess={guest.eventAccess}
+      guestName={guest.name}
+    >
+      <PageTransition>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="wedding-card rounded-2xl p-6 sm:p-8 md:p-12"
+            className="wedding-card rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-12"
           >
-            <div className="text-center mb-8 sm:mb-12">
-              <div className="flex justify-center mb-4">
-                <span className="text-4xl sm:text-5xl">📸</span>
+            <div className="text-center mb-6 sm:mb-8 md:mb-12">
+              <div className="flex justify-center mb-3 sm:mb-4">
+                <span className="text-3xl sm:text-4xl md:text-5xl">📸</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-display text-wedding-navy mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display text-wedding-navy mb-3 sm:mb-4">
                 Our Gallery
               </h1>
               <div className="wedding-divider-thick max-w-md mx-auto"></div>
-              <p className="text-base sm:text-lg text-gray-600 mt-6">
+              <p className="text-sm sm:text-base md:text-lg text-gray-600 mt-4 sm:mt-6">
                 Beautiful moments from our celebrations
               </p>
             </div>
 
             {/* Gallery Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
               {galleryImages.map((image, index) => (
                 <motion.div
                   key={image.id}
@@ -166,7 +211,8 @@ export default function GalleryPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05, duration: 0.4 }}
                   whileHover={{ scale: 1.02 }}
-                  className="relative aspect-square rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-shadow"
+                  whileTap={{ scale: 0.98 }}
+                  className="relative aspect-square rounded-lg sm:rounded-xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow touch-manipulation"
                   onClick={() => openLightbox(image.id)}
                 >
                   <Image
@@ -174,23 +220,14 @@ export default function GalleryPage() {
                     alt={image.alt}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                   />
-                  <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors" />
+                  <div className="absolute inset-0 bg-black/0 hover:bg-black/10 active:bg-black/20 transition-colors" />
                 </motion.div>
               ))}
             </div>
 
-            {/* Back Button */}
-            <div className="mt-10 sm:mt-12 text-center">
-              <Link
-                href={`/invite/${token}`}
-                className="inline-flex items-center bg-gradient-gold text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:shadow-lg transition-all duration-300 text-base sm:text-lg"
-              >
-                <span className="mr-2">←</span> Return Home
-              </Link>
-            </div>
-          </motion.div>
+        </motion.div>
         </div>
 
         {/* Lightbox Modal */}
@@ -213,7 +250,7 @@ export default function GalleryPage() {
                 {/* Close Button */}
                 <button
                   onClick={closeLightbox}
-                  className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-colors"
+                  className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/30 active:bg-white/40 text-white rounded-full p-3 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                   aria-label="Close"
                 >
                   <svg
@@ -237,7 +274,7 @@ export default function GalleryPage() {
                     e.stopPropagation()
                     goToPrev()
                   }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 active:bg-white/40 text-white rounded-full p-3 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                   aria-label="Previous"
                 >
                   <svg
@@ -261,7 +298,7 @@ export default function GalleryPage() {
                     e.stopPropagation()
                     goToNext()
                   }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 active:bg-white/40 text-white rounded-full p-3 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                   aria-label="Next"
                 >
                   <svg
@@ -299,8 +336,8 @@ export default function GalleryPage() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </PageTransition>
+      </PageTransition>
+    </InvitationPageLayout>
   )
 }
 

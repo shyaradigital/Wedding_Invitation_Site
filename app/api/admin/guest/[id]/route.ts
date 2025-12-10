@@ -9,6 +9,7 @@ const updateGuestSchema = z.object({
   phone: z.string().optional().nullable(),
   eventAccess: z.enum(['all-events', 'reception-only']).optional(), // Only two types now
   maxDevicesAllowed: z.number().int().min(1).max(10).optional(),
+  numberOfAttendees: z.number().int().min(1).optional(),
   regenerateToken: z.boolean().optional(),
   removeDevice: z.string().optional(),
   allowedDevices: z.string().optional(), // For clearing all devices
@@ -48,6 +49,7 @@ export async function PATCH(
       updateData.eventAccess = JSON.stringify(actualEventAccess)
     }
     if (data.maxDevicesAllowed !== undefined) updateData.maxDevicesAllowed = data.maxDevicesAllowed
+    if (data.numberOfAttendees !== undefined) updateData.numberOfAttendees = data.numberOfAttendees
 
     if (data.regenerateToken) {
       updateData.token = generateSecureToken()
@@ -82,6 +84,7 @@ export async function PATCH(
         eventAccess: ensureJsonArray(updatedGuest.eventAccess),
         allowedDevices: ensureJsonArray(updatedGuest.allowedDevices),
         maxDevicesAllowed: updatedGuest.maxDevicesAllowed,
+        numberOfAttendees: updatedGuest.numberOfAttendees,
       },
     })
   } catch (error) {

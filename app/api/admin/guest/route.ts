@@ -9,6 +9,7 @@ const createGuestSchema = z.object({
   phone: z.string().optional(),
   eventAccess: z.enum(['all-events', 'reception-only']), // Only two types now
   maxDevicesAllowed: z.number().int().min(1).max(10).optional().default(1),
+  numberOfAttendees: z.number().int().min(1).optional().default(1),
 })
 
 export async function POST(request: NextRequest) {
@@ -32,6 +33,7 @@ export async function POST(request: NextRequest) {
         token,
         eventAccess: JSON.stringify(actualEventAccess),
         maxDevicesAllowed: data.maxDevicesAllowed,
+        numberOfAttendees: data.numberOfAttendees,
         allowedDevices: JSON.stringify([]),
       },
     })
@@ -83,6 +85,7 @@ export async function GET(request: NextRequest) {
         allowedDevices: true,
         tokenUsedFirstTime: true,
         maxDevicesAllowed: true,
+        numberOfAttendees: true,
         createdAt: true,
       },
     })
