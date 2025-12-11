@@ -653,11 +653,20 @@ export default function GuestEditor({
 
       const totalAttendees = attending.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
 
+      // Calculate total attendees for each status
+      const notAttendingAttendees = notAttending.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+      const pendingAttendees = pending.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+      const notSubmittedAttendees = notSubmitted.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+
       return {
-        attending: attending.length,
-        notAttending: notAttending.length,
-        pending: pending.length,
-        notSubmitted: notSubmitted.length,
+        attending: totalAttendees, // Total attendees attending
+        attendingCount: attending.length, // Number of guest records attending
+        notAttending: notAttendingAttendees, // Total attendees not attending
+        notAttendingCount: notAttending.length, // Number of guest records not attending
+        pending: pendingAttendees, // Total attendees pending
+        pendingCount: pending.length, // Number of guest records pending
+        notSubmitted: notSubmittedAttendees, // Total attendees not submitted
+        notSubmittedCount: notSubmitted.length, // Number of guest records not submitted
         totalAttendees,
       }
     }
@@ -669,8 +678,11 @@ export default function GuestEditor({
       reception: calculateEventStats('reception'),
     }
 
+    // Total attendees across all guests (not just attending)
+    const totalAllAttendees = normalizedGuests.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+
     return {
-      total: normalizedGuests.length,
+      total: totalAllAttendees,
       allEvents: allEventsCount,
       receptionOnly: receptionOnlyCount,
       totalAttendees,
@@ -850,8 +862,8 @@ export default function GuestEditor({
               <span className="text-3xl">👥</span>
               <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.total}</div>
             </div>
-            <div className="text-sm font-semibold text-white/95 mb-1">Total Guests</div>
-            <div className="text-xs text-white/80">All invited guests</div>
+            <div className="text-sm font-semibold text-white/95 mb-1">Total Attendees</div>
+            <div className="text-xs text-white/80">All invited attendees</div>
           </div>
           
           <div className="bg-gradient-to-br from-amber-500 to-amber-400 rounded-xl shadow-lg p-5 border border-amber-400/30 hover:shadow-xl transition-all duration-300">
@@ -976,11 +988,11 @@ export default function GuestEditor({
                     <span>✓</span> Attending
                   </span>
                   <span className="text-base font-bold text-green-700">
-                    {stats.eventWise.mehndi.attending} guest{stats.eventWise.mehndi.attending !== 1 ? 's' : ''}
+                    {stats.eventWise.mehndi.attending} attendee{stats.eventWise.mehndi.attending !== 1 ? 's' : ''}
                   </span>
                 </div>
                 <div className="text-xs text-green-600">
-                  {stats.eventWise.mehndi.totalAttendees} total attendees
+                  {stats.eventWise.mehndi.attendingCount} invitation{stats.eventWise.mehndi.attendingCount !== 1 ? 's' : ''}
                 </div>
                 <div className="text-xs text-green-500 mt-1">Confirmed attendance</div>
               </div>
@@ -1030,11 +1042,11 @@ export default function GuestEditor({
                     <span>✓</span> Attending
                   </span>
                   <span className="text-base font-bold text-green-700">
-                    {stats.eventWise.wedding.attending} guest{stats.eventWise.wedding.attending !== 1 ? 's' : ''}
+                    {stats.eventWise.wedding.attending} attendee{stats.eventWise.wedding.attending !== 1 ? 's' : ''}
                   </span>
                 </div>
                 <div className="text-xs text-green-600">
-                  {stats.eventWise.wedding.totalAttendees} total attendees
+                  {stats.eventWise.wedding.attendingCount} invitation{stats.eventWise.wedding.attendingCount !== 1 ? 's' : ''}
                 </div>
                 <div className="text-xs text-green-500 mt-1">Confirmed attendance</div>
               </div>
@@ -1084,11 +1096,11 @@ export default function GuestEditor({
                     <span>✓</span> Attending
                   </span>
                   <span className="text-base font-bold text-green-700">
-                    {stats.eventWise.reception.attending} guest{stats.eventWise.reception.attending !== 1 ? 's' : ''}
+                    {stats.eventWise.reception.attending} attendee{stats.eventWise.reception.attending !== 1 ? 's' : ''}
                   </span>
                 </div>
                 <div className="text-xs text-green-600">
-                  {stats.eventWise.reception.totalAttendees} total attendees
+                  {stats.eventWise.reception.attendingCount} invitation{stats.eventWise.reception.attendingCount !== 1 ? 's' : ''}
                 </div>
                 <div className="text-xs text-green-500 mt-1">Confirmed attendance</div>
               </div>
