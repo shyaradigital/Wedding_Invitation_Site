@@ -122,7 +122,7 @@ export default function RSVPPage() {
     }
 
     // Validate menu preference - MANDATORY
-    if (!formData.menuPreference || formData.menuPreference === '') {
+    if (!formData.menuPreference) {
       setError('Please select a menu preference')
       const element = document.querySelector('[name="menuPreference"]')
       if (element) {
