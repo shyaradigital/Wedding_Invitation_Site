@@ -45,7 +45,6 @@ export default function GuestEditor({
   const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set())
   const [quickAddMode, setQuickAddMode] = useState(false)
   const [lastEventAccess, setLastEventAccess] = useState<'all-events' | 'reception-only'>('all-events')
-  const [filterHasAccessed, setFilterHasAccessed] = useState<string>('all')
   const [hideEventAccess, setHideEventAccess] = useState(false)
   const [inlineEditing, setInlineEditing] = useState<{ id: string; field: 'name' | 'phone' } | null>(null)
   const [inlineEditValue, setInlineEditValue] = useState('')
@@ -614,18 +613,6 @@ export default function GuestEditor({
       })
       .reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
     
-    const notAccessedCount = normalizedGuests.filter(g => {
-      // Check if tokenUsedFirstTime is null, undefined, empty string, or invalid date
-      const firstTime = g.tokenUsedFirstTime
-      if (!firstTime || firstTime === '' || firstTime === null) return true
-      // If it's a string, try to parse it - if invalid, consider it not accessed
-      if (typeof firstTime === 'string') {
-        const date = new Date(firstTime)
-        return isNaN(date.getTime())
-      }
-      return false
-    }).length
-    
     // RSVP stats
     const rsvpAttending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'attending').length
     const rsvpNotAttending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'not-attending').length
@@ -682,7 +669,6 @@ export default function GuestEditor({
       allEvents: allEventsCount,
       receptionOnly: receptionOnlyCount,
       totalAttendees,
-      notAccessed: notAccessedCount,
       rsvpAttending,
       rsvpNotAttending,
       rsvpPending,
@@ -718,33 +704,6 @@ export default function GuestEditor({
       })
     }
 
-    // Access filter
-    if (filterHasAccessed === 'accessed') {
-      filtered = filtered.filter(guest => {
-        // Check if tokenUsedFirstTime exists and is valid
-        const firstTime = guest.tokenUsedFirstTime
-        if (!firstTime || firstTime === '' || firstTime === null) return false
-        // If it's a string, validate it's a valid date
-        if (typeof firstTime === 'string') {
-          const date = new Date(firstTime)
-          return !isNaN(date.getTime())
-        }
-        return true
-      })
-    } else if (filterHasAccessed === 'not-accessed') {
-      filtered = filtered.filter(guest => {
-        // Check if tokenUsedFirstTime is null, undefined, empty string, or invalid date
-        const firstTime = guest.tokenUsedFirstTime
-        if (!firstTime || firstTime === '' || firstTime === null) return true
-        // If it's a string, try to parse it - if invalid, consider it not accessed
-        if (typeof firstTime === 'string') {
-          const date = new Date(firstTime)
-          return isNaN(date.getTime())
-        }
-        return false
-      })
-    }
-
     // RSVP filter
     if (filterRsvp !== 'all') {
       filtered = filtered.filter(guest => {
@@ -754,7 +713,7 @@ export default function GuestEditor({
     }
 
     return filtered
-  }, [normalizedGuests, searchQuery, filterEvent, filterHasAccessed, filterRsvp, getOverallRsvpStatus])
+  }, [normalizedGuests, searchQuery, filterEvent, filterRsvp, getOverallRsvpStatus])
 
   const handleRegenerateToken = async (guestId: string) => {
     if (
@@ -877,7 +836,7 @@ export default function GuestEditor({
         </div>
         
         {/* Guest Count Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-gradient-to-br from-wedding-gold to-wedding-gold-light rounded-xl shadow-lg p-5 border border-wedding-gold/30 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between mb-3">
               <span className="text-3xl">👥</span>
@@ -903,15 +862,6 @@ export default function GuestEditor({
             </div>
             <div className="text-sm font-semibold text-white/95 mb-1">Reception Only</div>
             <div className="text-xs text-white/80">Reception access only</div>
-          </div>
-          
-          <div className="bg-gradient-to-br from-orange-500 to-orange-400 rounded-xl shadow-lg p-5 border border-orange-400/30 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-3xl">📬</span>
-              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.notAccessed}</div>
-            </div>
-            <div className="text-sm font-semibold text-white/95 mb-1">Not Accessed</div>
-            <div className="text-xs text-white/80">Unopened invitations</div>
           </div>
         </div>
 
@@ -1280,18 +1230,6 @@ export default function GuestEditor({
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-600 mb-1">Access Status</label>
-                <select
-                  value={filterHasAccessed}
-                  onChange={(e) => setFilterHasAccessed(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent shadow-sm transition-all bg-white"
-                >
-                  <option value="all">All Access</option>
-                  <option value="accessed">Has Accessed</option>
-                  <option value="not-accessed">Not Accessed</option>
-                </select>
-              </div>
-              <div>
                 <label className="block text-xs text-gray-600 mb-1">RSVP Status</label>
                 <select
                   value={filterRsvp}
@@ -1307,19 +1245,13 @@ export default function GuestEditor({
               </div>
             </div>
             {/* Active Filter Chips */}
-            {(filterEvent !== 'all' || filterHasAccessed !== 'all' || filterRsvp !== 'all' || searchQuery) && (
+            {(filterEvent !== 'all' || filterRsvp !== 'all' || searchQuery) && (
               <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200">
                 <span className="text-xs text-gray-500 font-medium">Active filters:</span>
                 {filterEvent !== 'all' && (
                   <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-wedding-gold/20 text-wedding-navy border border-wedding-gold/30">
                     Event: {filterEvent === 'all-events' ? 'All Events' : 'Reception Only'}
                     <button onClick={() => setFilterEvent('all')} className="ml-2 hover:text-red-600 transition-colors">×</button>
-                  </span>
-                )}
-                {filterHasAccessed !== 'all' && (
-                  <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                    Access: {filterHasAccessed === 'accessed' ? 'Has Accessed' : 'Not Accessed'}
-                    <button onClick={() => setFilterHasAccessed('all')} className="ml-2 hover:text-red-600 transition-colors">×</button>
                   </span>
                 )}
                 {filterRsvp !== 'all' && (
@@ -1783,7 +1715,7 @@ export default function GuestEditor({
         </table>
         {filteredGuests.length === 0 && (
           <div className="text-center py-12 text-gray-500">
-            {searchQuery || filterEvent !== 'all' || filterHasAccessed !== 'all' || filterRsvp !== 'all'
+            {searchQuery || filterEvent !== 'all' || filterRsvp !== 'all'
               ? 'No guests found matching your search criteria.'
               : 'No guests yet. Create your first guest to get started!'}
           </div>
