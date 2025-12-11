@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import EventCard from './EventCard'
 import Link from 'next/link'
 import InvitationNavigation from './InvitationNavigation'
@@ -59,7 +60,7 @@ export default function GuestInviteLayout({
               background: 'linear-gradient(135deg, #FFFEF7 0%, #FAF9F6 100%)',
               border: '2px solid rgba(212, 175, 55, 0.3)',
             }}
-          >
+            >
             {/* Floral border decoration - corners */}
             <div className="absolute top-0 left-0 w-16 h-16 opacity-30">
               <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,6 +82,42 @@ export default function GuestInviteLayout({
                 <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
               </svg>
             </div>
+
+            {/* Couple Image */}
+            <div className="mb-6 sm:mb-8">
+              <div className="relative w-full max-w-lg mx-auto rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src="/about-jay-ankita.jpeg"
+                  alt="Jay and Ankita"
+                  width={800}
+                  height={600}
+                  className="w-full h-auto object-cover"
+                  priority
+                />
+              </div>
+            </div>
+
+            <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
+
+            {/* Love Story Write-up */}
+            <div className="mb-6 sm:mb-8">
+              <div className="text-center mb-4 sm:mb-6">
+                <p className="text-base sm:text-lg md:text-xl text-wedding-navy italic font-serif leading-relaxed">
+                  "True love sees the soul, embraces the uniqueness in one another and transcends geographical borders".
+                </p>
+              </div>
+              
+              <div className="text-left space-y-4 sm:space-y-5">
+                <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed font-serif">
+                  Even though Ankita was raised in India and Jay was raised in US, they exemplify the essence of true love. Our love story originated thousands of miles away from each other, Ankita in Michigan and Jay in California, and quickly transpired into an inseparable bond based on love, trust and understanding.
+                </p>
+                <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed font-serif">
+                  Combining Indian and American values Jay and Ankita created an everlasting bond and committed to spending the rest of their lives together.
+                </p>
+              </div>
+            </div>
+
+            <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
 
             {/* Sanskrit Shloka */}
             <div className="text-center mb-6 sm:mb-8">
