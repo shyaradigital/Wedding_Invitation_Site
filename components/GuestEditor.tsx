@@ -619,6 +619,11 @@ export default function GuestEditor({
     const rsvpPending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'pending').length
     const rsvpNotSubmitted = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'not-submitted').length
 
+    // Menu preference stats
+    const menuVeg = normalizedGuests.filter(g => g.menuPreference === 'veg').length
+    const menuNonVeg = normalizedGuests.filter(g => g.menuPreference === 'non-veg').length
+    const menuBoth = normalizedGuests.filter(g => g.menuPreference === 'both').length
+
     // Helper function to calculate event-wise stats
     const calculateEventStats = (eventSlug: string) => {
       const guestsWithEvent = normalizedGuests.filter(g => {
@@ -673,6 +678,9 @@ export default function GuestEditor({
       rsvpNotAttending,
       rsvpPending,
       rsvpNotSubmitted,
+      menuVeg,
+      menuNonVeg,
+      menuBoth,
       eventWise: eventWiseStats,
     }
   }, [normalizedGuests, getOverallRsvpStatus])
@@ -862,6 +870,39 @@ export default function GuestEditor({
             </div>
             <div className="text-sm font-semibold text-white/95 mb-1">Reception Only</div>
             <div className="text-xs text-white/80">Reception access only</div>
+          </div>
+        </div>
+
+        {/* Menu Preference Stats */}
+        <div className="mb-6 mt-6">
+          <h3 className="text-lg font-display text-wedding-navy mb-3">Menu Preference Overview</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-5 border border-green-400/30 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-3xl">🥗</span>
+                <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.menuVeg}</div>
+              </div>
+              <div className="text-sm font-semibold text-white/95 mb-1">Vegetarian</div>
+              <div className="text-xs text-white/80">Veg preference</div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-5 border border-orange-400/30 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-3xl">🍖</span>
+                <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.menuNonVeg}</div>
+              </div>
+              <div className="text-sm font-semibold text-white/95 mb-1">Non-Vegetarian</div>
+              <div className="text-xs text-white/80">Non-veg preference</div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-5 border border-purple-400/30 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-3xl">🍽️</span>
+                <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.menuBoth}</div>
+              </div>
+              <div className="text-sm font-semibold text-white/95 mb-1">Both</div>
+              <div className="text-xs text-white/80">No preference</div>
+            </div>
           </div>
         </div>
 
@@ -1506,6 +1547,9 @@ export default function GuestEditor({
                 Attendees
               </th>
               <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
+                Menu Preference
+              </th>
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
                 RSVP Status
               </th>
               <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
@@ -1605,6 +1649,21 @@ export default function GuestEditor({
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                     {guest.numberOfAttendees || 1}
+                  </td>
+                  <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                    {guest.menuPreference ? (
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                        guest.menuPreference === 'veg' 
+                          ? 'bg-green-100 text-green-800 border border-green-200'
+                          : guest.menuPreference === 'non-veg'
+                          ? 'bg-orange-100 text-orange-800 border border-orange-200'
+                          : 'bg-purple-100 text-purple-800 border border-purple-200'
+                      }`}>
+                        {guest.menuPreference === 'veg' ? '🥗 Veg' : guest.menuPreference === 'non-veg' ? '🍖 Non-Veg' : '🍽️ Both'}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-400 italic">Not set</span>
+                    )}
                   </td>
                   <td 
                     className="px-3 sm:px-6 py-4 cursor-pointer hover:bg-gray-50 min-w-[200px]"
