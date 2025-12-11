@@ -71,6 +71,32 @@ export default function GuestEditor({
   const [deviceManagementGuest, setDeviceManagementGuest] = useState<Guest | null>(null)
   const [newMaxDevices, setNewMaxDevices] = useState<number | ''>('')
 
+  // Helper function to safely parse JSON string or return the value as-is
+  const safeParseJson = <T,>(value: string | T | null | undefined, fallback: T): T => {
+    if (!value) return fallback
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value) as T
+      } catch {
+        return fallback
+      }
+    }
+    return value as T
+  }
+
+  // Normalize guest data to ensure consistent structure
+  const normalizedGuests = useMemo(() => {
+    return guests.map(guest => ({
+      ...guest,
+      eventAccess: Array.isArray(guest.eventAccess) 
+        ? guest.eventAccess 
+        : safeParseJson<string[]>(guest.eventAccess as any, []),
+      rsvpStatus: guest.rsvpStatus && typeof guest.rsvpStatus === 'object' && !Array.isArray(guest.rsvpStatus)
+        ? guest.rsvpStatus
+        : safeParseJson<Record<string, 'yes' | 'no' | 'pending'>>(guest.rsvpStatus as any, {})
+    }))
+  }, [guests])
+
   // Initialize form with last used event access
   useEffect(() => {
     if (lastEventAccess) {
@@ -316,7 +342,7 @@ export default function GuestEditor({
       return
     }
 
-    const selectedGuestList = guests.filter(g => selectedGuests.has(g.id))
+    const selectedGuestList = normalizedGuests.filter(g => selectedGuests.has(g.id))
     const eventNames: Record<string, string> = {
       mehndi: 'Mehndi',
       wedding: 'Wedding',
@@ -488,8 +514,15 @@ export default function GuestEditor({
   const getOverallRsvpStatus = (guest: Guest): 'attending' | 'not-attending' | 'pending' | 'not-submitted' => {
     if (!guest.rsvpSubmitted || !guest.rsvpStatus) return 'not-submitted'
     
-    const rsvpStatus = guest.rsvpStatus
-    const eventAccess = guest.eventAccess || []
+    // Ensure rsvpStatus is an object
+    const rsvpStatus = typeof guest.rsvpStatus === 'object' && !Array.isArray(guest.rsvpStatus)
+      ? guest.rsvpStatus
+      : safeParseJson<Record<string, 'yes' | 'no' | 'pending'>>(guest.rsvpStatus as any, {})
+    
+    // Ensure eventAccess is an array
+    const eventAccess = Array.isArray(guest.eventAccess) 
+      ? guest.eventAccess 
+      : safeParseJson<string[]>(guest.eventAccess as any, [])
     
     // Check if attending any event
     const hasAttending = eventAccess.some(event => rsvpStatus[event] === 'yes')
@@ -504,7 +537,7 @@ export default function GuestEditor({
 
   const handleExportGuests = () => {
     const guestsToExport = selectedGuests.size > 0 
-      ? guests.filter(g => selectedGuests.has(g.id))
+      ? normalizedGuests.filter(g => selectedGuests.has(g.id))
       : filteredGuests
     const eventNames: Record<string, string> = {
       mehndi: 'Mehndi',
@@ -559,25 +592,80 @@ export default function GuestEditor({
 
   // Calculate stats
   const stats = useMemo(() => {
-    const allEventsCount = guests.filter(g => {
-      const events = g.eventAccess
+    // Use normalized guests for calculations
+    const allEventsCount = normalizedGuests.filter(g => {
+      const events = Array.isArray(g.eventAccess) ? g.eventAccess : []
       return events.includes('mehndi') && events.includes('wedding') && events.includes('reception')
     }).length
-    const receptionOnlyCount = guests.filter(g => {
-      const events = g.eventAccess
+    
+    const receptionOnlyCount = normalizedGuests.filter(g => {
+      const events = Array.isArray(g.eventAccess) ? g.eventAccess : []
       return events.length === 1 && events.includes('reception')
     }).length
-    const totalAttendees = guests.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
-    const notAccessedCount = guests.filter(g => !g.tokenUsedFirstTime).length
+    
+    // Fixed: Total Attendees should only count guests who RSVP'd "yes" to at least one event
+    const totalAttendees = normalizedGuests
+      .filter(g => {
+        const status = getOverallRsvpStatus(g)
+        return status === 'attending'
+      })
+      .reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+    
+    const notAccessedCount = normalizedGuests.filter(g => !g.tokenUsedFirstTime).length
     
     // RSVP stats
-    const rsvpAttending = guests.filter(g => getOverallRsvpStatus(g) === 'attending').length
-    const rsvpNotAttending = guests.filter(g => getOverallRsvpStatus(g) === 'not-attending').length
-    const rsvpPending = guests.filter(g => getOverallRsvpStatus(g) === 'pending').length
-    const rsvpNotSubmitted = guests.filter(g => getOverallRsvpStatus(g) === 'not-submitted').length
+    const rsvpAttending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'attending').length
+    const rsvpNotAttending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'not-attending').length
+    const rsvpPending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'pending').length
+    const rsvpNotSubmitted = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'not-submitted').length
+
+    // Helper function to calculate event-wise stats
+    const calculateEventStats = (eventSlug: string) => {
+      const guestsWithEvent = normalizedGuests.filter(g => {
+        const events = Array.isArray(g.eventAccess) ? g.eventAccess : []
+        return events.includes(eventSlug)
+      })
+
+      const attending = guestsWithEvent.filter(g => {
+        const rsvpStatus = typeof g.rsvpStatus === 'object' && !Array.isArray(g.rsvpStatus) ? g.rsvpStatus : {}
+        return rsvpStatus[eventSlug] === 'yes'
+      })
+      
+      const notAttending = guestsWithEvent.filter(g => {
+        const rsvpStatus = typeof g.rsvpStatus === 'object' && !Array.isArray(g.rsvpStatus) ? g.rsvpStatus : {}
+        return rsvpStatus[eventSlug] === 'no'
+      })
+      
+      const pending = guestsWithEvent.filter(g => {
+        const rsvpStatus = typeof g.rsvpStatus === 'object' && !Array.isArray(g.rsvpStatus) ? g.rsvpStatus : {}
+        return rsvpStatus[eventSlug] === 'pending'
+      })
+      
+      const notSubmitted = guestsWithEvent.filter(g => {
+        const rsvpStatus = typeof g.rsvpStatus === 'object' && !Array.isArray(g.rsvpStatus) ? g.rsvpStatus : {}
+        return !g.rsvpSubmitted || !rsvpStatus[eventSlug]
+      })
+
+      const totalAttendees = attending.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+
+      return {
+        attending: attending.length,
+        notAttending: notAttending.length,
+        pending: pending.length,
+        notSubmitted: notSubmitted.length,
+        totalAttendees,
+      }
+    }
+
+    // Event-wise RSVP statistics
+    const eventWiseStats = {
+      mehndi: calculateEventStats('mehndi'),
+      wedding: calculateEventStats('wedding'),
+      reception: calculateEventStats('reception'),
+    }
 
     return {
-      total: guests.length,
+      total: normalizedGuests.length,
       allEvents: allEventsCount,
       receptionOnly: receptionOnlyCount,
       totalAttendees,
@@ -586,12 +674,13 @@ export default function GuestEditor({
       rsvpNotAttending,
       rsvpPending,
       rsvpNotSubmitted,
+      eventWise: eventWiseStats,
     }
-  }, [guests])
+  }, [normalizedGuests])
 
   // Filter and search guests
   const filteredGuests = useMemo(() => {
-    let filtered = guests
+    let filtered = normalizedGuests
 
     // Search filter
     if (searchQuery) {
@@ -632,7 +721,7 @@ export default function GuestEditor({
     }
 
     return filtered
-  }, [guests, searchQuery, filterEvent, filterHasAccessed, filterRsvp])
+  }, [normalizedGuests, searchQuery, filterEvent, filterHasAccessed, filterRsvp])
 
   const handleRegenerateToken = async (guestId: string) => {
     if (
@@ -787,6 +876,90 @@ export default function GuestEditor({
         </div>
       </div>
 
+      {/* Event-Wise RSVP Statistics */}
+      <div className="mb-6">
+        <h3 className="text-lg font-serif text-wedding-navy mb-4">Event-Wise RSVP Statistics</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Mehndi & Pithi */}
+          <div className="bg-white rounded-lg shadow p-4 border border-wedding-gold/30">
+            <h4 className="text-base font-semibold text-wedding-navy mb-3">Mehndi & Pithi</h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">✓ Attending:</span>
+                <span className="text-sm font-bold text-green-600">
+                  {stats.eventWise.mehndi.attending} guest{stats.eventWise.mehndi.attending !== 1 ? 's' : ''} 
+                  <span className="text-gray-600 ml-1">({stats.eventWise.mehndi.totalAttendees} attendees)</span>
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">✗ Not Attending:</span>
+                <span className="text-sm font-bold text-red-600">{stats.eventWise.mehndi.notAttending}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">⏳ Pending:</span>
+                <span className="text-sm font-bold text-yellow-600">{stats.eventWise.mehndi.pending}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">❓ Not Submitted:</span>
+                <span className="text-sm font-bold text-gray-600">{stats.eventWise.mehndi.notSubmitted}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Hindu Wedding */}
+          <div className="bg-white rounded-lg shadow p-4 border border-wedding-gold/30">
+            <h4 className="text-base font-semibold text-wedding-navy mb-3">Hindu Wedding</h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">✓ Attending:</span>
+                <span className="text-sm font-bold text-green-600">
+                  {stats.eventWise.wedding.attending} guest{stats.eventWise.wedding.attending !== 1 ? 's' : ''} 
+                  <span className="text-gray-600 ml-1">({stats.eventWise.wedding.totalAttendees} attendees)</span>
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">✗ Not Attending:</span>
+                <span className="text-sm font-bold text-red-600">{stats.eventWise.wedding.notAttending}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">⏳ Pending:</span>
+                <span className="text-sm font-bold text-yellow-600">{stats.eventWise.wedding.pending}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">❓ Not Submitted:</span>
+                <span className="text-sm font-bold text-gray-600">{stats.eventWise.wedding.notSubmitted}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Reception */}
+          <div className="bg-white rounded-lg shadow p-4 border border-wedding-gold/30">
+            <h4 className="text-base font-semibold text-wedding-navy mb-3">Reception</h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">✓ Attending:</span>
+                <span className="text-sm font-bold text-green-600">
+                  {stats.eventWise.reception.attending} guest{stats.eventWise.reception.attending !== 1 ? 's' : ''} 
+                  <span className="text-gray-600 ml-1">({stats.eventWise.reception.totalAttendees} attendees)</span>
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">✗ Not Attending:</span>
+                <span className="text-sm font-bold text-red-600">{stats.eventWise.reception.notAttending}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">⏳ Pending:</span>
+                <span className="text-sm font-bold text-yellow-600">{stats.eventWise.reception.pending}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">❓ Not Submitted:</span>
+                <span className="text-sm font-bold text-gray-600">{stats.eventWise.reception.notSubmitted}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Header with Actions */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4">
@@ -795,7 +968,7 @@ export default function GuestEditor({
               Guest Management
             </h2>
             <p className="text-sm text-gray-600">
-              Showing: {filteredGuests.length} of {guests.length} guests
+              Showing: {filteredGuests.length} of {normalizedGuests.length} guests
               {selectedGuests.size > 0 && ` | ${selectedGuests.size} selected`}
             </p>
           </div>
