@@ -63,9 +63,19 @@ export async function POST(request: NextRequest) {
 
     // Subsequent times - verify phone matches
     if (guest.phone === normalizedPhone) {
+      // If tokenUsedFirstTime is not set yet, set it now (first time accessing)
+      if (!guest.tokenUsedFirstTime) {
+        await prisma.guest.update({
+          where: { id: guest.id },
+          data: {
+            tokenUsedFirstTime: new Date(),
+          },
+        })
+      }
+
       return NextResponse.json({
         success: true,
-        isFirstTime: false,
+        isFirstTime: !guest.tokenUsedFirstTime,
         message: 'Phone number verified',
       })
     }

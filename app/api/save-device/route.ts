@@ -80,11 +80,17 @@ export async function POST(request: NextRequest) {
     // Add new device
     const updatedDevices = [...allowedDevices, fingerprint]
 
+    // Set tokenUsedFirstTime if not already set (first time accessing)
+    const updateData: any = {
+      allowedDevices: JSON.stringify(updatedDevices),
+    }
+    if (!guest.tokenUsedFirstTime) {
+      updateData.tokenUsedFirstTime = new Date()
+    }
+
     await prisma.guest.update({
       where: { id: guest.id },
-      data: {
-        allowedDevices: JSON.stringify(updatedDevices),
-      },
+      data: updateData,
     })
 
     return NextResponse.json({
