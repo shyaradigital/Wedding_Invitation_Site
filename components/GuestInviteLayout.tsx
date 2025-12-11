@@ -103,7 +103,7 @@ export default function GuestInviteLayout({
             <div className="mb-6 sm:mb-8">
               <div className="text-center mb-4 sm:mb-6">
                 <p className="text-base sm:text-lg md:text-xl text-wedding-navy italic font-serif leading-relaxed">
-                  "True love sees the soul, embraces the uniqueness in one another and transcends geographical borders".
+                  &ldquo;True love sees the soul, embraces the uniqueness in one another and transcends geographical borders&rdquo;.
                 </p>
               </div>
               
