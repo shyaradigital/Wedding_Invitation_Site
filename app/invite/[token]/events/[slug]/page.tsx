@@ -63,7 +63,8 @@ const eventContent: Record<string, {
   reception: {
     date: '21st Day of March, 2026',
     time: 'Five O\'Clock in the evening',
-    attire: 'Formal Indian/Western Attire\nNo boxed gifts / registry',
+    note: 'Note: No boxed gifts / registry',
+    attire: 'Formal Indian/Western Attire',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     address: '90 Pacifica, Irvine, CA 92618',
   },
