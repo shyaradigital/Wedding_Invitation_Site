@@ -22,8 +22,6 @@ export default function RSVPPage() {
   const [formData, setFormData] = useState({
     rsvpStatus: {} as Record<string, 'yes' | 'no' | 'pending'>,
     menuPreference: '' as 'veg' | 'non-veg' | 'both' | '',
-    dietaryRestrictions: '',
-    additionalInfo: '',
   })
 
   // Use the shared access check hook
@@ -51,7 +49,7 @@ export default function RSVPPage() {
       fetch(`/api/guest/preferences?token=${token}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data && data.preferencesSubmitted) {
+            if (data && data.preferencesSubmitted) {
             setSubmitted(true)
             if (data.rsvpStatus) {
               setExistingRsvp(data.rsvpStatus)
@@ -61,8 +59,6 @@ export default function RSVPPage() {
               setFormData(prev => ({
                 ...prev,
                 menuPreference: data.preferences.menuPreference || '',
-                dietaryRestrictions: data.preferences.dietaryRestrictions || '',
-                additionalInfo: data.preferences.additionalInfo || '',
                 rsvpStatus: data.rsvpStatus || {},
               }))
             }
@@ -141,8 +137,6 @@ export default function RSVPPage() {
           token,
           rsvpStatus: formData.rsvpStatus,
           menuPreference: formData.menuPreference,
-          dietaryRestrictions: formData.dietaryRestrictions.trim() || undefined,
-          additionalInfo: formData.additionalInfo.trim() || undefined,
         }),
       })
 
@@ -498,39 +492,6 @@ export default function RSVPPage() {
                       </div>
                     </div>
 
-                    {/* Dietary Restrictions */}
-                    <div>
-                      <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
-                        Dietary Restrictions or Allergies (Optional)
-                      </label>
-                      <OrnamentalDivider variant="simple" className="mb-4" />
-                      <textarea
-                        value={formData.dietaryRestrictions}
-                        onChange={(e) =>
-                          setFormData({ ...formData, dietaryRestrictions: e.target.value })
-                        }
-                        rows={4}
-                        className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg border-2 border-wedding-gold/30 rounded-xl focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold touch-manipulation bg-white/70 font-serif"
-                        placeholder="e.g., Nut allergy, Gluten-free, etc."
-                      />
-                    </div>
-
-                    {/* Additional Info */}
-                    <div>
-                      <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
-                        Additional Information (Optional)
-                      </label>
-                      <OrnamentalDivider variant="simple" className="mb-4" />
-                      <textarea
-                        value={formData.additionalInfo}
-                        onChange={(e) =>
-                          setFormData({ ...formData, additionalInfo: e.target.value })
-                        }
-                        rows={4}
-                        className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg border-2 border-wedding-gold/30 rounded-xl focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold touch-manipulation bg-white/70 font-serif"
-                        placeholder="Any other information you'd like to share..."
-                      />
-                    </div>
 
                     {/* Error Message */}
                     {error && (

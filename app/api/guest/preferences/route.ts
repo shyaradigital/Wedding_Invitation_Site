@@ -75,8 +75,8 @@ export async function POST(request: NextRequest) {
         rsvpSubmitted: true,
         rsvpSubmittedAt: new Date(),
         menuPreference: data.menuPreference || null,
-        dietaryRestrictions: data.dietaryRestrictions || null,
-        additionalInfo: data.additionalInfo || null,
+        dietaryRestrictions: null,
+        additionalInfo: null,
         preferencesSubmitted: true,
       },
     })

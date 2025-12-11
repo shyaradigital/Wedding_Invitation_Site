@@ -1607,7 +1607,7 @@ export default function GuestEditor({
                     {guest.numberOfAttendees || 1}
                   </td>
                   <td 
-                    className="px-3 sm:px-6 py-4 whitespace-nowrap cursor-pointer hover:bg-gray-50"
+                    className="px-3 sm:px-6 py-4 cursor-pointer hover:bg-gray-50 min-w-[200px]"
                     onClick={() => setViewingGuest(guest)}
                     title="Click to view RSVP details"
                   >
@@ -1632,25 +1632,26 @@ export default function GuestEditor({
                       const rsvpData = guest.rsvpStatus || {}
                       
                       return (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-1.5">
                           {eventAccess.map((eventSlug: string) => {
                             const status = rsvpData[eventSlug]
                             if (!status) return null
                             
                             const statusConfig = {
-                              yes: { bg: 'bg-green-100', text: 'text-green-800', icon: '✓' },
-                              no: { bg: 'bg-red-100', text: 'text-red-800', icon: '✗' },
-                              pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: '⏳' },
-                            }[status] || { bg: 'bg-gray-100', text: 'text-gray-800', icon: '❓' }
+                              yes: { bg: 'bg-green-100', text: 'text-green-800', icon: '✓', label: 'Attending' },
+                              no: { bg: 'bg-red-100', text: 'text-red-800', icon: '✗', label: 'Not Attending' },
+                              pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: '⏳', label: 'Pending' },
+                            }[status] || { bg: 'bg-gray-100', text: 'text-gray-800', icon: '❓', label: 'Unknown' }
                             
                             return (
                               <span
                                 key={eventSlug}
-                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}
-                                title={`${eventNames[eventSlug] || eventSlug}: ${status === 'yes' ? 'Attending' : status === 'no' ? 'Not Attending' : 'Pending'}`}
+                                className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-medium ${statusConfig.bg} ${statusConfig.text} w-fit`}
+                                title={`${eventNames[eventSlug] || eventSlug}: ${statusConfig.label}`}
                               >
-                                <span className="mr-1">{statusConfig.icon}</span>
-                                {eventNames[eventSlug] || eventSlug}
+                                <span className="mr-1.5">{statusConfig.icon}</span>
+                                <span className="font-semibold">{eventNames[eventSlug] || eventSlug}:</span>
+                                <span className="ml-1">{statusConfig.label}</span>
                               </span>
                             )
                           })}
