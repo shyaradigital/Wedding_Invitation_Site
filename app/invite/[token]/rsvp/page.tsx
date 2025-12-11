@@ -102,17 +102,32 @@ export default function RSVPPage() {
     e.preventDefault()
     setError(null)
 
-    // Validate RSVP status for all accessible events
+    // Validate RSVP status for all accessible events - MANDATORY
     const eventAccess = guest?.eventAccess || []
-    const missingRsvp = eventAccess.filter((event: string) => !formData.rsvpStatus[event])
+    const missingRsvp = eventAccess.filter((event: string) => {
+      const status = formData.rsvpStatus[event]
+      return !status || status === ''
+    })
     
     if (missingRsvp.length > 0) {
-      setError(`Please provide RSVP status for all events: ${missingRsvp.map((e: string) => eventNames[e] || e).join(', ')}`)
+      const missingEventNames = missingRsvp.map((e: string) => eventNames[e] || e).join(', ')
+      setError(`Please provide RSVP status for all events. Missing: ${missingEventNames}`)
+      // Scroll to first missing field
+      const firstMissing = missingRsvp[0]
+      const element = document.querySelector(`[name="rsvp-${firstMissing}"]`)
+      if (element) {
+        element.closest('.border-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
       return
     }
 
-    if (!formData.menuPreference) {
+    // Validate menu preference - MANDATORY
+    if (!formData.menuPreference || formData.menuPreference === '') {
       setError('Please select a menu preference')
+      const element = document.querySelector('[name="menuPreference"]')
+      if (element) {
+        element.closest('div')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
       return
     }
 
@@ -253,14 +268,28 @@ export default function RSVPPage() {
                           {guest.eventAccess.map((eventSlug: string) => {
                             const eventName = eventNames[eventSlug] || eventSlug
                             const currentStatus = formData.rsvpStatus[eventSlug] || (existingRsvp?.[eventSlug] || '')
+                            const isRequired = !currentStatus
                             
                             return (
-                              <div key={eventSlug} className="border-2 border-wedding-gold/30 rounded-xl p-4 sm:p-5 bg-white/50">
+                              <div key={eventSlug} className={`border-2 rounded-xl p-4 sm:p-5 bg-white/50 transition-colors ${isRequired ? 'border-red-300 bg-red-50/30' : 'border-wedding-gold/30'}`}>
                                 <h3 className="text-base sm:text-lg font-display text-wedding-navy mb-3 sm:mb-4">
-                                  {eventName}
+                                  {eventName} {isRequired && <span className="text-red-500 text-sm">(Required)</span>}
                                 </h3>
                                 <div className="space-y-2">
-                                  <label className="flex items-center p-3 sm:p-4 border-2 border-wedding-gold/30 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation bg-white/70">
+                                  <label 
+                                    onClick={() => {
+                                      setFormData({
+                                        ...formData,
+                                        rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'yes' },
+                                      })
+                                    }}
+                                    className={`flex items-center p-4 sm:p-5 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                                      currentStatus === 'yes' 
+                                        ? 'bg-green-50 border-green-400 shadow-md scale-[1.02]' 
+                                        : 'bg-white/70 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                    }`}
+                                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                                  >
                                     <input
                                       type="radio"
                                       name={`rsvp-${eventSlug}`}
@@ -272,11 +301,32 @@ export default function RSVPPage() {
                                           rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'yes' },
                                         })
                                       }
-                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                                     />
-                                    <span className="text-base sm:text-lg font-serif text-gray-700">✓ Attending</span>
+                                    <span className={`text-base sm:text-lg font-serif flex-1 ${
+                                      currentStatus === 'yes' 
+                                        ? 'text-green-800 font-semibold' 
+                                        : 'text-gray-700'
+                                    }`}>✓ Attending</span>
+                                    {currentStatus === 'yes' && (
+                                      <span className="text-green-600 text-xl ml-2">✓</span>
+                                    )}
                                   </label>
-                                  <label className="flex items-center p-3 sm:p-4 border-2 border-wedding-gold/30 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation bg-white/70">
+                                  <label 
+                                    onClick={() => {
+                                      setFormData({
+                                        ...formData,
+                                        rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'no' },
+                                      })
+                                    }}
+                                    className={`flex items-center p-4 sm:p-5 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                                      currentStatus === 'no' 
+                                        ? 'bg-red-50 border-red-400 shadow-md scale-[1.02]' 
+                                        : 'bg-white/70 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                    }`}
+                                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                                  >
                                     <input
                                       type="radio"
                                       name={`rsvp-${eventSlug}`}
@@ -288,11 +338,32 @@ export default function RSVPPage() {
                                           rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'no' },
                                         })
                                       }
-                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                                     />
-                                    <span className="text-base sm:text-lg font-serif text-gray-700">✗ Not Attending</span>
+                                    <span className={`text-base sm:text-lg font-serif flex-1 ${
+                                      currentStatus === 'no' 
+                                        ? 'text-red-800 font-semibold' 
+                                        : 'text-gray-700'
+                                    }`}>✗ Not Attending</span>
+                                    {currentStatus === 'no' && (
+                                      <span className="text-red-600 text-xl ml-2">✗</span>
+                                    )}
                                   </label>
-                                  <label className="flex items-center p-3 sm:p-4 border-2 border-wedding-gold/30 rounded-lg cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation bg-white/70">
+                                  <label 
+                                    onClick={() => {
+                                      setFormData({
+                                        ...formData,
+                                        rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'pending' },
+                                      })
+                                    }}
+                                    className={`flex items-center p-4 sm:p-5 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                                      currentStatus === 'pending' 
+                                        ? 'bg-yellow-50 border-yellow-400 shadow-md scale-[1.02]' 
+                                        : 'bg-white/70 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                    }`}
+                                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                                  >
                                     <input
                                       type="radio"
                                       name={`rsvp-${eventSlug}`}
@@ -304,9 +375,17 @@ export default function RSVPPage() {
                                           rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'pending' },
                                         })
                                       }
-                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                                     />
-                                    <span className="text-base sm:text-lg font-serif text-gray-700">⏳ Pending</span>
+                                    <span className={`text-base sm:text-lg font-serif flex-1 ${
+                                      currentStatus === 'pending' 
+                                        ? 'text-yellow-800 font-semibold' 
+                                        : 'text-gray-700'
+                                    }`}>⏳ Pending</span>
+                                    {currentStatus === 'pending' && (
+                                      <span className="text-yellow-600 text-xl ml-2">⏳</span>
+                                    )}
                                   </label>
                                 </div>
                               </div>
@@ -323,7 +402,17 @@ export default function RSVPPage() {
                       </label>
                       <OrnamentalDivider variant="simple" className="mb-4" />
                       <div className="space-y-3">
-                        <label className="flex items-center p-4 sm:p-5 border-2 border-wedding-gold/30 rounded-xl cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation min-h-[56px] bg-white/50">
+                        <label 
+                          onClick={() => setFormData({ ...formData, menuPreference: 'veg' })}
+                          className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                            formData.menuPreference === 'veg'
+                              ? 'bg-green-50 border-green-400 shadow-md scale-[1.02]'
+                              : !formData.menuPreference 
+                                ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                          }`}
+                          style={{ WebkitTapHighlightColor: 'transparent' }}
+                        >
                           <input
                             type="radio"
                             name="menuPreference"
@@ -332,11 +421,29 @@ export default function RSVPPage() {
                             onChange={(e) =>
                               setFormData({ ...formData, menuPreference: e.target.value as 'veg' })
                             }
-                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                            onClick={(e) => e.stopPropagation()}
+                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                           />
-                          <span className="text-base sm:text-lg font-serif text-gray-700">Vegetarian</span>
+                          <span className={`text-base sm:text-lg font-serif flex-1 ${
+                            formData.menuPreference === 'veg' 
+                              ? 'text-green-800 font-semibold' 
+                              : 'text-gray-700'
+                          }`}>Vegetarian</span>
+                          {formData.menuPreference === 'veg' && (
+                            <span className="text-green-600 text-xl ml-2">✓</span>
+                          )}
                         </label>
-                        <label className="flex items-center p-4 sm:p-5 border-2 border-wedding-gold/30 rounded-xl cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation min-h-[56px] bg-white/50">
+                        <label 
+                          onClick={() => setFormData({ ...formData, menuPreference: 'non-veg' })}
+                          className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                            formData.menuPreference === 'non-veg'
+                              ? 'bg-blue-50 border-blue-400 shadow-md scale-[1.02]'
+                              : !formData.menuPreference 
+                                ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                          }`}
+                          style={{ WebkitTapHighlightColor: 'transparent' }}
+                        >
                           <input
                             type="radio"
                             name="menuPreference"
@@ -345,11 +452,29 @@ export default function RSVPPage() {
                             onChange={(e) =>
                               setFormData({ ...formData, menuPreference: e.target.value as 'non-veg' })
                             }
-                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                            onClick={(e) => e.stopPropagation()}
+                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                           />
-                          <span className="text-base sm:text-lg font-serif text-gray-700">Non-Vegetarian</span>
+                          <span className={`text-base sm:text-lg font-serif flex-1 ${
+                            formData.menuPreference === 'non-veg' 
+                              ? 'text-blue-800 font-semibold' 
+                              : 'text-gray-700'
+                          }`}>Non-Vegetarian</span>
+                          {formData.menuPreference === 'non-veg' && (
+                            <span className="text-blue-600 text-xl ml-2">✓</span>
+                          )}
                         </label>
-                        <label className="flex items-center p-4 sm:p-5 border-2 border-wedding-gold/30 rounded-xl cursor-pointer hover:bg-wedding-cream/30 active:bg-wedding-cream/40 transition-colors touch-manipulation min-h-[56px] bg-white/50">
+                        <label 
+                          onClick={() => setFormData({ ...formData, menuPreference: 'both' })}
+                          className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                            formData.menuPreference === 'both'
+                              ? 'bg-purple-50 border-purple-400 shadow-md scale-[1.02]'
+                              : !formData.menuPreference 
+                                ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                          }`}
+                          style={{ WebkitTapHighlightColor: 'transparent' }}
+                        >
                           <input
                             type="radio"
                             name="menuPreference"
@@ -358,9 +483,17 @@ export default function RSVPPage() {
                             onChange={(e) =>
                               setFormData({ ...formData, menuPreference: e.target.value as 'both' })
                             }
-                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
+                            onClick={(e) => e.stopPropagation()}
+                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                           />
-                          <span className="text-base sm:text-lg font-serif text-gray-700">Both (No Preference)</span>
+                          <span className={`text-base sm:text-lg font-serif flex-1 ${
+                            formData.menuPreference === 'both' 
+                              ? 'text-purple-800 font-semibold' 
+                              : 'text-gray-700'
+                          }`}>Both (No Preference)</span>
+                          {formData.menuPreference === 'both' && (
+                            <span className="text-purple-600 text-xl ml-2">✓</span>
+                          )}
                         </label>
                       </div>
                     </div>

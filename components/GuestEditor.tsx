@@ -832,162 +832,318 @@ export default function GuestEditor({
 
   return (
     <div>
-      {/* Quick Stats Dashboard */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-          <div className="text-2xl font-bold text-wedding-navy">{stats.total}</div>
-          <div className="text-sm text-gray-600">Total Guests</div>
+      {/* Overview Statistics Section */}
+      <div className="mb-8">
+        <div className="mb-6">
+          <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-2">
+            Overview Statistics
+          </h2>
+          <p className="text-sm text-gray-600">
+            Key metrics about your guest list and invitations
+          </p>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-          <div className="text-2xl font-bold text-wedding-gold">{stats.allEvents}</div>
-          <div className="text-sm text-gray-600">All Events</div>
+        
+        {/* Guest Count Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-gradient-to-br from-wedding-gold to-wedding-gold-light rounded-xl shadow-lg p-5 border border-wedding-gold/30 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-3xl">👥</span>
+              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.total}</div>
+            </div>
+            <div className="text-sm font-semibold text-white/95 mb-1">Total Guests</div>
+            <div className="text-xs text-white/80">All invited guests</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-amber-500 to-amber-400 rounded-xl shadow-lg p-5 border border-amber-400/30 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-3xl">🎉</span>
+              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.allEvents}</div>
+            </div>
+            <div className="text-sm font-semibold text-white/95 mb-1">All Events</div>
+            <div className="text-xs text-white/80">Full event access</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-wedding-rose to-wedding-rose-light rounded-xl shadow-lg p-5 border border-wedding-rose/30 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-3xl">🥂</span>
+              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.receptionOnly}</div>
+            </div>
+            <div className="text-sm font-semibold text-white/95 mb-1">Reception Only</div>
+            <div className="text-xs text-white/80">Reception access only</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-orange-500 to-orange-400 rounded-xl shadow-lg p-5 border border-orange-400/30 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-3xl">📬</span>
+              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.notAccessed}</div>
+            </div>
+            <div className="text-sm font-semibold text-white/95 mb-1">Not Accessed</div>
+            <div className="text-xs text-white/80">Unopened invitations</div>
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-          <div className="text-2xl font-bold text-wedding-rose">{stats.receptionOnly}</div>
-          <div className="text-sm text-gray-600">Reception Only</div>
+
+        {/* RSVP Status Cards */}
+        <div className="mb-4">
+          <h3 className="text-lg font-display text-wedding-navy mb-3">RSVP Status Overview</h3>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-          <div className="text-2xl font-bold text-wedding-navy">{stats.totalAttendees}</div>
-          <div className="text-sm text-gray-600">Total Attendees</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-          <div className="text-2xl font-bold text-orange-600">{stats.notAccessed}</div>
-          <div className="text-sm text-gray-600">Not Accessed</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-5 border border-green-400/30 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-3xl">✓</span>
+              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.rsvpAttending}</div>
+            </div>
+            <div className="text-sm font-semibold text-white/95 mb-1">Attending</div>
+            <div className="text-xs text-white/80">Confirmed attendance</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg p-5 border border-red-400/30 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-3xl">✗</span>
+              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.rsvpNotAttending}</div>
+            </div>
+            <div className="text-sm font-semibold text-white/95 mb-1">Not Attending</div>
+            <div className="text-xs text-white/80">Declined invitations</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl shadow-lg p-5 border border-yellow-400/30 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-3xl">⏳</span>
+              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.rsvpPending}</div>
+            </div>
+            <div className="text-sm font-semibold text-white/95 mb-1">Pending</div>
+            <div className="text-xs text-white/80">Awaiting response</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl shadow-lg p-5 border border-gray-400/30 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-3xl">❓</span>
+              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.rsvpNotSubmitted}</div>
+            </div>
+            <div className="text-sm font-semibold text-white/95 mb-1">Not Submitted</div>
+            <div className="text-xs text-white/80">No response yet</div>
+          </div>
         </div>
       </div>
 
-      {/* RSVP Stats Dashboard */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4 border border-green-200">
-          <div className="text-2xl font-bold text-green-600">{stats.rsvpAttending}</div>
-          <div className="text-sm text-gray-600">✓ Attending</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-red-200">
-          <div className="text-2xl font-bold text-red-600">{stats.rsvpNotAttending}</div>
-          <div className="text-sm text-gray-600">✗ Not Attending</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-yellow-200">
-          <div className="text-2xl font-bold text-yellow-600">{stats.rsvpPending}</div>
-          <div className="text-sm text-gray-600">⏳ Pending</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-          <div className="text-2xl font-bold text-gray-600">{stats.rsvpNotSubmitted}</div>
-          <div className="text-sm text-gray-600">❓ Not Submitted</div>
-        </div>
-      </div>
+      {/* Visual Separator */}
+      <div className="ornamental-divider my-8"></div>
 
       {/* Event-Wise RSVP Statistics */}
-      <div className="mb-6">
-        <h3 className="text-lg font-serif text-wedding-navy mb-4">Event-Wise RSVP Statistics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="mb-8">
+        <div className="mb-6">
+          <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-2">
+            Event-Wise RSVP Statistics
+          </h2>
+          <p className="text-sm text-gray-600">
+            Detailed RSVP breakdown for each wedding event
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Mehndi & Pithi */}
-          <div className="bg-white rounded-lg shadow p-4 border border-wedding-gold/30">
-            <h4 className="text-base font-semibold text-wedding-navy mb-3">Mehndi & Pithi</h4>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">✓ Attending:</span>
-                <span className="text-sm font-bold text-green-600">
-                  {stats.eventWise.mehndi.attending} guest{stats.eventWise.mehndi.attending !== 1 ? 's' : ''} 
-                  <span className="text-gray-600 ml-1">({stats.eventWise.mehndi.totalAttendees} attendees)</span>
-                </span>
+          <div className="bg-gradient-to-br from-wedding-cream-light to-white rounded-xl shadow-lg p-6 border-2 border-wedding-gold/40 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">🎨</span>
+              <h4 className="text-lg font-semibold text-wedding-navy">Mehndi & Pithi</h4>
+            </div>
+            <div className="space-y-3">
+              <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-green-800 flex items-center gap-1">
+                    <span>✓</span> Attending
+                  </span>
+                  <span className="text-base font-bold text-green-700">
+                    {stats.eventWise.mehndi.attending} guest{stats.eventWise.mehndi.attending !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className="text-xs text-green-600">
+                  {stats.eventWise.mehndi.totalAttendees} total attendees
+                </div>
+                <div className="text-xs text-green-500 mt-1">Confirmed attendance</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">✗ Not Attending:</span>
-                <span className="text-sm font-bold text-red-600">{stats.eventWise.mehndi.notAttending}</span>
+              
+              <div className="bg-red-50 rounded-lg p-3 border border-red-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-red-800 flex items-center gap-1">
+                    <span>✗</span> Not Attending
+                  </span>
+                  <span className="text-base font-bold text-red-700">{stats.eventWise.mehndi.notAttending}</span>
+                </div>
+                <div className="text-xs text-red-500">Declined invitations</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">⏳ Pending:</span>
-                <span className="text-sm font-bold text-yellow-600">{stats.eventWise.mehndi.pending}</span>
+              
+              <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-yellow-800 flex items-center gap-1">
+                    <span>⏳</span> Pending
+                  </span>
+                  <span className="text-base font-bold text-yellow-700">{stats.eventWise.mehndi.pending}</span>
+                </div>
+                <div className="text-xs text-yellow-500">Awaiting response</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">❓ Not Submitted:</span>
-                <span className="text-sm font-bold text-gray-600">{stats.eventWise.mehndi.notSubmitted}</span>
+              
+              <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-gray-800 flex items-center gap-1">
+                    <span>❓</span> Not Submitted
+                  </span>
+                  <span className="text-base font-bold text-gray-700">{stats.eventWise.mehndi.notSubmitted}</span>
+                </div>
+                <div className="text-xs text-gray-500">No response yet</div>
               </div>
             </div>
           </div>
 
           {/* Hindu Wedding */}
-          <div className="bg-white rounded-lg shadow p-4 border border-wedding-gold/30">
-            <h4 className="text-base font-semibold text-wedding-navy mb-3">Hindu Wedding</h4>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">✓ Attending:</span>
-                <span className="text-sm font-bold text-green-600">
-                  {stats.eventWise.wedding.attending} guest{stats.eventWise.wedding.attending !== 1 ? 's' : ''} 
-                  <span className="text-gray-600 ml-1">({stats.eventWise.wedding.totalAttendees} attendees)</span>
-                </span>
+          <div className="bg-gradient-to-br from-wedding-cream-light to-white rounded-xl shadow-lg p-6 border-2 border-wedding-gold/40 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">💒</span>
+              <h4 className="text-lg font-semibold text-wedding-navy">Hindu Wedding</h4>
+            </div>
+            <div className="space-y-3">
+              <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-green-800 flex items-center gap-1">
+                    <span>✓</span> Attending
+                  </span>
+                  <span className="text-base font-bold text-green-700">
+                    {stats.eventWise.wedding.attending} guest{stats.eventWise.wedding.attending !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className="text-xs text-green-600">
+                  {stats.eventWise.wedding.totalAttendees} total attendees
+                </div>
+                <div className="text-xs text-green-500 mt-1">Confirmed attendance</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">✗ Not Attending:</span>
-                <span className="text-sm font-bold text-red-600">{stats.eventWise.wedding.notAttending}</span>
+              
+              <div className="bg-red-50 rounded-lg p-3 border border-red-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-red-800 flex items-center gap-1">
+                    <span>✗</span> Not Attending
+                  </span>
+                  <span className="text-base font-bold text-red-700">{stats.eventWise.wedding.notAttending}</span>
+                </div>
+                <div className="text-xs text-red-500">Declined invitations</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">⏳ Pending:</span>
-                <span className="text-sm font-bold text-yellow-600">{stats.eventWise.wedding.pending}</span>
+              
+              <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-yellow-800 flex items-center gap-1">
+                    <span>⏳</span> Pending
+                  </span>
+                  <span className="text-base font-bold text-yellow-700">{stats.eventWise.wedding.pending}</span>
+                </div>
+                <div className="text-xs text-yellow-500">Awaiting response</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">❓ Not Submitted:</span>
-                <span className="text-sm font-bold text-gray-600">{stats.eventWise.wedding.notSubmitted}</span>
+              
+              <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-gray-800 flex items-center gap-1">
+                    <span>❓</span> Not Submitted
+                  </span>
+                  <span className="text-base font-bold text-gray-700">{stats.eventWise.wedding.notSubmitted}</span>
+                </div>
+                <div className="text-xs text-gray-500">No response yet</div>
               </div>
             </div>
           </div>
 
           {/* Reception */}
-          <div className="bg-white rounded-lg shadow p-4 border border-wedding-gold/30">
-            <h4 className="text-base font-semibold text-wedding-navy mb-3">Reception</h4>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">✓ Attending:</span>
-                <span className="text-sm font-bold text-green-600">
-                  {stats.eventWise.reception.attending} guest{stats.eventWise.reception.attending !== 1 ? 's' : ''} 
-                  <span className="text-gray-600 ml-1">({stats.eventWise.reception.totalAttendees} attendees)</span>
-                </span>
+          <div className="bg-gradient-to-br from-wedding-cream-light to-white rounded-xl shadow-lg p-6 border-2 border-wedding-gold/40 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">🎊</span>
+              <h4 className="text-lg font-semibold text-wedding-navy">Reception</h4>
+            </div>
+            <div className="space-y-3">
+              <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-green-800 flex items-center gap-1">
+                    <span>✓</span> Attending
+                  </span>
+                  <span className="text-base font-bold text-green-700">
+                    {stats.eventWise.reception.attending} guest{stats.eventWise.reception.attending !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className="text-xs text-green-600">
+                  {stats.eventWise.reception.totalAttendees} total attendees
+                </div>
+                <div className="text-xs text-green-500 mt-1">Confirmed attendance</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">✗ Not Attending:</span>
-                <span className="text-sm font-bold text-red-600">{stats.eventWise.reception.notAttending}</span>
+              
+              <div className="bg-red-50 rounded-lg p-3 border border-red-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-red-800 flex items-center gap-1">
+                    <span>✗</span> Not Attending
+                  </span>
+                  <span className="text-base font-bold text-red-700">{stats.eventWise.reception.notAttending}</span>
+                </div>
+                <div className="text-xs text-red-500">Declined invitations</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">⏳ Pending:</span>
-                <span className="text-sm font-bold text-yellow-600">{stats.eventWise.reception.pending}</span>
+              
+              <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-yellow-800 flex items-center gap-1">
+                    <span>⏳</span> Pending
+                  </span>
+                  <span className="text-base font-bold text-yellow-700">{stats.eventWise.reception.pending}</span>
+                </div>
+                <div className="text-xs text-yellow-500">Awaiting response</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">❓ Not Submitted:</span>
-                <span className="text-sm font-bold text-gray-600">{stats.eventWise.reception.notSubmitted}</span>
+              
+              <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-gray-800 flex items-center gap-1">
+                    <span>❓</span> Not Submitted
+                  </span>
+                  <span className="text-base font-bold text-gray-700">{stats.eventWise.reception.notSubmitted}</span>
+                </div>
+                <div className="text-xs text-gray-500">No response yet</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Header with Actions */}
-      <div className="mb-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-serif text-wedding-navy mb-2">
-              Guest Management
-            </h2>
-            <p className="text-sm text-gray-600">
-              Showing: {filteredGuests.length} of {normalizedGuests.length} guests
-              {selectedGuests.size > 0 && ` | ${selectedGuests.size} selected`}
-            </p>
+      {/* Visual Separator */}
+      <div className="ornamental-divider my-8"></div>
+
+      {/* Guest Management Section */}
+      <div className="mb-8">
+        <div className="mb-6">
+          <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-2">
+            Guest Management
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Manage your guest list, view RSVPs, and export data
+          </p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+            <div className="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
+              Showing: <span className="font-semibold text-wedding-navy">{filteredGuests.length}</span> of <span className="font-semibold text-wedding-navy">{normalizedGuests.length}</span> guests
+              {selectedGuests.size > 0 && (
+                <span className="ml-2 text-wedding-gold font-semibold">
+                  | {selectedGuests.size} selected
+                </span>
+              )}
+            </div>
           </div>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-3 mb-6">
           <div className="flex flex-wrap gap-2">
             <button
               onClick={handleDownloadTemplate}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
             >
               📋 Download Template
             </button>
             <button
               onClick={() => setShowImportModal(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
             >
               📤 Import Excel
             </button>
             <button
               onClick={handleExportGuests}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base"
+              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
             >
               📥 Export CSV
             </button>
@@ -999,7 +1155,7 @@ export default function GuestEditor({
                   setShowCreateForm(true)
                   setQuickAddMode(false)
                 }}
-                className="bg-wedding-gold text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors text-sm sm:text-base"
+                className="bg-wedding-gold text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
               >
                 + Add All Events Guest
               </button>
@@ -1010,7 +1166,7 @@ export default function GuestEditor({
                   setShowCreateForm(true)
                   setQuickAddMode(false)
                 }}
-                className="bg-wedding-rose text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors text-sm sm:text-base"
+                className="bg-wedding-rose text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
               >
                 + Add Reception Guest
               </button>
@@ -1062,87 +1218,107 @@ export default function GuestEditor({
         )}
 
         {/* Search and Filters */}
-        <div className="space-y-3 mb-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Search by name, phone, or token..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
-              />
+        <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
+          <h3 className="text-sm font-semibold text-wedding-navy mb-3">Search & Filter Guests</h3>
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <label className="block text-xs text-gray-600 mb-1">Search</label>
+                <input
+                  type="text"
+                  placeholder="Search by name, phone, or token..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent shadow-sm transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Event Type</label>
+                <select
+                  value={filterEvent}
+                  onChange={(e) => setFilterEvent(e.target.value)}
+                  className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent shadow-sm transition-all bg-white"
+                >
+                  <option value="all">All Guests</option>
+                  <option value="all-events">All Events</option>
+                  <option value="reception-only">Reception Only</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Access Status</label>
+                <select
+                  value={filterHasAccessed}
+                  onChange={(e) => setFilterHasAccessed(e.target.value)}
+                  className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent shadow-sm transition-all bg-white"
+                >
+                  <option value="all">All Access</option>
+                  <option value="accessed">Has Accessed</option>
+                  <option value="not-accessed">Not Accessed</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">RSVP Status</label>
+                <select
+                  value={filterRsvp}
+                  onChange={(e) => setFilterRsvp(e.target.value)}
+                  className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent shadow-sm transition-all bg-white"
+                >
+                  <option value="all">All RSVP</option>
+                  <option value="attending">✓ Attending</option>
+                  <option value="not-attending">✗ Not Attending</option>
+                  <option value="pending">⏳ Pending</option>
+                  <option value="not-submitted">❓ Not Submitted</option>
+                </select>
+              </div>
             </div>
-            <select
-              value={filterEvent}
-              onChange={(e) => setFilterEvent(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
-            >
-              <option value="all">All Guests</option>
-              <option value="all-events">All Events</option>
-              <option value="reception-only">Reception Only</option>
-            </select>
-            <select
-              value={filterHasAccessed}
-              onChange={(e) => setFilterHasAccessed(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
-            >
-              <option value="all">All Access</option>
-              <option value="accessed">Has Accessed</option>
-              <option value="not-accessed">Not Accessed</option>
-            </select>
-            <select
-              value={filterRsvp}
-              onChange={(e) => setFilterRsvp(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
-            >
-              <option value="all">All RSVP</option>
-              <option value="attending">✓ Attending</option>
-              <option value="not-attending">✗ Not Attending</option>
-              <option value="pending">⏳ Pending</option>
-              <option value="not-submitted">❓ Not Submitted</option>
-            </select>
+            {/* Active Filter Chips */}
+            {(filterEvent !== 'all' || filterHasAccessed !== 'all' || filterRsvp !== 'all' || searchQuery) && (
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200">
+                <span className="text-xs text-gray-500 font-medium">Active filters:</span>
+                {filterEvent !== 'all' && (
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-wedding-gold/20 text-wedding-navy border border-wedding-gold/30">
+                    Event: {filterEvent === 'all-events' ? 'All Events' : 'Reception Only'}
+                    <button onClick={() => setFilterEvent('all')} className="ml-2 hover:text-red-600 transition-colors">×</button>
+                  </span>
+                )}
+                {filterHasAccessed !== 'all' && (
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                    Access: {filterHasAccessed === 'accessed' ? 'Has Accessed' : 'Not Accessed'}
+                    <button onClick={() => setFilterHasAccessed('all')} className="ml-2 hover:text-red-600 transition-colors">×</button>
+                  </span>
+                )}
+                {filterRsvp !== 'all' && (
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                    RSVP: {filterRsvp === 'attending' ? '✓ Attending' : filterRsvp === 'not-attending' ? '✗ Not Attending' : filterRsvp === 'pending' ? '⏳ Pending' : '❓ Not Submitted'}
+                    <button onClick={() => setFilterRsvp('all')} className="ml-2 hover:text-red-600 transition-colors">×</button>
+                  </span>
+                )}
+                {searchQuery && (
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                    Search: &quot;{searchQuery}&quot;
+                    <button onClick={() => setSearchQuery('')} className="ml-2 hover:text-red-600 transition-colors">×</button>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
-          {/* Active Filter Chips */}
-          {(filterEvent !== 'all' || filterHasAccessed !== 'all' || filterRsvp !== 'all' || searchQuery) && (
-            <div className="flex flex-wrap gap-2">
-              {filterEvent !== 'all' && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-wedding-gold/20 text-wedding-navy">
-                  Event: {filterEvent === 'all-events' ? 'All Events' : 'Reception Only'}
-                  <button onClick={() => setFilterEvent('all')} className="ml-2 hover:text-red-600">×</button>
-                </span>
-              )}
-              {filterHasAccessed !== 'all' && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
-                  Access: {filterHasAccessed === 'accessed' ? 'Has Accessed' : 'Not Accessed'}
-                  <button onClick={() => setFilterHasAccessed('all')} className="ml-2 hover:text-red-600">×</button>
-                </span>
-              )}
-              {filterRsvp !== 'all' && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
-                  RSVP: {filterRsvp === 'attending' ? '✓ Attending' : filterRsvp === 'not-attending' ? '✗ Not Attending' : filterRsvp === 'pending' ? '⏳ Pending' : '❓ Not Submitted'}
-                  <button onClick={() => setFilterRsvp('all')} className="ml-2 hover:text-red-600">×</button>
-                </span>
-              )}
-              {searchQuery && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
-                  Search: &quot;{searchQuery}&quot;
-                  <button onClick={() => setSearchQuery('')} className="ml-2 hover:text-red-600">×</button>
-                </span>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-            {success}
+          <div className="mb-4 bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-lg shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">✓</span>
+              <span className="font-medium">{success}</span>
+            </div>
           </div>
         )}
         {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error}
+          <div className="mb-4 bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">✗</span>
+              <span className="font-medium">{error}</span>
+            </div>
           </div>
         )}
       </div>
@@ -1297,37 +1473,37 @@ export default function GuestEditor({
       </AnimatePresence>
 
       {/* Guests List */}
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
+      <div className="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
             <tr>
-              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider w-12 border-b-2 border-gray-200">
                 <input
                   type="checkbox"
                   checked={selectedGuests.size === filteredGuests.length && filteredGuests.length > 0}
                   onChange={toggleSelectAll}
-                  className="rounded"
+                  className="rounded border-gray-300 text-wedding-gold focus:ring-wedding-gold"
                 />
               </th>
-              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
                 Name
               </th>
-              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden sm:table-cell border-b-2 border-gray-200">
                 Phone
               </th>
-              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
                 Event Type
               </th>
-              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
                 Devices
               </th>
-              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
                 Attendees
               </th>
-              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
                 RSVP Status
               </th>
-              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
                 Actions
               </th>
             </tr>
