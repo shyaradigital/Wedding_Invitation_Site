@@ -614,7 +614,17 @@ export default function GuestEditor({
       })
       .reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
     
-    const notAccessedCount = normalizedGuests.filter(g => !g.tokenUsedFirstTime).length
+    const notAccessedCount = normalizedGuests.filter(g => {
+      // Check if tokenUsedFirstTime is null, undefined, empty string, or invalid date
+      const firstTime = g.tokenUsedFirstTime
+      if (!firstTime || firstTime === '' || firstTime === null) return true
+      // If it's a string, try to parse it - if invalid, consider it not accessed
+      if (typeof firstTime === 'string') {
+        const date = new Date(firstTime)
+        return isNaN(date.getTime())
+      }
+      return false
+    }).length
     
     // RSVP stats
     const rsvpAttending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'attending').length
@@ -710,9 +720,29 @@ export default function GuestEditor({
 
     // Access filter
     if (filterHasAccessed === 'accessed') {
-      filtered = filtered.filter(guest => guest.tokenUsedFirstTime !== null)
+      filtered = filtered.filter(guest => {
+        // Check if tokenUsedFirstTime exists and is valid
+        const firstTime = guest.tokenUsedFirstTime
+        if (!firstTime || firstTime === '' || firstTime === null) return false
+        // If it's a string, validate it's a valid date
+        if (typeof firstTime === 'string') {
+          const date = new Date(firstTime)
+          return !isNaN(date.getTime())
+        }
+        return true
+      })
     } else if (filterHasAccessed === 'not-accessed') {
-      filtered = filtered.filter(guest => guest.tokenUsedFirstTime === null)
+      filtered = filtered.filter(guest => {
+        // Check if tokenUsedFirstTime is null, undefined, empty string, or invalid date
+        const firstTime = guest.tokenUsedFirstTime
+        if (!firstTime || firstTime === '' || firstTime === null) return true
+        // If it's a string, try to parse it - if invalid, consider it not accessed
+        if (typeof firstTime === 'string') {
+          const date = new Date(firstTime)
+          return isNaN(date.getTime())
+        }
+        return false
+      })
     }
 
     // RSVP filter
