@@ -7,13 +7,14 @@ import PageTransition from '@/components/PageTransition'
 import InvitationPageLayout from '@/components/InvitationPageLayout'
 import OrnamentalDivider from '@/components/OrnamentalDivider'
 import FloatingPetals from '@/components/FloatingPetals'
+import PhoneVerificationForm from '@/components/PhoneVerificationForm'
+import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
+import { useGuestAccess } from '@/lib/use-guest-access'
 
 export default function RSVPPage() {
   const params = useParams()
   const router = useRouter()
   const token = params.token as string
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
-  const [guest, setGuest] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -25,6 +26,18 @@ export default function RSVPPage() {
     additionalInfo: '',
   })
 
+  // Use the shared access check hook
+  const {
+    accessState,
+    guest,
+    error: accessError,
+    handlePhoneSubmit,
+    showRestrictedPopup,
+    setShowRestrictedPopup,
+  } = useGuestAccess(token)
+
+  const [isVerifyingPhone, setIsVerifyingPhone] = useState(false)
+
   // Event name mapping
   const eventNames: Record<string, string> = {
     mehndi: 'Mehndi & Pithi',
@@ -32,61 +45,58 @@ export default function RSVPPage() {
     reception: 'Reception',
   }
 
+  // Load preferences when access is granted
   useEffect(() => {
-    // Verify access
-    fetch('/api/verify-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.guest) {
-          setHasAccess(true)
-          setGuest(data.guest)
-          // Check if preferences have already been submitted
-          return fetch(`/api/guest/preferences?token=${token}`)
-        } else {
-          setHasAccess(false)
-          return null
-        }
-      })
-      .then((res) => {
-        if (res) {
-          return res.json()
-        }
-        return null
-      })
-      .then((data) => {
-        if (data && data.preferencesSubmitted) {
-          setSubmitted(true)
-          if (data.rsvpStatus) {
+    if (accessState === 'granted' && guest) {
+      fetch(`/api/guest/preferences?token=${token}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.preferencesSubmitted) {
+            setSubmitted(true)
+            if (data.rsvpStatus) {
+              setExistingRsvp(data.rsvpStatus)
+            }
+            // Pre-populate form with existing data
+            if (data.preferences) {
+              setFormData(prev => ({
+                ...prev,
+                menuPreference: data.preferences.menuPreference || '',
+                dietaryRestrictions: data.preferences.dietaryRestrictions || '',
+                additionalInfo: data.preferences.additionalInfo || '',
+                rsvpStatus: data.rsvpStatus || {},
+              }))
+            }
+          } else if (data && data.rsvpStatus) {
+            // RSVP already submitted but show existing status
             setExistingRsvp(data.rsvpStatus)
-          }
-          // Pre-populate form with existing data
-          if (data.preferences) {
             setFormData(prev => ({
               ...prev,
-              menuPreference: data.preferences.menuPreference || '',
-              dietaryRestrictions: data.preferences.dietaryRestrictions || '',
-              additionalInfo: data.preferences.additionalInfo || '',
               rsvpStatus: data.rsvpStatus || {},
             }))
           }
-        } else if (data && data.rsvpStatus) {
-          // RSVP already submitted but show existing status
-          setExistingRsvp(data.rsvpStatus)
-          setFormData(prev => ({
-            ...prev,
-            rsvpStatus: data.rsvpStatus || {},
-          }))
-        }
-      })
-      .catch((err) => {
-        console.error('Error checking preferences:', err)
-        setHasAccess(false)
-      })
-  }, [token])
+        })
+        .catch((err) => {
+          console.error('Error checking preferences:', err)
+        })
+    }
+  }, [accessState, guest, token])
+
+  const handlePhoneVerification = async (phone: string) => {
+    setIsVerifyingPhone(true)
+    setError(null)
+    const success = await handlePhoneSubmit(phone)
+    setIsVerifyingPhone(false)
+    if (!success) {
+      setError(accessError || 'Phone verification failed')
+    }
+  }
+
+  // Redirect to home if access denied
+  useEffect(() => {
+    if (accessState === 'access-denied') {
+      router.push(`/invite/${token}`)
+    }
+  }, [accessState, router, token])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -136,7 +146,8 @@ export default function RSVPPage() {
     }
   }
 
-  if (hasAccess === null) {
+  // Show loading state
+  if (accessState === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">
@@ -147,12 +158,35 @@ export default function RSVPPage() {
     )
   }
 
-  if (hasAccess === false) {
-    router.push(`/invite/${token}`)
-    return null
+  // Show phone verification form
+  if (accessState === 'phone-required' || accessState === 'phone-verification') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-wedding p-4">
+        <PhoneVerificationForm
+          onSubmit={handlePhoneVerification}
+          isLoading={isVerifyingPhone}
+        />
+        {error && (
+          <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+        <AccessRestrictedPopup
+          isOpen={showRestrictedPopup}
+          onClose={() => setShowRestrictedPopup(false)}
+          onTryAgain={() => setShowRestrictedPopup(false)}
+        />
+      </div>
+    )
   }
 
-  if (!guest) {
+  // Show access denied
+  if (accessState === 'access-denied') {
+    return null // Will redirect
+  }
+
+  // Wait for guest data
+  if (accessState !== 'granted' || !guest) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">

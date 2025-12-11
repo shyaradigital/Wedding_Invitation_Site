@@ -4,10 +4,13 @@ import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import PageTransition from '@/components/PageTransition'
 import InvitationPageLayout from '@/components/InvitationPageLayout'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import FloatingPetals from '@/components/FloatingPetals'
 import OrnamentalDivider from '@/components/OrnamentalDivider'
+import PhoneVerificationForm from '@/components/PhoneVerificationForm'
+import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
+import { useGuestAccess } from '@/lib/use-guest-access'
 
 const eventData = {
   mehndi: {
@@ -37,30 +40,31 @@ export default function SaveTheDatePage() {
   const params = useParams()
   const router = useRouter()
   const token = params.token as string
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
-  const [guest, setGuest] = useState<any>(null)
+  const [isVerifyingPhone, setIsVerifyingPhone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetch('/api/verify-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.guest) {
-          setHasAccess(true)
-          setGuest(data.guest)
-        } else {
-          setHasAccess(false)
-        }
-      })
-      .catch(() => {
-        setHasAccess(false)
-      })
-  }, [token])
+  // Use the shared access check hook
+  const {
+    accessState,
+    guest,
+    error: accessError,
+    handlePhoneSubmit,
+    showRestrictedPopup,
+    setShowRestrictedPopup,
+  } = useGuestAccess(token)
 
-  if (hasAccess === null) {
+  const handlePhoneVerification = async (phone: string) => {
+    setIsVerifyingPhone(true)
+    setError(null)
+    const success = await handlePhoneSubmit(phone)
+    setIsVerifyingPhone(false)
+    if (!success) {
+      setError(accessError || 'Phone verification failed')
+    }
+  }
+
+  // Show loading state
+  if (accessState === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">
@@ -71,12 +75,34 @@ export default function SaveTheDatePage() {
     )
   }
 
-  if (hasAccess === false) {
-    router.push(`/invite/${token}`)
-    return null
+  // Show phone verification form
+  if (accessState === 'phone-required' || accessState === 'phone-verification') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-wedding p-4">
+        <PhoneVerificationForm
+          onSubmit={handlePhoneVerification}
+          isLoading={isVerifyingPhone}
+        />
+        {error && (
+          <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+        <AccessRestrictedPopup
+          isOpen={showRestrictedPopup}
+          onClose={() => setShowRestrictedPopup(false)}
+          onTryAgain={() => setShowRestrictedPopup(false)}
+        />
+      </div>
+    )
   }
 
-  if (!guest) {
+  // Show access denied or wait for guest
+  if (accessState === 'access-denied' || accessState !== 'granted' || !guest) {
+    if (accessState === 'access-denied') {
+      router.push(`/invite/${token}`)
+      return null
+    }
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">

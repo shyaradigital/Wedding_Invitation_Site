@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import PageTransition from '@/components/PageTransition'
 import InvitationPageLayout from '@/components/InvitationPageLayout'
+import PhoneVerificationForm from '@/components/PhoneVerificationForm'
+import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
+import { useGuestAccess } from '@/lib/use-guest-access'
 
 // High-quality wedding-themed images from Unsplash
 const galleryImages = [
@@ -107,29 +110,28 @@ export default function GalleryPage() {
   const router = useRouter()
   const token = params.token as string
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
-  const [guest, setGuest] = useState<any>(null)
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
+  const [isVerifyingPhone, setIsVerifyingPhone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    // Verify access
-    fetch('/api/verify-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.guest) {
-          setHasAccess(true)
-          setGuest(data.guest)
-        } else {
-          setHasAccess(false)
-        }
-      })
-      .catch(() => {
-        setHasAccess(false)
-      })
-  }, [token])
+  // Use the shared access check hook
+  const {
+    accessState,
+    guest,
+    error: accessError,
+    handlePhoneSubmit,
+    showRestrictedPopup,
+    setShowRestrictedPopup,
+  } = useGuestAccess(token)
+
+  const handlePhoneVerification = async (phone: string) => {
+    setIsVerifyingPhone(true)
+    setError(null)
+    const success = await handlePhoneSubmit(phone)
+    setIsVerifyingPhone(false)
+    if (!success) {
+      setError(accessError || 'Phone verification failed')
+    }
+  }
 
   const openLightbox = (id: number) => {
     setSelectedImage(id)
@@ -159,7 +161,8 @@ export default function GalleryPage() {
     ? galleryImages.find((img) => img.id === selectedImage)
     : null
 
-  if (hasAccess === null) {
+  // Show loading state
+  if (accessState === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">
@@ -170,9 +173,42 @@ export default function GalleryPage() {
     )
   }
 
-  if (hasAccess === false || !guest) {
-    router.push(`/invite/${token}`)
-    return null
+  // Show phone verification form
+  if (accessState === 'phone-required' || accessState === 'phone-verification') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-wedding p-4">
+        <PhoneVerificationForm
+          onSubmit={handlePhoneVerification}
+          isLoading={isVerifyingPhone}
+        />
+        {error && (
+          <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+        <AccessRestrictedPopup
+          isOpen={showRestrictedPopup}
+          onClose={() => setShowRestrictedPopup(false)}
+          onTryAgain={() => setShowRestrictedPopup(false)}
+        />
+      </div>
+    )
+  }
+
+  // Show access denied or wait for guest
+  if (accessState === 'access-denied' || accessState !== 'granted' || !guest) {
+    if (accessState === 'access-denied') {
+      router.push(`/invite/${token}`)
+      return null
+    }
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-gold mx-auto mb-4"></div>
+          <p className="text-wedding-navy">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

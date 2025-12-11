@@ -8,6 +8,9 @@ import InvitationPageLayout from '@/components/InvitationPageLayout'
 import OrnamentalDivider from '@/components/OrnamentalDivider'
 import FloatingPetals from '@/components/FloatingPetals'
 import StarParticles from '@/components/StarParticles'
+import PhoneVerificationForm from '@/components/PhoneVerificationForm'
+import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
+import { useGuestAccess } from '@/lib/use-guest-access'
 import { formatWrittenDate, formatWrittenTime, formatWrittenDateFromString } from '@/lib/date-formatter'
 
 const eventInfo: Record<
@@ -72,31 +75,40 @@ export default function EventDetailsPage() {
   const token = params.token as string
   const slug = params.slug as string
 
-  const [guest, setGuest] = useState<any>(null)
   const [event, setEvent] = useState<any>(null)
+  const [isVerifyingPhone, setIsVerifyingPhone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Use the shared access check hook
+  const {
+    accessState,
+    guest,
+    error: accessError,
+    handlePhoneSubmit,
+    showRestrictedPopup,
+    setShowRestrictedPopup,
+  } = useGuestAccess(token)
+
+  const handlePhoneVerification = async (phone: string) => {
+    setIsVerifyingPhone(true)
+    setError(null)
+    const success = await handlePhoneSubmit(phone)
+    setIsVerifyingPhone(false)
+    if (!success) {
+      setError(accessError || 'Phone verification failed')
+    }
+  }
 
   useEffect(() => {
-    // Verify access
-    fetch('/api/verify-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.guest) {
-          setGuest(data.guest)
-          // Check if guest has access to this event
-          if (!data.guest.eventAccess.includes(slug)) {
-            router.push(`/invite/${token}`)
-          }
-        }
-      })
-      .catch((err) => {
-        console.error('Error verifying access:', err)
+    // Check if guest has access to this event
+    if (accessState === 'granted' && guest) {
+      if (!guest.eventAccess.includes(slug)) {
         router.push(`/invite/${token}`)
-      })
+      }
+    }
+  }, [accessState, guest, slug, router, token])
 
+  useEffect(() => {
     // Fetch event details
     fetch(`/api/events/${slug}`)
       .then((res) => res.json())
@@ -124,7 +136,8 @@ export default function EventDetailsPage() {
       })
   }, [token, slug, router])
 
-  if (!event) {
+  // Show loading state
+  if (accessState === 'loading' || !event) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">
@@ -135,7 +148,30 @@ export default function EventDetailsPage() {
     )
   }
 
-  if (!guest) {
+  // Show phone verification form
+  if (accessState === 'phone-required' || accessState === 'phone-verification') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-wedding p-4">
+        <PhoneVerificationForm
+          onSubmit={handlePhoneVerification}
+          isLoading={isVerifyingPhone}
+        />
+        {error && (
+          <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+        <AccessRestrictedPopup
+          isOpen={showRestrictedPopup}
+          onClose={() => setShowRestrictedPopup(false)}
+          onTryAgain={() => setShowRestrictedPopup(false)}
+        />
+      </div>
+    )
+  }
+
+  // Show access denied
+  if (accessState === 'access-denied' || accessState !== 'granted' || !guest) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">

@@ -90,8 +90,7 @@ export default function InvitePage() {
           return
         } else {
           // Stored phone doesn't match - someone shared the link with different phone
-          // Block access and show restricted popup (don't allow phone entry)
-          setShowRestrictedPopup(true)
+          // Require phone verification (will verify against database)
           setAccessState('phone-verification')
           return
         }
