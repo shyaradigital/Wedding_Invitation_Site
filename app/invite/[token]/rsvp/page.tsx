@@ -106,7 +106,7 @@ export default function RSVPPage() {
     const eventAccess = guest?.eventAccess || []
     const missingRsvp = eventAccess.filter((event: string) => {
       const status = formData.rsvpStatus[event]
-      return !status || status === ''
+      return !status
     })
     
     if (missingRsvp.length > 0) {

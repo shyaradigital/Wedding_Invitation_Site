@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import WhatsAppShare from './WhatsAppShare'
 import EventTypeBadge from './EventTypeBadge'
@@ -511,7 +511,7 @@ export default function GuestEditor({
   }
 
   // Helper function to get overall RSVP status
-  const getOverallRsvpStatus = (guest: Guest): 'attending' | 'not-attending' | 'pending' | 'not-submitted' => {
+  const getOverallRsvpStatus = useCallback((guest: Guest): 'attending' | 'not-attending' | 'pending' | 'not-submitted' => {
     if (!guest.rsvpSubmitted || !guest.rsvpStatus) return 'not-submitted'
     
     // Ensure rsvpStatus is an object
@@ -533,7 +533,7 @@ export default function GuestEditor({
     if (hasNotAttending && !hasAttending && !hasPending) return 'not-attending'
     if (hasPending) return 'pending'
     return 'not-submitted'
-  }
+  }, [])
 
   const handleExportGuests = () => {
     const guestsToExport = selectedGuests.size > 0 
@@ -676,7 +676,7 @@ export default function GuestEditor({
       rsvpNotSubmitted,
       eventWise: eventWiseStats,
     }
-  }, [normalizedGuests])
+  }, [normalizedGuests, getOverallRsvpStatus])
 
   // Filter and search guests
   const filteredGuests = useMemo(() => {
@@ -721,7 +721,7 @@ export default function GuestEditor({
     }
 
     return filtered
-  }, [normalizedGuests, searchQuery, filterEvent, filterHasAccessed, filterRsvp])
+  }, [normalizedGuests, searchQuery, filterEvent, filterHasAccessed, filterRsvp, getOverallRsvpStatus])
 
   const handleRegenerateToken = async (guestId: string) => {
     if (
