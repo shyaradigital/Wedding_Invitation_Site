@@ -67,7 +67,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
             <div className="flex-1 min-w-0">
               <Link href={`/invite/${token}`} className="block">
                 <h1 className="text-base md:text-lg font-display text-wedding-navy font-bold truncate">
-                  <span className="text-wedding-gold">A</span>&<span className="text-wedding-gold">J</span>
+                  <span className="text-wedding-gold">From Jay and Ankita</span>
                 </h1>
                 {guestName && (
                   <p className="text-xs text-gray-600 truncate">Hi, {guestName.split(' ')[0]}!</p>

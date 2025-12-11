@@ -1519,8 +1519,8 @@ export default function GuestEditor({
       </AnimatePresence>
 
       {/* Guests List */}
-      <div className="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+        <table className="w-full divide-y divide-gray-200">
           <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
             <tr>
               <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider w-12 border-b-2 border-gray-200">
@@ -1531,28 +1531,28 @@ export default function GuestEditor({
                   className="rounded border-gray-300 text-wedding-gold focus:ring-wedding-gold"
                 />
               </th>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[140px]">
                 Name
               </th>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden sm:table-cell border-b-2 border-gray-200">
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden sm:table-cell border-b-2 border-gray-200 w-[120px]">
                 Phone
               </th>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[130px]">
                 Event Type
               </th>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[90px]">
                 Devices
               </th>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[90px]">
                 Attendees
               </th>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[140px]">
                 Menu Preference
               </th>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 min-w-[200px]">
                 RSVP Status
               </th>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200">
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[200px]">
                 Actions
               </th>
             </tr>
@@ -1578,7 +1578,7 @@ export default function GuestEditor({
                       className="rounded"
                     />
                   </td>
-                  <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm font-medium text-gray-900">
+                  <td className="px-2 sm:px-4 py-4 text-xs sm:text-sm font-medium text-gray-900">
                     {isEditingName ? (
                       <div className="flex gap-2">
                         <input
@@ -1608,7 +1608,7 @@ export default function GuestEditor({
                       {guest.phone || 'No phone'}
                     </div>
                   </td>
-                  <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden sm:table-cell">
+                  <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden sm:table-cell">
                     {isEditingPhone ? (
                       <div className="flex gap-2">
                         <input
@@ -1666,7 +1666,7 @@ export default function GuestEditor({
                     )}
                   </td>
                   <td 
-                    className="px-3 sm:px-6 py-4 cursor-pointer hover:bg-gray-50 min-w-[200px]"
+                    className="px-2 sm:px-4 py-4 cursor-pointer hover:bg-gray-50"
                     onClick={() => setViewingGuest(guest)}
                     title="Click to view RSVP details"
                   >
@@ -1718,7 +1718,7 @@ export default function GuestEditor({
                       )
                     })()}
                   </td>
-                  <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
+                  <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-wrap gap-1 sm:gap-2">
                         <button
