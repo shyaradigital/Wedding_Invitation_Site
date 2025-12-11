@@ -256,7 +256,7 @@ export default function EventDetailsPage() {
                 transition={{ delay: 0.4 }}
                 className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${
                   isWedding
-                    ? 'bg-wedding-burgundy/20 border-2 border-wedding-burgundy/40'
+                    ? 'bg-white/80 border-2 border-wedding-gold/40'
                     : isReception
                     ? 'bg-wedding-gold/10 border border-wedding-gold/30'
                     : 'bg-white/60 border border-wedding-gold/20'
@@ -264,7 +264,7 @@ export default function EventDetailsPage() {
               >
                 <h2
                   className={`text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
-                    isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-burgundy' : 'text-wedding-navy'
+                    isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-navy' : 'text-wedding-navy'
                   }`}
                 >
                   Attire
