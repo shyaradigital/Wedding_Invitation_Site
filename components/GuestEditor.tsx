@@ -46,6 +46,7 @@ export default function GuestEditor({
   const [quickAddMode, setQuickAddMode] = useState(false)
   const [lastEventAccess, setLastEventAccess] = useState<'all-events' | 'reception-only'>('all-events')
   const [filterHasAccessed, setFilterHasAccessed] = useState<string>('all')
+  const [hideEventAccess, setHideEventAccess] = useState(false)
   const [inlineEditing, setInlineEditing] = useState<{ id: string; field: 'name' | 'phone' } | null>(null)
   const [inlineEditValue, setInlineEditValue] = useState('')
   const nameInputRef = useRef<HTMLInputElement>(null)
@@ -217,6 +218,7 @@ export default function GuestEditor({
       numberOfAttendees: guest.numberOfAttendees || '',
     })
     setShowCreateForm(false)
+    setHideEventAccess(false)
     setError(null)
   }
 
@@ -259,6 +261,7 @@ export default function GuestEditor({
     setEditingGuest(null)
     setShowCreateForm(false)
     setQuickAddMode(false)
+    setHideEventAccess(false)
     setError(null)
   }
 
@@ -1154,6 +1157,7 @@ export default function GuestEditor({
                   setFormData(prev => ({ ...prev, eventAccess: 'all-events' }))
                   setShowCreateForm(true)
                   setQuickAddMode(false)
+                  setHideEventAccess(true)
                 }}
                 className="bg-wedding-gold text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
               >
@@ -1165,6 +1169,7 @@ export default function GuestEditor({
                   setFormData(prev => ({ ...prev, eventAccess: 'reception-only' }))
                   setShowCreateForm(true)
                   setQuickAddMode(false)
+                  setHideEventAccess(true)
                 }}
                 className="bg-wedding-rose text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
               >
@@ -1380,41 +1385,79 @@ export default function GuestEditor({
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Event Access
-                </label>
-                <div className="space-y-2">
-                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="eventAccess"
-                      value="all-events"
-                      checked={formData.eventAccess === 'all-events'}
-                      onChange={(e) => setFormData({ ...formData, eventAccess: e.target.value as 'all-events' | 'reception-only' })}
-                      className="mr-3"
-                    />
-                    <div>
-                      <span className="font-semibold">All Events</span>
-                      <p className="text-xs text-gray-500">Mehndi, Wedding & Reception</p>
-                    </div>
+              {!hideEventAccess && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Event Access
                   </label>
-                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="eventAccess"
-                      value="reception-only"
-                      checked={formData.eventAccess === 'reception-only'}
-                      onChange={(e) => setFormData({ ...formData, eventAccess: e.target.value as 'all-events' | 'reception-only' })}
-                      className="mr-3"
-                    />
-                    <div>
-                      <span className="font-semibold">Reception Only</span>
-                      <p className="text-xs text-gray-500">Reception event only</p>
-                    </div>
-                  </label>
+                  <div className="space-y-2">
+                    <label 
+                      onClick={() => setFormData({ ...formData, eventAccess: 'all-events' })}
+                      className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                        formData.eventAccess === 'all-events'
+                          ? 'bg-wedding-gold/20 border-wedding-gold shadow-md scale-[1.02]'
+                          : 'bg-white border-gray-300 hover:bg-gray-50'
+                      }`}
+                      style={{ WebkitTapHighlightColor: 'transparent' }}
+                    >
+                      <input
+                        type="radio"
+                        name="eventAccess"
+                        value="all-events"
+                        checked={formData.eventAccess === 'all-events'}
+                        onChange={(e) => setFormData({ ...formData, eventAccess: e.target.value as 'all-events' | 'reception-only' })}
+                        onClick={(e) => e.stopPropagation()}
+                        className="mr-3 w-5 h-5 text-wedding-gold focus:ring-wedding-gold pointer-events-none"
+                      />
+                      <div className="flex-1">
+                        <span className={`font-semibold block ${formData.eventAccess === 'all-events' ? 'text-wedding-navy' : 'text-gray-700'}`}>All Events</span>
+                        <p className="text-xs text-gray-500">Mehndi, Wedding & Reception</p>
+                      </div>
+                      {formData.eventAccess === 'all-events' && (
+                        <span className="text-wedding-gold text-xl ml-2">✓</span>
+                      )}
+                    </label>
+                    <label 
+                      onClick={() => setFormData({ ...formData, eventAccess: 'reception-only' })}
+                      className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                        formData.eventAccess === 'reception-only'
+                          ? 'bg-wedding-rose/20 border-wedding-rose shadow-md scale-[1.02]'
+                          : 'bg-white border-gray-300 hover:bg-gray-50'
+                      }`}
+                      style={{ WebkitTapHighlightColor: 'transparent' }}
+                    >
+                      <input
+                        type="radio"
+                        name="eventAccess"
+                        value="reception-only"
+                        checked={formData.eventAccess === 'reception-only'}
+                        onChange={(e) => setFormData({ ...formData, eventAccess: e.target.value as 'all-events' | 'reception-only' })}
+                        onClick={(e) => e.stopPropagation()}
+                        className="mr-3 w-5 h-5 text-wedding-gold focus:ring-wedding-gold pointer-events-none"
+                      />
+                      <div className="flex-1">
+                        <span className={`font-semibold block ${formData.eventAccess === 'reception-only' ? 'text-wedding-navy' : 'text-gray-700'}`}>Reception Only</span>
+                        <p className="text-xs text-gray-500">Reception event only</p>
+                      </div>
+                      {formData.eventAccess === 'reception-only' && (
+                        <span className="text-wedding-rose text-xl ml-2">✓</span>
+                      )}
+                    </label>
+                  </div>
                 </div>
-              </div>
+              )}
+              {hideEventAccess && (
+                <div className="bg-wedding-gold/10 border border-wedding-gold/30 rounded-lg p-3">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold">Event Access:</span>{' '}
+                    {formData.eventAccess === 'all-events' ? (
+                      <span className="text-wedding-gold">All Events (Mehndi, Wedding & Reception)</span>
+                    ) : (
+                      <span className="text-wedding-rose">Reception Only</span>
+                    )}
+                  </p>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Max Devices Allowed
