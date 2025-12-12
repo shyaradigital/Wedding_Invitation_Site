@@ -40,6 +40,12 @@ export function validatePhoneNumber(phone: string): boolean {
   return normalized.length >= 8 && normalized.length <= 15
 }
 
+export function validateEmail(email: string): boolean {
+  // Basic email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email.trim())
+}
+
 /**
  * Formats a phone number for WhatsApp links (wa.me)
  * Handles international numbers correctly, including Indian numbers without country code

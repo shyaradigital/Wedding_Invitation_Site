@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma'
 import { verifyPassword, generateAdminToken } from '@/lib/auth'
 import { rateLimit } from '@/lib/rate-limit'
 import { z } from 'zod'
-import { cookies } from 'next/headers'
 
 const loginSchema = z.object({
   email: z.string().min(1), // Accept email or username
@@ -72,36 +71,25 @@ export async function POST(request: NextRequest) {
 
     const token = generateAdminToken(admin.id)
 
-    // Set HTTP-only cookie
-    try {
-      const cookieStore = await cookies()
-      cookieStore.set('admin_token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: '/',
-      })
-    } catch (cookieError) {
-      console.error('Error setting cookie:', cookieError)
-      // In some edge cases, cookies() might fail, return token in response as fallback
-      return NextResponse.json({
-        success: true,
-        token, // Include token in response if cookie setting fails
-        admin: {
-          id: admin.id,
-          email: admin.email,
-        },
-      })
-    }
-
-    return NextResponse.json({
+    // Create response
+    const response = NextResponse.json({
       success: true,
       admin: {
         id: admin.id,
         email: admin.email,
       },
     })
+
+    // Set HTTP-only cookie using NextResponse
+    response.cookies.set('admin_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    })
+
+    return response
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

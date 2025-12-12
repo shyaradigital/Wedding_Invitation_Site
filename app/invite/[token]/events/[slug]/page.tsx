@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import PageTransition from '@/components/PageTransition'
 import InvitationPageLayout from '@/components/InvitationPageLayout'
 import OrnamentalDivider from '@/components/OrnamentalDivider'
@@ -19,17 +20,17 @@ const eventInfo: Record<
 > = {
   mehndi: {
     title: 'Mehendi',
-    icon: '🎨',
+    icon: '/icons/mehndi-icon.png',
     color: 'wedding-rose',
   },
   wedding: {
     title: 'Hindu Wedding Ceremony',
-    icon: '💒',
+    icon: '/icons/wedding-icon.png',
     color: 'wedding-gold',
   },
   reception: {
     title: 'Reception',
-    icon: '🎉',
+    icon: '/icons/reception-icon.png',
     color: 'wedding-burgundy',
   },
 }

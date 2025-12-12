@@ -7,6 +7,7 @@ import EventCard from './EventCard'
 import Link from 'next/link'
 import InvitationNavigation from './InvitationNavigation'
 import FloatingPetals from './FloatingPetals'
+import FloatingHearts from './FloatingHearts'
 import OrnamentalDivider from './OrnamentalDivider'
 
 interface Guest {
@@ -44,6 +45,7 @@ export default function GuestInviteLayout({
   return (
     <div className="min-h-screen bg-gradient-to-br from-wedding-rose-pastel via-wedding-cream to-wedding-gold-light relative overflow-hidden">
       <FloatingPetals />
+      <FloatingHearts />
       {/* Navigation */}
       <InvitationNavigation token={token} eventAccess={guest.eventAccess} guestName={guest.name} />
 
@@ -83,17 +85,135 @@ export default function GuestInviteLayout({
               </svg>
             </div>
 
-            {/* Couple Image */}
-            <div className="mb-6 sm:mb-8">
-              <div className="relative w-full max-w-lg mx-auto rounded-2xl overflow-hidden shadow-lg">
-                <Image
-                  src="/about-jay-ankita.jpeg"
-                  alt="Jay and Ankita"
-                  width={800}
-                  height={600}
-                  className="w-full h-auto object-cover"
-                  priority
-                />
+            {/* Ganesh Image and Prayer - At the very top */}
+            <div className="text-center mb-8 sm:mb-10 relative z-10">
+              {/* Ganesh Image */}
+              <div className="mb-4 sm:mb-6">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mx-auto">
+                  <Image
+                    src="/images/ganesh.png"
+                    alt="Ganesh"
+                    width={192}
+                    height={192}
+                    className="w-full h-full object-contain"
+                    priority
+                  />
+                </div>
+              </div>
+              <div className="text-xs sm:text-sm md:text-base text-wedding-navy/80 leading-relaxed font-serif">
+                <p className="mb-2">श्री गणेशाय नमः</p>
+                <p className="mb-1">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।</p>
+                <p>निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</p>
+              </div>
+            </div>
+
+            <OrnamentalDivider variant="ornate" className="mb-8 sm:mb-10" />
+
+            {/* Couple Images Side by Side with Moving Hearts */}
+            <div className="mb-6 sm:mb-8 relative z-10">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12 md:gap-16 relative">
+                {/* Moving Hearts Container - Behind the images */}
+                <div className="absolute left-0 right-0 top-0 bottom-0 pointer-events-none overflow-visible z-0">
+                  {/* Hearts flowing from first image to second - Desktop (horizontal) */}
+                  <div className="hidden sm:block absolute inset-0">
+                    {[...Array(15)].map((_, i) => {
+                      const startLeft = '22.5%'
+                      const endLeft = '77.5%'
+                      const verticalPos = 10 + ((i % 8) * 11)
+                      const cycleOffset = Math.floor(i / 8) * 2
+                      return (
+                        <motion.div
+                          key={`desktop-${i}`}
+                          className="absolute text-wedding-rose/85"
+                          style={{
+                            fontSize: 'clamp(18px, 1.8vw, 26px)',
+                            left: startLeft,
+                            top: `${verticalPos}%`,
+                            zIndex: 0,
+                          }}
+                          animate={{
+                            left: [startLeft, endLeft, endLeft],
+                            y: [0, Math.sin(i * 0.7) * 15, Math.sin(i * 0.7) * 15],
+                            opacity: [0, 0.9, 0],
+                            scale: [0.8, 1.3, 0.8],
+                          }}
+                          transition={{
+                            duration: 6 + (i % 3) * 0.8,
+                            delay: (i * 0.3) + cycleOffset,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }}
+                        >
+                          ❤️
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+                  {/* Hearts flowing from first image to second - Mobile (vertical) */}
+                  <div className="block sm:hidden absolute inset-0">
+                    {[...Array(12)].map((_, i) => {
+                      const startTop = '20%'
+                      const endTop = '80%'
+                      const horizontalPos = 50 + Math.sin(i) * 8
+                      const cycleOffset = Math.floor(i / 6) * 1.5
+                      return (
+                        <motion.div
+                          key={`mobile-${i}`}
+                          className="absolute text-wedding-rose/85"
+                          style={{
+                            fontSize: 'clamp(18px, 4.5vw, 24px)',
+                            left: `${horizontalPos}%`,
+                            top: startTop,
+                            transform: 'translateX(-50%)',
+                            zIndex: 0,
+                          }}
+                          animate={{
+                            top: [startTop, endTop, endTop],
+                            x: [0, Math.sin(i * 1.2) * 20, Math.sin(i * 1.2) * 20],
+                            opacity: [0, 0.9, 0],
+                            scale: [0.8, 1.3, 0.8],
+                          }}
+                          transition={{
+                            duration: 5.5 + (i % 3) * 0.6,
+                            delay: (i * 0.35) + cycleOffset,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }}
+                        >
+                          ❤️
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* First Image - About Jay and Ankita */}
+                <div className="relative w-full sm:w-[45%] max-w-md md:max-w-lg z-10">
+                  <div className="relative rounded-2xl overflow-hidden shadow-lg">
+                    <Image
+                      src="/about-jay-ankita.jpeg"
+                      alt="Jay and Ankita"
+                      width={600}
+                      height={750}
+                      className="w-full h-auto object-cover"
+                      priority
+                    />
+                  </div>
+                </div>
+
+                {/* Second Image - Reception Pic */}
+                <div className="relative w-full sm:w-[45%] max-w-md md:max-w-lg z-10">
+                  <div className="relative rounded-2xl overflow-hidden shadow-lg">
+                    <Image
+                      src="/images/reception-pic.jpeg"
+                      alt="Jay and Ankita Reception"
+                      width={600}
+                      height={750}
+                      className="w-full h-auto object-cover"
+                      priority
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -118,68 +238,6 @@ export default function GuestInviteLayout({
             </div>
 
             <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
-
-            {/* Sanskrit Shloka */}
-            <div className="text-center mb-6 sm:mb-8">
-              <div className="text-xs sm:text-sm md:text-base text-wedding-navy/80 leading-relaxed font-serif">
-                <p className="mb-2">श्री गणेशाय नमः</p>
-                <p className="mb-1">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।</p>
-                <p>निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</p>
-              </div>
-            </div>
-
-            <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
-
-            {/* Welcome Message */}
-            <div className="text-center mb-6 sm:mb-8">
-              <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed font-serif">
-                Your presence will make our celebration even more memorable.
-              </p>
-              <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed font-serif mt-2">
-                We look forward to having you with us on this wonderful occasion.
-              </p>
-            </div>
-
-            <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
-
-            {/* Names with Parents */}
-            <div className="text-center mb-6 sm:mb-8">
-              <div className="mb-4 sm:mb-6">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-script text-wedding-navy mb-2 sm:mb-3 font-bold">
-                  Jay Bhavan Mehta
-                </h1>
-                <p className="text-xs sm:text-sm md:text-base text-gray-600 font-serif italic">
-                  Son of Mr. Bhavan Vidyut Mehta & Mrs. Nina Bhavan Mehta
-                </p>
-              </div>
-
-              {/* "With" divider */}
-              <div className="flex items-center justify-center my-4 sm:my-6">
-                <div className="flex items-center w-full max-w-xs">
-                  <div className="flex-1 h-px bg-gradient-to-r from-transparent to-wedding-gold"></div>
-                  <span className="mx-3 sm:mx-4 text-wedding-gold font-script text-xl sm:text-2xl md:text-3xl">With</span>
-                  <div className="flex-1 h-px bg-gradient-to-l from-transparent to-wedding-gold"></div>
-                </div>
-              </div>
-
-              <div className="mt-4 sm:mt-6">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-script text-wedding-navy mb-2 sm:mb-3 font-bold">
-                  Ankita Brijesh Sharma
-                </h1>
-                <p className="text-xs sm:text-sm md:text-base text-gray-600 font-serif italic">
-                  Daughter of Mr. Brijesh Kumar Sharma & Mrs. Ruchira Sharma
-                </p>
-              </div>
-            </div>
-
-            <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
-
-            {/* Date */}
-            <div className="text-center">
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-script text-wedding-gold font-semibold">
-                21st Day of March 2026
-              </p>
-            </div>
           </motion.div>
 
           {/* Event Cards Section */}

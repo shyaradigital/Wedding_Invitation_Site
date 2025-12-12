@@ -7,6 +7,7 @@ import { z } from 'zod'
 const createGuestSchema = z.object({
   name: z.string().min(1),
   phone: z.string().optional(),
+  email: z.string().email().optional().or(z.literal('')),
   eventAccess: z.enum(['all-events', 'reception-only']), // Only two types now
   maxDevicesAllowed: z.number().int().min(1).max(10).optional().default(1),
   numberOfAttendees: z.number().int().min(1).optional().default(1),
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: data.name,
         phone: data.phone || null,
+        email: data.email && data.email.trim() !== '' ? data.email.trim().toLowerCase() : null,
         token,
         eventAccess: JSON.stringify(actualEventAccess),
         maxDevicesAllowed: data.maxDevicesAllowed,
@@ -80,6 +82,7 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         phone: true,
+        email: true,
         token: true,
         eventAccess: true,
         allowedDevices: true,

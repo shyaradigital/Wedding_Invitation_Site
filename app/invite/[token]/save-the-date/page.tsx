@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import PageTransition from '@/components/PageTransition'
 import InvitationPageLayout from '@/components/InvitationPageLayout'
 import { useState } from 'react'
@@ -17,21 +18,21 @@ const eventData = {
     name: 'Mehendi',
     date: '20th Day of March',
     time: 'Six O\'Clock in the evening',
-    icon: '🎨',
+    icon: '/icons/mehndi-icon.png',
     slug: 'mehndi',
   },
   wedding: {
     name: 'Hindu Wedding Ceremony',
     date: '21st Day of March',
     time: 'Ten O\'Clock in the morning',
-    icon: '💒',
+    icon: '/icons/wedding-icon.png',
     slug: 'wedding',
   },
   reception: {
     name: 'Reception',
     date: '21st Day of March',
     time: 'Five O\'Clock in the evening',
-    icon: '🎉',
+    icon: '/icons/reception-icon.png',
     slug: 'reception',
   },
 }
@@ -175,8 +176,14 @@ export default function SaveTheDatePage() {
                       {/* Event Card */}
                       <div className="bg-white/80 rounded-2xl p-6 sm:p-8 border-2 border-wedding-gold/30 shadow-lg">
                         <div className="flex items-start gap-4 sm:gap-6">
-                          <div className="text-4xl sm:text-5xl md:text-6xl flex-shrink-0">
-                            {event.icon}
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 relative">
+                            <Image
+                              src={event.icon}
+                              alt={event.name}
+                              width={96}
+                              height={96}
+                              className="w-full h-full object-contain"
+                            />
                           </div>
                           <div className="flex-1">
                             <h3 className="text-xl sm:text-2xl md:text-3xl font-script text-wedding-navy mb-3 sm:mb-4">

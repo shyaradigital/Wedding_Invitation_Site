@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import PageTransition from './PageTransition'
 import PreviewBanner from './PreviewBanner'
 
@@ -11,19 +12,19 @@ export default function PreviewSaveTheDateContent({ token }: { token: string }) 
       name: 'Mehndi',
       date: 'March 20, 2026',
       time: '6:00 PM',
-      icon: '🎨',
+      icon: '/icons/mehndi-icon.png',
     },
     {
       name: 'Hindu Wedding Ceremony',
       date: 'March 21, 2026',
       time: '10:00 AM',
-      icon: '💒',
+      icon: '/icons/wedding-icon.png',
     },
     {
       name: 'Wedding Reception',
       date: 'March 21, 2026',
       time: '5:30 PM',
-      icon: '🎉',
+      icon: '/icons/reception-icon.png',
     },
   ]
 
@@ -86,7 +87,15 @@ export default function PreviewSaveTheDateContent({ token }: { token: string }) 
                     className="bg-white/60 rounded-xl p-6 sm:p-8 border border-wedding-gold/20"
                   >
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                      <div className="text-5xl sm:text-6xl">{event.icon}</div>
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 relative">
+                        <Image
+                          src={event.icon}
+                          alt={event.name}
+                          width={96}
+                          height={96}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                       <div className="flex-1">
                         <h3 className="text-xl sm:text-2xl font-display text-wedding-navy mb-2">
                           {event.name}

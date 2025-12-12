@@ -9,6 +9,7 @@ interface Guest {
   id: string
   name: string
   phone: string | null
+  email: string | null
   token: string
   eventAccess: string[]
   allowedDevices: string[]
@@ -52,12 +53,14 @@ export default function GuestEditor({
   const [formData, setFormData] = useState<{
     name: string
     phone: string
+    email: string
     eventAccess: 'all-events' | 'reception-only'
     maxDevicesAllowed: number | ''
     numberOfAttendees: number | ''
   }>({
     name: '',
     phone: '',
+    email: '',
     eventAccess: 'all-events',
     maxDevicesAllowed: '',
     numberOfAttendees: '',
@@ -109,8 +112,8 @@ export default function GuestEditor({
       setError('Name is required')
       return
     }
-    if (!formData.phone.trim()) {
-      setError('Phone number is required')
+    if (!formData.phone.trim() && !formData.email.trim()) {
+      setError('Phone number or email is required')
       return
     }
 
@@ -121,7 +124,8 @@ export default function GuestEditor({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
-          phone: formData.phone,
+          phone: formData.phone.trim() || undefined,
+          email: formData.email.trim() || undefined,
           eventAccess: formData.eventAccess,
           maxDevicesAllowed: formData.maxDevicesAllowed || 1,
           numberOfAttendees: formData.numberOfAttendees || 1,
@@ -134,10 +138,11 @@ export default function GuestEditor({
         if (!quickAddMode) {
           setShowCreateForm(false)
         }
-        // Keep form open in quick-add mode, clear name and phone, keep event access
+        // Keep form open in quick-add mode, clear name, phone, and email, keep event access
         setFormData({
           name: '',
           phone: '',
+          email: '',
           eventAccess: formData.eventAccess, // Keep last used
           maxDevicesAllowed: '',
           numberOfAttendees: '',
@@ -212,6 +217,7 @@ export default function GuestEditor({
     setFormData({
       name: guest.name,
       phone: guest.phone || '',
+      email: guest.email || '',
       eventAccess: getEventAccessType(guest.eventAccess),
       maxDevicesAllowed: guest.maxDevicesAllowed || '',
       numberOfAttendees: guest.numberOfAttendees || '',
@@ -227,14 +233,15 @@ export default function GuestEditor({
       setError('Name is required')
       return
     }
-    if (!formData.phone.trim()) {
-      setError('Phone number is required')
+    if (!formData.phone.trim() && !formData.email.trim()) {
+      setError('Phone number or email is required')
       return
     }
 
     await handleUpdateGuest(editingGuest.id, {
       name: formData.name,
-      phone: formData.phone,
+      phone: formData.phone.trim() || null,
+      email: formData.email.trim() || null,
       eventAccess: formData.eventAccess,
       maxDevicesAllowed: formData.maxDevicesAllowed || 1,
       numberOfAttendees: formData.numberOfAttendees || 1,
@@ -1387,7 +1394,7 @@ export default function GuestEditor({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone <span className="text-red-500">*</span>
+                  Phone
                 </label>
                 <input
                   type="tel"
@@ -1396,9 +1403,25 @@ export default function GuestEditor({
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  placeholder="Phone number"
-                  required
+                  placeholder="Phone number (optional if email provided)"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Email (optional if phone provided)"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  At least one of phone or email is required
+                </p>
               </div>
               {!hideEventAccess && (
                 <div>
@@ -1549,6 +1572,9 @@ export default function GuestEditor({
               <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden sm:table-cell border-b-2 border-gray-200 w-[120px]">
                 Phone
               </th>
+              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden sm:table-cell border-b-2 border-gray-200 w-[150px]">
+                Email
+              </th>
               <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[130px]">
                 Event Type
               </th>
@@ -1617,7 +1643,10 @@ export default function GuestEditor({
                       </div>
                     )}
                     <div className="text-gray-500 text-xs sm:hidden mt-1">
-                      {guest.phone || 'No phone'}
+                      {guest.phone ? `Phone: ${guest.phone}` : ''}
+                      {guest.phone && guest.email ? ' | ' : ''}
+                      {guest.email ? `Email: ${guest.email}` : ''}
+                      {!guest.phone && !guest.email ? 'No contact info' : ''}
                     </div>
                   </td>
                   <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden sm:table-cell">
@@ -1646,6 +1675,9 @@ export default function GuestEditor({
                         {guest.phone || 'Not set'}
                       </span>
                     )}
+                  </td>
+                  <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden sm:table-cell">
+                    {guest.email || 'Not set'}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                     <EventTypeBadge eventAccess={guest.eventAccess} size="sm" />
@@ -1839,6 +1871,15 @@ export default function GuestEditor({
                   </label>
                   <p className="text-gray-900">
                     {viewingGuest.phone || 'Not set'}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <p className="text-gray-900">
+                    {viewingGuest.email || 'Not set'}
                   </p>
                 </div>
 
@@ -2082,9 +2123,10 @@ export default function GuestEditor({
                     <h4 className="font-semibold text-blue-900 mb-2">Excel Format:</h4>
                     <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
                       <li><strong>Column A:</strong> Name (required)</li>
-                      <li><strong>Column B:</strong> Phone (required)</li>
-                      <li><strong>Column C:</strong> Event Access (required: &quot;all-events&quot; or &quot;reception-only&quot;)</li>
-                      <li><strong>Column D:</strong> Max Devices Allowed (optional, default: 1)</li>
+                      <li><strong>Column B:</strong> Phone (optional, but phone or email required)</li>
+                      <li><strong>Column C:</strong> Email (optional, but phone or email required)</li>
+                      <li><strong>Column D:</strong> Event Access (required: &quot;all-events&quot; or &quot;reception-only&quot;)</li>
+                      <li><strong>Column E:</strong> Max Devices Allowed (optional, default: 1)</li>
                     </ul>
                     <button
                       onClick={handleDownloadTemplate}

@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import PageTransition from './PageTransition'
 import PreviewBanner from './PreviewBanner'
 
 const eventInfo: Record<string, { title: string; icon: string; color: string }> = {
-  mehndi: { title: 'Mehndi & Pithi Ceremony', icon: '🎨', color: 'wedding-rose' },
-  wedding: { title: 'Hindu Wedding', icon: '💒', color: 'wedding-gold' },
-  reception: { title: 'Reception', icon: '🎉', color: 'wedding-burgundy' },
+  mehndi: { title: 'Mehndi & Pithi Ceremony', icon: '/icons/mehndi-icon.png', color: 'wedding-rose' },
+  wedding: { title: 'Hindu Wedding', icon: '/icons/wedding-icon.png', color: 'wedding-gold' },
+  reception: { title: 'Reception', icon: '/icons/reception-icon.png', color: 'wedding-burgundy' },
 }
 
 function getDefaultDescription(slug: string): string {
@@ -109,7 +110,15 @@ export default function PreviewEventContent({ token, slug }: { token: string; sl
               className="wedding-card rounded-2xl p-6 sm:p-8 md:p-12"
             >
               <div className="text-center mb-8 sm:mb-10">
-                <div className="text-5xl sm:text-6xl md:text-7xl mb-4 sm:mb-5">{event.icon}</div>
+                <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 mx-auto mb-4 sm:mb-5 relative">
+                  <Image
+                    src={event.icon}
+                    alt={event.title}
+                    width={128}
+                    height={128}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-display text-wedding-navy mb-4 sm:mb-5 font-bold">
                   {event.title}
                 </h1>

@@ -2,32 +2,38 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { validatePhoneNumber, validateEmail } from '@/lib/utils'
 
-interface PhoneVerificationFormProps {
-  onSubmit: (phone: string) => Promise<void>
+interface PhoneOrEmailVerificationFormProps {
+  onSubmit: (phoneOrEmail: string) => Promise<void>
   isLoading?: boolean
 }
 
-export default function PhoneVerificationForm({
+export default function PhoneOrEmailVerificationForm({
   onSubmit,
   isLoading = false,
-}: PhoneVerificationFormProps) {
-  const [phone, setPhone] = useState('')
+}: PhoneOrEmailVerificationFormProps) {
+  const [phoneOrEmail, setPhoneOrEmail] = useState('')
   const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    // Basic validation
-    const digitsOnly = phone.replace(/\D/g, '')
-    if (digitsOnly.length < 8 || digitsOnly.length > 15) {
-      setError('Please enter a valid phone number (8-15 digits)')
+    // Determine if input is phone or email
+    const isEmail = validateEmail(phoneOrEmail)
+    const isPhone = validatePhoneNumber(phoneOrEmail)
+
+    if (!isEmail && !isPhone) {
+      setError('Please enter a valid phone number (8-15 digits) or email address')
       return
     }
 
+    // Normalize phone number (remove non-digits) or keep email as-is
+    const normalizedInput = isPhone ? phoneOrEmail.replace(/\D/g, '') : phoneOrEmail.trim()
+
     try {
-      await onSubmit(digitsOnly)
+      await onSubmit(normalizedInput)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     }
@@ -43,25 +49,25 @@ export default function PhoneVerificationForm({
       <div className="text-center mb-5 sm:mb-6">
         <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">📱</div>
         <h2 className="text-xl sm:text-2xl md:text-3xl font-display text-wedding-navy mb-2 sm:mb-3">
-          Enter Your Phone Number
+          Enter Your Phone Number or Email
         </h2>
         <div className="wedding-divider max-w-32 mx-auto mb-3 sm:mb-4"></div>
         <p className="text-sm sm:text-base md:text-lg text-gray-600 px-2">
-          Please enter your phone number to continue
+          Please enter your phone number or email to continue
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone Number"
+            type="text"
+            value={phoneOrEmail}
+            onChange={(e) => setPhoneOrEmail(e.target.value)}
+            placeholder="Phone Number or Email"
             className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent touch-manipulation"
             disabled={isLoading}
             autoFocus
-            autoComplete="tel"
+            autoComplete="tel email"
           />
           {error && (
             <p className="mt-2 text-sm text-red-600">{error}</p>

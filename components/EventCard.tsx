@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface EventCardProps {
   slug: string
@@ -15,15 +16,15 @@ interface EventCardProps {
 const eventInfo: Record<string, { color: string; icon: string }> = {
   mehndi: {
     color: 'bg-wedding-rose',
-    icon: '🎨',
+    icon: '/icons/mehndi-icon.png',
   },
   wedding: {
     color: 'bg-wedding-gold',
-    icon: '💒',
+    icon: '/icons/wedding-icon.png',
   },
   reception: {
     color: 'bg-wedding-burgundy',
-    icon: '🎉',
+    icon: '/icons/reception-icon.png',
   },
 }
 
@@ -51,7 +52,15 @@ export default function EventCard({
       </div>
       
       <div className="relative z-10 flex flex-col h-full">
-        <div className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4 md:mb-5">{info.icon}</div>
+        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 md:mb-5 relative">
+          <Image
+            src={info.icon}
+            alt={title}
+            width={96}
+            height={96}
+            className="w-full h-full object-contain"
+          />
+        </div>
         <h3 className="text-xl sm:text-2xl md:text-3xl font-display mb-3 sm:mb-4 font-bold leading-tight">{title}</h3>
         {date && (
           <p className="text-sm sm:text-base md:text-lg opacity-95 mb-1.5 sm:mb-2 font-medium leading-snug">

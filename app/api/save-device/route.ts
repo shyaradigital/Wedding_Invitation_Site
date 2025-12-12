@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { rateLimit } from '@/lib/rate-limit'
-import { normalizePhoneNumber, validatePhoneNumber, ensureJsonArray } from '@/lib/utils'
+import { normalizePhoneNumber, validatePhoneNumber, validateEmail, ensureJsonArray } from '@/lib/utils'
 import { z } from 'zod'
 
 const saveDeviceSchema = z.object({
   token: z.string().min(1),
-  phone: z.string().min(1),
+  phoneOrEmail: z.string().min(1),
   fingerprint: z.string().min(1),
 })
 
@@ -23,16 +23,18 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { token, phone, fingerprint } = saveDeviceSchema.parse(body)
+    const { token, phoneOrEmail, fingerprint } = saveDeviceSchema.parse(body)
 
-    if (!validatePhoneNumber(phone)) {
+    // Determine if input is phone or email
+    const isEmail = validateEmail(phoneOrEmail)
+    const isPhone = validatePhoneNumber(phoneOrEmail)
+
+    if (!isEmail && !isPhone) {
       return NextResponse.json(
-        { error: 'Invalid phone number format' },
+        { error: 'Invalid phone number or email format' },
         { status: 400 }
       )
     }
-
-    const normalizedPhone = normalizePhoneNumber(phone)
 
     const guest = await prisma.guest.findUnique({
       where: { token },
@@ -45,12 +47,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify phone matches
-    if (guest.phone !== normalizedPhone) {
-      return NextResponse.json(
-        { error: 'Phone number does not match' },
-        { status: 403 }
-      )
+    // Verify phone or email matches
+    if (isPhone) {
+      const normalizedPhone = normalizePhoneNumber(phoneOrEmail)
+      const normalizedGuestPhone = guest.phone ? normalizePhoneNumber(guest.phone) : null
+      if (normalizedGuestPhone !== normalizedPhone) {
+        return NextResponse.json(
+          { error: 'Phone number does not match' },
+          { status: 403 }
+        )
+      }
+    } else if (isEmail) {
+      const normalizedEmail = phoneOrEmail.trim().toLowerCase()
+      const normalizedGuestEmail = guest.email ? guest.email.trim().toLowerCase() : null
+      if (normalizedGuestEmail !== normalizedEmail) {
+        return NextResponse.json(
+          { error: 'Email does not match' },
+          { status: 403 }
+        )
+      }
     }
 
     // Get current allowed devices

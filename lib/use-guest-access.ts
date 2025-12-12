@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { generateDeviceFingerprint } from './device-fingerprint'
-import { getStoredPhone, setStoredPhone } from './storage'
-import { normalizePhoneNumber } from './utils'
+import { getStoredPhone, setStoredPhone, clearStoredPhone } from './storage'
+import { normalizePhoneNumber, validateEmail } from './utils'
 
 interface Guest {
   id: string
   name: string
   phone: string | null
+  email: string | null
   eventAccess: string[]
   allowedDevices: string[]
   hasPhone: boolean
+  hasEmail?: boolean
   tokenUsedFirstTime: string | null
   maxDevicesAllowed: number
 }
@@ -27,7 +29,7 @@ interface UseGuestAccessResult {
   guest: Guest | null
   error: string | null
   checkAccess: () => Promise<void>
-  handlePhoneSubmit: (phone: string) => Promise<boolean>
+  handlePhoneSubmit: (phoneOrEmail: string) => Promise<boolean>
   showRestrictedPopup: boolean
   setShowRestrictedPopup: (show: boolean) => void
 }
@@ -63,32 +65,42 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
       const { guest: guestData } = await verifyResponse.json()
       setGuest(guestData)
 
-      // If no phone, require phone input
-      if (!guestData.hasPhone) {
+      // If no phone and no email, require phone/email input
+      if (!guestData.hasPhone && !guestData.hasEmail) {
         setAccessState('phone-required')
         return
       }
 
-      // First, check localStorage for stored phone number
-      const storedPhone = getStoredPhone(token)
-      if (storedPhone) {
-        // Phone is stored in localStorage - check if it matches guest's phone
-        const normalizedStoredPhone = normalizePhoneNumber(storedPhone)
+      // First, check localStorage for stored phone or email
+      const storedPhoneOrEmail = getStoredPhone(token)
+      if (storedPhoneOrEmail) {
+        // Phone or email is stored in localStorage - check if it matches guest's phone or email
+        const isStoredEmail = validateEmail(storedPhoneOrEmail)
+        const normalizedStored = isStoredEmail 
+          ? storedPhoneOrEmail.trim().toLowerCase()
+          : normalizePhoneNumber(storedPhoneOrEmail)
+        
         const normalizedGuestPhone = guestData.phone ? normalizePhoneNumber(guestData.phone) : null
+        const normalizedGuestEmail = guestData.email ? guestData.email.trim().toLowerCase() : null
 
-        if (normalizedGuestPhone && normalizedStoredPhone === normalizedGuestPhone) {
-          // Stored phone matches guest's phone - grant access
+        const phoneMatches = normalizedGuestPhone && !isStoredEmail && normalizedStored === normalizedGuestPhone
+        const emailMatches = normalizedGuestEmail && isStoredEmail && normalizedStored === normalizedGuestEmail
+
+        if (phoneMatches || emailMatches) {
+          // Stored phone/email matches guest's phone/email - grant access
           setAccessState('granted')
           return
         } else {
-          // Stored phone doesn't match - someone shared the link with different phone
-          // Require phone verification (will verify against database)
+          // Stored phone/email doesn't match database - clear localStorage and require re-verification
+          // This handles the case where admin updated the guest's phone/email
+          clearStoredPhone(token)
+          // Require phone/email verification (will verify against database)
           setAccessState('phone-verification')
           return
         }
       }
 
-      // No stored phone - check device fingerprint
+      // No stored phone/email - check device fingerprint
       try {
         const fingerprint = await generateDeviceFingerprint()
         const allowedDevices = Array.isArray(guestData.allowedDevices)
@@ -96,18 +108,20 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
           : []
 
         if (allowedDevices.includes(fingerprint)) {
-          // Device is allowed - store phone for future access
+          // Device is allowed - store phone or email for future access
           if (guestData.phone) {
             setStoredPhone(token, guestData.phone)
+          } else if (guestData.email) {
+            setStoredPhone(token, guestData.email)
           }
           setAccessState('granted')
         } else {
-          // New device - require phone verification
+          // New device - require phone/email verification
           setAccessState('phone-verification')
         }
       } catch (err) {
         console.error('Error generating fingerprint:', err)
-        // Fallback to phone verification
+        // Fallback to phone/email verification
         setAccessState('phone-verification')
       }
     } catch (err) {
@@ -117,37 +131,37 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
     }
   }
 
-  const handlePhoneSubmit = async (phone: string): Promise<boolean> => {
+  const handlePhoneSubmit = async (phoneOrEmail: string): Promise<boolean> => {
     try {
-      // Verify phone matches guest's phone in database
+      // Verify phone or email matches guest's phone or email in database
       const verifyResponse = await fetch('/api/verify-phone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, phone }),
+        body: JSON.stringify({ token, phoneOrEmail }),
       })
 
       if (!verifyResponse.ok) {
         const data = await verifyResponse.json()
-        setError(data.error || 'Phone verification failed')
+        setError(data.error || 'Phone or email verification failed')
         return false
       }
 
       const { success, isFirstTime } = await verifyResponse.json()
 
       if (!success) {
-        // Phone doesn't match database - show restricted popup
+        // Phone/email doesn't match database - show restricted popup
         setShowRestrictedPopup(true)
-        setError('Phone number does not match our records')
+        setError('Phone number or email does not match our records')
         return false
       }
 
-      // Phone verified - save device fingerprint
+      // Phone/email verified - save device fingerprint
       try {
         const fingerprint = await generateDeviceFingerprint()
         const saveDeviceResponse = await fetch('/api/save-device', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, phone, fingerprint }),
+          body: JSON.stringify({ token, phoneOrEmail, fingerprint }),
         })
 
         if (!saveDeviceResponse.ok) {
@@ -158,9 +172,8 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
           }
         }
 
-        // Store phone for future access
-        const normalizedPhone = normalizePhoneNumber(phone)
-        setStoredPhone(token, normalizedPhone)
+        // Store phone or email for future access
+        setStoredPhone(token, phoneOrEmail)
 
         // Grant access
         setAccessState('granted')
@@ -172,7 +185,7 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
         return true
       }
     } catch (err) {
-      console.error('Error verifying phone:', err)
+      console.error('Error verifying phone or email:', err)
       setError('An error occurred. Please try again.')
       return false
     }

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 
 interface InvitationNavigationProps {
   token: string
@@ -14,12 +15,37 @@ interface InvitationNavigationProps {
 export default function InvitationNavigation({ token, eventAccess, guestName }: InvitationNavigationProps) {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const isAllEvents = eventAccess.includes('mehndi') && eventAccess.includes('wedding') && eventAccess.includes('reception')
+  
+  // Check if we're on the reception page
+  const isReceptionPage = pathname?.includes('/events/reception') || false
 
   // Close menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false)
   }, [pathname])
+
+  // Handle scroll detection for dynamic navbar styling
+  useEffect(() => {
+    if (!isReceptionPage) {
+      setIsScrolled(false)
+      return
+    }
+
+    const handleScroll = () => {
+      // Change navbar style after scrolling past 100px on reception page
+      setIsScrolled(window.scrollY > 100)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    // Check initial scroll position
+    handleScroll()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [isReceptionPage])
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -34,55 +60,72 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
   }, [isMobileMenuOpen])
 
   // Build navigation items in logical order - ensure we always have at least Home, Save the Date, and RSVP
-  const navItems: Array<{ href: string; label: string; icon: string }> = [
-    { href: `/invite/${token}`, label: 'Home', icon: '🏠' },
+  const navItems: Array<{ href: string; label: string; icon: string; iconType?: 'image' | 'emoji' }> = [
+    { href: `/invite/${token}`, label: 'About Jay and Ankita', icon: '🏠', iconType: 'emoji' },
   ]
 
   // Add event pages based on access (in chronological order)
   if (eventAccess && Array.isArray(eventAccess)) {
     if (eventAccess.includes('mehndi')) {
-      navItems.push({ href: `/invite/${token}/events/mehndi`, label: 'Mehndi', icon: '🎨' })
+      navItems.push({ href: `/invite/${token}/events/mehndi`, label: 'Mehndi', icon: '/icons/mehndi-icon.png', iconType: 'image' })
     }
     if (eventAccess.includes('wedding')) {
-      navItems.push({ href: `/invite/${token}/events/wedding`, label: 'Wedding', icon: '💒' })
+      navItems.push({ href: `/invite/${token}/events/wedding`, label: 'Wedding', icon: '/icons/wedding-icon.png', iconType: 'image' })
     }
     if (eventAccess.includes('reception')) {
-      navItems.push({ href: `/invite/${token}/events/reception`, label: 'Reception', icon: '🎉' })
+      navItems.push({ href: `/invite/${token}/events/reception`, label: 'Reception', icon: '/icons/reception-icon.png', iconType: 'image' })
     }
   }
 
   // Add Save the Date and RSVP - always include these
   navItems.push(
-    { href: `/invite/${token}/save-the-date`, label: 'Save the Date', icon: '📅' },
-    { href: `/invite/${token}/rsvp`, label: 'RSVP', icon: '💌' }
+    { href: `/invite/${token}/save-the-date`, label: 'Save the Date', icon: '📅', iconType: 'emoji' },
+    { href: `/invite/${token}/rsvp`, label: 'RSVP', icon: '💌', iconType: 'emoji' }
   )
+
+  // Dynamic navbar styling based on scroll position and page
+  const navBgClass = isReceptionPage && isScrolled
+    ? 'bg-wedding-navy/95 backdrop-blur-lg'
+    : 'bg-white/98 backdrop-blur-lg'
+  
+  const navTextClass = isReceptionPage && isScrolled
+    ? 'text-wedding-gold-light'
+    : 'text-wedding-navy'
+  
+  const navBorderClass = isReceptionPage && isScrolled
+    ? 'border-wedding-gold/50'
+    : 'border-wedding-gold/30'
 
   return (
     <>
-      <nav className="sticky top-0 z-[100] bg-white/98 backdrop-blur-lg shadow-lg border-b-2 border-wedding-gold/30">
+      <nav className={`sticky top-0 z-[100] ${navBgClass} shadow-lg border-b-2 ${navBorderClass} transition-all duration-300`}>
         <div className="max-w-7xl mx-auto">
           {/* Mobile Header Bar - Always Visible */}
           <div className="flex items-center justify-between px-4 py-3 md:px-6">
             {/* Compact Header with Couple Names */}
             <div className="flex-1 min-w-0">
               <Link href={`/invite/${token}`} className="block">
-                <h1 className="text-base md:text-lg font-display text-wedding-navy font-bold truncate">
-                  <span className="text-wedding-gold">From Jay and Ankita</span>
+                <h1 className={`text-base md:text-lg font-display font-bold truncate ${isReceptionPage && isScrolled ? 'text-wedding-gold' : ''}`}>
+                  <span className={isReceptionPage && isScrolled ? 'text-wedding-gold' : 'text-wedding-gold'}>From Jay and Ankita</span>
                 </h1>
                 {guestName && (
-                  <p className="text-xs text-gray-600 truncate">Hi, {guestName.split(' ')[0]}!</p>
+                  <p className={`text-xs truncate ${isReceptionPage && isScrolled ? 'text-wedding-gold-light/80' : 'text-gray-600'}`}>Hi, {guestName.split(' ')[0]}!</p>
                 )}
               </Link>
             </div>
 
             {/* Hamburger Menu Button - Larger touch target */}
             <button
-              className="md:hidden p-3 -mr-2 rounded-xl active:bg-wedding-cream transition-colors touch-manipulation flex items-center gap-2"
+              className={`md:hidden p-3 -mr-2 rounded-xl transition-colors touch-manipulation flex items-center gap-2 ${
+                isReceptionPage && isScrolled 
+                  ? 'active:bg-wedding-navy-light' 
+                  : 'active:bg-wedding-cream'
+              }`}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
             >
-              <span className="text-sm font-medium text-wedding-navy">Menu</span>
+              <span className={`text-sm font-medium ${navTextClass}`}>Menu</span>
               <motion.div
                 animate={isMobileMenuOpen ? 'open' : 'closed'}
                 className="w-6 h-6 flex flex-col justify-center gap-1.5"
@@ -92,21 +135,27 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                     closed: { rotate: 0, y: 0 },
                     open: { rotate: 45, y: 8 },
                   }}
-                  className="w-full h-0.5 bg-wedding-navy rounded-full origin-center transition-all"
+                  className={`w-full h-0.5 rounded-full origin-center transition-all ${
+                    isReceptionPage && isScrolled ? 'bg-wedding-gold-light' : 'bg-wedding-navy'
+                  }`}
                 />
                 <motion.span
                   variants={{
                     closed: { opacity: 1 },
                     open: { opacity: 0 },
                   }}
-                  className="w-full h-0.5 bg-wedding-navy rounded-full transition-all"
+                  className={`w-full h-0.5 rounded-full transition-all ${
+                    isReceptionPage && isScrolled ? 'bg-wedding-gold-light' : 'bg-wedding-navy'
+                  }`}
                 />
                 <motion.span
                   variants={{
                     closed: { rotate: 0, y: 0 },
                     open: { rotate: -45, y: -8 },
                   }}
-                  className="w-full h-0.5 bg-wedding-navy rounded-full origin-center transition-all"
+                  className={`w-full h-0.5 rounded-full origin-center transition-all ${
+                    isReceptionPage && isScrolled ? 'bg-wedding-gold-light' : 'bg-wedding-navy'
+                  }`}
                 />
               </motion.div>
             </button>
@@ -123,10 +172,24 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                       className={`flex items-center gap-1.5 px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap min-h-[44px] ${
                         isActive
                           ? 'bg-wedding-gold text-white shadow-md font-semibold'
+                          : isReceptionPage && isScrolled
+                          ? 'text-wedding-gold-light hover:bg-wedding-navy-light hover:text-wedding-gold'
                           : 'text-wedding-navy hover:bg-wedding-cream hover:text-wedding-gold'
                       }`}
                     >
-                      <span className="text-base">{item.icon}</span>
+                      {item.iconType === 'image' ? (
+                        <div className="w-5 h-5 relative flex-shrink-0">
+                          <Image
+                            src={item.icon}
+                            alt={item.label}
+                            width={20}
+                            height={20}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-base">{item.icon}</span>
+                      )}
                       <span className="font-medium text-sm">{item.label}</span>
                     </Link>
                   )
@@ -210,7 +273,19 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                                   : 'bg-wedding-cream text-wedding-navy active:bg-wedding-gold-light active:scale-[0.98]'
                               }`}
                             >
-                              <span className="text-2xl flex-shrink-0">{item.icon}</span>
+                              {item.iconType === 'image' ? (
+                                <div className="w-8 h-8 relative flex-shrink-0">
+                                  <Image
+                                    src={item.icon}
+                                    alt={item.label}
+                                    width={32}
+                                    height={32}
+                                    className="w-full h-full object-contain"
+                                  />
+                                </div>
+                              ) : (
+                                <span className="text-2xl flex-shrink-0">{item.icon}</span>
+                              )}
                               <span className={`font-medium text-base flex-1 ${isActive ? 'font-semibold' : ''}`}>
                                 {item.label}
                               </span>

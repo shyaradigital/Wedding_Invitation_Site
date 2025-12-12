@@ -1,12 +1,12 @@
 /**
- * LocalStorage utility functions for storing guest phone numbers
+ * LocalStorage utility functions for storing guest phone numbers or emails
  * Key format: guest_phone_${token}
  */
 
 /**
- * Get stored phone number for a given token
+ * Get stored phone number or email for a given token
  * @param token - Guest invitation token
- * @returns Stored phone number or null if not found
+ * @returns Stored phone number or email, or null if not found
  */
 export function getStoredPhone(token: string): string | null {
   if (typeof window === 'undefined') {
@@ -24,25 +24,25 @@ export function getStoredPhone(token: string): string | null {
 }
 
 /**
- * Store phone number for a given token
+ * Store phone number or email for a given token
  * @param token - Guest invitation token
- * @param phone - Phone number to store
+ * @param phoneOrEmail - Phone number or email to store
  */
-export function setStoredPhone(token: string, phone: string): void {
+export function setStoredPhone(token: string, phoneOrEmail: string): void {
   if (typeof window === 'undefined') {
     return
   }
 
   try {
     const key = `guest_phone_${token}`
-    localStorage.setItem(key, phone)
+    localStorage.setItem(key, phoneOrEmail)
   } catch (error) {
     console.error('Error writing to localStorage:', error)
   }
 }
 
 /**
- * Clear stored phone number for a given token
+ * Clear stored phone number or email for a given token
  * @param token - Guest invitation token
  */
 export function clearStoredPhone(token: string): void {

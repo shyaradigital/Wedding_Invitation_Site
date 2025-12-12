@@ -38,7 +38,7 @@ export default function RSVPPage() {
 
   // Event name mapping
   const eventNames: Record<string, string> = {
-    mehndi: 'Mehndi & Pithi',
+    mehndi: 'Mehndi',
     wedding: 'Hindu Wedding',
     reception: 'Reception',
   }

@@ -7,8 +7,9 @@ const XLSX = require('xlsx')
 // Expected Excel format:
 // Column A: Name (required)
 // Column B: Phone (optional)
-// Column C: Event Access (required: "all-events" or "reception-only")
-// Column D: Max Devices Allowed (optional, default: 1)
+// Column C: Email (optional)
+// Column D: Event Access (required: "all-events" or "reception-only")
+// Column E: Max Devices Allowed (optional, default: 1)
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
     
     // Convert to JSON
     const data = XLSX.utils.sheet_to_json(worksheet, { 
-      header: ['name', 'phone', 'eventAccess', 'maxDevicesAllowed'],
+      header: ['name', 'phone', 'email', 'eventAccess', 'maxDevicesAllowed'],
       defval: null,
       raw: false
     })
@@ -110,6 +111,17 @@ export async function POST(request: NextRequest) {
         // Parse phone (optional)
         const phone = row.phone ? String(row.phone).trim() : null
 
+        // Parse email (optional)
+        const email = row.email ? String(row.email).trim().toLowerCase() : null
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          results.errors.push({
+            row: rowNumber,
+            name,
+            error: 'Invalid email format',
+          })
+          continue
+        }
+
         // Parse max devices (optional, default 1)
         let maxDevicesAllowed = 1
         if (row.maxDevicesAllowed) {
@@ -139,6 +151,7 @@ export async function POST(request: NextRequest) {
           data: {
             name,
             phone: phone || null,
+            email: email || null,
             token,
             eventAccess: JSON.stringify(actualEventAccess),
             maxDevicesAllowed,
@@ -200,12 +213,14 @@ export async function GET() {
       {
         name: 'John Doe',
         phone: '+1234567890',
+        email: 'john.doe@example.com',
         eventAccess: 'all-events',
         maxDevicesAllowed: 2,
       },
       {
         name: 'Jane Smith',
         phone: '+0987654321',
+        email: 'jane.smith@example.com',
         eventAccess: 'reception-only',
         maxDevicesAllowed: 1,
       },
