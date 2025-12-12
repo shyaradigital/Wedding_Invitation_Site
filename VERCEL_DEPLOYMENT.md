@@ -1,8 +1,8 @@
 # Vercel Deployment Guide
 
-## Current Build Configuration
+## ✅ Configuration Complete
 
-The build command has been updated to only generate Prisma client and build the Next.js app. Database setup needs to be done separately.
+The Prisma schema has been updated to use PostgreSQL (required for Vercel), and the build command will automatically set up the database during deployment.
 
 ## Required Steps for Deployment
 
@@ -20,21 +20,20 @@ Vercel requires PostgreSQL for production (SQLite is only for local development)
 - Use services like [Supabase](https://supabase.com), [Neon](https://neon.tech), or [Railway](https://railway.app)
 - Get your PostgreSQL connection string
 
-### 2. Update Prisma Schema for Production
+### 2. Prisma Schema (Already Updated ✅)
 
-The schema needs to support PostgreSQL. Update `prisma/schema.prisma`:
-
+The schema has been updated to use PostgreSQL. The `prisma/schema.prisma` file now uses:
 ```prisma
 datasource db {
-  provider = "postgresql"  // Change from "sqlite" to "postgresql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 ```
 
-**Note:** For local development, you can keep using SQLite by having a separate `.env.local` file with:
-```
-DATABASE_URL="file:./prisma/dev.db"
-```
+**Note:** For local development, you'll need to use PostgreSQL as well. You can:
+- Use the same PostgreSQL database (Vercel Postgres)
+- Set up a local PostgreSQL instance
+- Use a free PostgreSQL service like [Neon](https://neon.tech) or [Supabase](https://supabase.com) for local dev
 
 ### 3. Set Environment Variables in Vercel
 
@@ -57,49 +56,24 @@ Go to **Vercel Dashboard** → **Your Project** → **Settings** → **Environme
 5. **NEXT_PUBLIC_ADMIN_CONTACT** (Optional)
    - Contact phone number for guests
 
-### 4. Set Up Database Schema
+### 4. Database Setup (Automatic ✅)
 
-After setting the DATABASE_URL, you need to push the schema and seed data:
+The build command in `vercel.json` is now configured to automatically:
+1. Generate Prisma client
+2. Push database schema (`npx prisma db push`)
+3. Seed admin user (`npm run seed:admin`)
+4. Seed events (`npm run seed:events`)
+5. Build the Next.js app
 
-**Option A: Using Vercel CLI (Recommended)**
-```bash
-# Install Vercel CLI if not already installed
-npm i -g vercel
-
-# Link your project
-vercel link
-
-# Pull environment variables
-vercel env pull .env.local
-
-# Push database schema
-npx prisma db push
-
-# Seed admin user
-npm run seed:admin
-
-# Seed events
-npm run seed:events
-```
-
-**Option B: Using Vercel Dashboard**
-1. Go to your project → **Settings** → **Functions**
-2. You can create a one-time API route to run setup, or use Vercel's database console
-
-**Option C: Add to Build Command (Not Recommended)**
-You can add database setup back to `vercel.json`, but this runs on every build:
-```json
-{
-  "buildCommand": "npx prisma generate && npx prisma db push && npm run seed:admin && npm run seed:events && npm run build"
-}
-```
+**This happens automatically during deployment!** No manual setup needed.
 
 ### 5. Deploy
 
-After setting up the database and environment variables:
-1. Commit and push your changes
+After setting the environment variables:
+1. The changes are already pushed to GitHub
 2. Vercel will automatically redeploy
-3. The build should now succeed
+3. The build will set up the database automatically
+4. You should be able to log in after deployment completes
 
 ## Troubleshooting
 
@@ -124,9 +98,9 @@ After setting up the database and environment variables:
 The build command in `vercel.json` is now:
 ```json
 {
-  "buildCommand": "npx prisma generate && npm run build"
+  "buildCommand": "npx prisma generate && npx prisma db push --skip-generate && npm run seed:admin && npm run seed:events && npm run build"
 }
 ```
 
-This only generates the Prisma client and builds the app. Database setup must be done separately as described above.
+This automatically sets up the database during each deployment. The database schema and seed data will be created/updated automatically.
 
