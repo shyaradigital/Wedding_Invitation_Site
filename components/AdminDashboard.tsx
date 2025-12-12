@@ -8,6 +8,7 @@ interface Guest {
   id: string
   name: string
   phone: string | null
+  email: string | null
   token: string
   eventAccess: string[]
   allowedDevices: string[]
