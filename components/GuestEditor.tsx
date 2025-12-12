@@ -260,6 +260,7 @@ export default function GuestEditor({
     setFormData({
       name: '',
       phone: '',
+      email: '',
       eventAccess: lastEventAccess || 'all-events',
       maxDevicesAllowed: '',
       numberOfAttendees: '',
