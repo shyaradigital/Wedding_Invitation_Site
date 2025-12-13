@@ -257,9 +257,6 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.15 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
                 >
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-display text-wedding-navy mb-3 sm:mb-4">
-                    About Pheras
-                  </h3>
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
                     {content.pherasDescription}
                   </p>
@@ -294,6 +291,20 @@ export default function EventDetailsPage() {
                   </p>
                 </div>
               </motion.div>
+
+              {/* Additional Info for Wedding - Right after Date & Time */}
+              {isWedding && content.additionalInfo && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 text-center"
+                >
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700">
+                    {content.additionalInfo}
+                  </p>
+                </motion.div>
+              )}
 
               {/* Cocktail Hour (Reception only) */}
               {content.cocktailHour && (
@@ -419,8 +430,8 @@ export default function EventDetailsPage() {
                 </div>
               </motion.div>
 
-              {/* Additional Info */}
-              {content.additionalInfo && (
+              {/* Additional Info (for non-wedding pages) */}
+              {!isWedding && content.additionalInfo && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
