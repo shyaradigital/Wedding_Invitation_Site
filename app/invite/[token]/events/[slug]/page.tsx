@@ -124,15 +124,16 @@ export default function EventDetailsPage() {
   }, [accessState, guest, slug, router, token])
 
   useEffect(() => {
-    // Fetch event details
-    fetch(`/api/events/${slug}`)
+    // Fetch event details with cache-busting to ensure fresh data
+    fetch(`/api/events/${slug}?t=${Date.now()}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
       .then((res) => res.json())
       .then((data) => {
         if (data.event) {
-          setEvent({
+          const mergedEvent = {
             ...eventInfo[slug],
             ...data.event,
-          })
+          }
+          setEvent(mergedEvent)
         } else {
           // Fallback to default info
           const eventData = eventInfo[slug]
@@ -197,7 +198,18 @@ export default function EventDetailsPage() {
     )
   }
 
-  const content = eventContent[slug] || eventContent.mehndi
+  // Merge database event data with fallback content, prioritizing database values
+  const fallbackContent = eventContent[slug] || eventContent.mehndi
+  const content = {
+    ...fallbackContent,
+    // Override with database values when they exist (not null/undefined/empty)
+    date: event?.date ? formatWrittenDateFromString(event.date) : fallbackContent.date,
+    time: event?.time || fallbackContent.time,
+    venue: event?.venue || fallbackContent.venue,
+    address: event?.address || fallbackContent.address,
+    attire: event?.dressCode || fallbackContent.attire,
+    additionalInfo: event?.description || fallbackContent.additionalInfo,
+  }
   const isReception = slug === 'reception'
   const isMehendi = slug === 'mehndi'
   const isWedding = slug === 'wedding'

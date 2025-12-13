@@ -71,7 +71,7 @@ export default function PreviewEventContent({ token, slug }: { token: string; sl
   const [event, setEvent] = useState<any>(null)
 
   useEffect(() => {
-    fetch(`/api/events/${slug}`)
+    fetch(`/api/events/${slug}?t=${Date.now()}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
       .then((res) => res.json())
       .then((data) => {
         if (data.event) {
