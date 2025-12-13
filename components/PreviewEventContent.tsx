@@ -8,7 +8,7 @@ import PageTransition from './PageTransition'
 import PreviewBanner from './PreviewBanner'
 
 const eventInfo: Record<string, { title: string; icon: string; color: string }> = {
-  mehndi: { title: 'Mehndi & Pithi Ceremony', icon: '/icons/mehndi-icon.png', color: 'wedding-rose' },
+  mehndi: { title: 'Mehendi', icon: '/icons/mehndi-icon.png', color: 'wedding-rose' },
   wedding: { title: 'Hindu Wedding', icon: '/icons/wedding-icon.png', color: 'wedding-gold' },
   reception: { title: 'Reception', icon: '/icons/reception-icon.png', color: 'wedding-burgundy' },
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { generateDeviceFingerprint } from './device-fingerprint'
-import { getStoredPhone, setStoredPhone, clearStoredPhone } from './storage'
+import { getStoredPhone, setStoredPhone, clearStoredPhone, setAdminPreview, isAdminPreview } from './storage'
 import { normalizePhoneNumber, validateEmail } from './utils'
 
 interface Guest {
@@ -43,7 +43,55 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
 
   const checkAccess = async () => {
     try {
-      // Verify token
+      // Special handling for admin-preview token
+      if (token === 'admin-preview') {
+        // Check if admin preview is already set in localStorage
+        if (isAdminPreview(token)) {
+          // Grant immediate access for admin preview
+          setGuest({
+            id: 'admin-preview',
+            name: 'Admin Preview',
+            phone: null,
+            email: null,
+            eventAccess: ['mehndi', 'wedding', 'reception'],
+            allowedDevices: [],
+            hasPhone: false,
+            hasEmail: false,
+            tokenUsedFirstTime: null,
+            maxDevicesAllowed: 999,
+          })
+          setAccessState('granted')
+          return
+        }
+
+        // First time accessing admin-preview - verify with API
+        // This ensures admin is authenticated on initial access
+        const verifyResponse = await fetch('/api/verify-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        })
+
+        if (!verifyResponse.ok) {
+          const data = await verifyResponse.json()
+          setError(data.error || 'Admin preview access denied. Please log in as admin.')
+          setAccessState('access-denied')
+          return
+        }
+
+        const { guest: guestData } = await verifyResponse.json()
+        
+        // Verify this is the admin-preview guest
+        if (guestData.id === 'admin-preview') {
+          // Set admin preview flag in localStorage for future access
+          setAdminPreview(token)
+          setGuest(guestData)
+          setAccessState('granted')
+          return
+        }
+      }
+
+      // Verify token for regular guests
       const verifyResponse = await fetch('/api/verify-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

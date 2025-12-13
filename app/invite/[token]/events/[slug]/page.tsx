@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
@@ -43,7 +45,11 @@ const eventContent: Record<string, {
   note?: string
   attire: string
   venue: string
+  venueDetails?: string
   address: string
+  additionalInfo?: string
+  cocktailHour?: string
+  pherasDescription?: string
 }> = {
   mehndi: {
     date: '20th Day of March, 2026',
@@ -51,7 +57,9 @@ const eventContent: Record<string, {
     programNote: 'Hand Painting with Henna',
     attire: 'Casual',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
+    venueDetails: 'Bridal lounge, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
+    additionalInfo: 'Boxed Indian vegetarian dinner will be served',
   },
   wedding: {
     date: '21st Day of March, 2026',
@@ -59,7 +67,10 @@ const eventContent: Record<string, {
     note: 'Lunch to be served after photo session',
     attire: 'Formal Indian Attire',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
+    venueDetails: 'Poolside patio, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
+    pherasDescription: 'Religious ceremony where the couple vows commitment around sacred fire',
+    additionalInfo: 'No boxed gifts/registry',
   },
   reception: {
     date: '21st Day of March, 2026',
@@ -67,7 +78,9 @@ const eventContent: Record<string, {
     note: 'Note: No boxed gifts / registry',
     attire: 'Formal Indian/Western Attire',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
+    venueDetails: 'Ballroom, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
+    cocktailHour: '5:30pm - 6:30pm',
   },
 }
 
@@ -265,6 +278,20 @@ export default function EventDetailsPage() {
                 </div>
               </motion.div>
 
+              {/* Cocktail Hour (Reception only) */}
+              {content.cocktailHour && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30"
+                >
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light">
+                    <span className="font-semibold">Cocktail hour:</span> {content.cocktailHour}
+                  </p>
+                </motion.div>
+              )}
+
               {/* Program Note or Note */}
               {(content.programNote || content.note) && (
                 <motion.div
@@ -283,6 +310,24 @@ export default function EventDetailsPage() {
                     }`}
                   >
                     {content.programNote || content.note}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Pheras Description (Wedding only) */}
+              {content.pherasDescription && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                >
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-display text-wedding-navy mb-3 sm:mb-4">
+                    About Pheras
+                  </h3>
+                  <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                    {content.pherasDescription}
                   </p>
                 </motion.div>
               )}
@@ -343,6 +388,15 @@ export default function EventDetailsPage() {
                 >
                   {content.venue}
                 </p>
+                {content.venueDetails && (
+                  <p
+                    className={`text-sm sm:text-base md:text-lg font-serif mb-2 ${
+                      isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
+                    }`}
+                  >
+                    {content.venueDetails}
+                  </p>
+                )}
                 <p
                   className={`text-sm sm:text-base md:text-lg font-serif mb-4 ${
                     isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
@@ -365,6 +419,28 @@ export default function EventDetailsPage() {
                   ></iframe>
                 </div>
               </motion.div>
+
+              {/* Additional Info */}
+              {content.additionalInfo && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${
+                    isReception
+                      ? 'bg-wedding-gold/10 border border-wedding-gold/30'
+                      : 'bg-white/60 border border-wedding-gold/20'
+                  }`}
+                >
+                  <p
+                    className={`text-base sm:text-lg md:text-xl font-serif ${
+                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                    }`}
+                  >
+                    {content.additionalInfo}
+                  </p>
+                </motion.div>
+              )}
 
               {/* Botanical/Decorative elements for Mehendi */}
               {isMehendi && (

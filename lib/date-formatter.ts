@@ -42,7 +42,7 @@ export function formatWrittenTime(time: string): string {
   const hourWords = numberToWords(hour)
 
   // Determine time of day
-  const timeOfDay = period === 'AM' ? 'morning' : 'evening'
+  const timeOfDay = period === 'AM' ? 'Morning' : 'Evening'
 
   return `${hourWords} O'Clock in the ${timeOfDay}`
 }

@@ -58,3 +58,72 @@ export function clearStoredPhone(token: string): void {
   }
 }
 
+/**
+ * Set admin preview flag for a given token
+ * @param token - Guest invitation token (should be 'admin-preview')
+ */
+export function setAdminPreview(token: string): void {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    const key = `admin_preview_${token}`
+    const expiryTime = Date.now() + (24 * 60 * 60 * 1000) // 24 hours from now
+    localStorage.setItem(key, expiryTime.toString())
+  } catch (error) {
+    console.error('Error writing admin preview to localStorage:', error)
+  }
+}
+
+/**
+ * Check if token is in admin preview mode
+ * @param token - Guest invitation token
+ * @returns true if admin preview is active and not expired, false otherwise
+ */
+export function isAdminPreview(token: string): boolean {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  try {
+    const key = `admin_preview_${token}`
+    const stored = localStorage.getItem(key)
+    
+    if (!stored) {
+      return false
+    }
+
+    const expiryTime = parseInt(stored, 10)
+    const now = Date.now()
+
+    // Check if expired
+    if (now > expiryTime) {
+      localStorage.removeItem(key)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error reading admin preview from localStorage:', error)
+    return false
+  }
+}
+
+/**
+ * Clear admin preview flag for a given token
+ * @param token - Guest invitation token
+ */
+export function clearAdminPreview(token: string): void {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    const key = `admin_preview_${token}`
+    localStorage.removeItem(key)
+  } catch (error) {
+    console.error('Error clearing admin preview from localStorage:', error)
+  }
+}
+

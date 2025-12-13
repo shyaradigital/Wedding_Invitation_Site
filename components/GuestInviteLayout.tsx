@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import EventCard from './EventCard'
 import Link from 'next/link'
 import InvitationNavigation from './InvitationNavigation'
 import FloatingPetals from './FloatingPetals'
 import FloatingHearts from './FloatingHearts'
 import OrnamentalDivider from './OrnamentalDivider'
+import AdminPreviewBanner from './AdminPreviewBanner'
 
 interface Guest {
   id: string
@@ -36,14 +36,13 @@ export default function GuestInviteLayout({
   guest,
   token,
 }: GuestInviteLayoutProps) {
-  const [selectedEvent, setSelectedEvent] = useState<string | null>(null)
-
-  const availableEvents = guest.eventAccess
-    .map((slug) => eventSlugs[slug])
-    .filter(Boolean)
+  const isAdminPreview = token === 'admin-preview'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-wedding-rose-pastel via-wedding-cream to-wedding-gold-light relative overflow-hidden">
+      {/* Admin Preview Banner - Show only in admin preview mode */}
+      {isAdminPreview && <AdminPreviewBanner />}
+      
       <FloatingPetals />
       <FloatingHearts />
       {/* Navigation */}
@@ -89,18 +88,18 @@ export default function GuestInviteLayout({
             <div className="text-center mb-8 sm:mb-10 relative z-10">
               {/* Ganesh Image */}
               <div className="mb-4 sm:mb-6">
-                <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mx-auto">
+                <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 mx-auto">
                   <Image
                     src="/images/ganesh.png"
                     alt="Ganesh"
-                    width={192}
-                    height={192}
+                    width={256}
+                    height={256}
                     className="w-full h-full object-contain"
                     priority
                   />
                 </div>
               </div>
-              <div className="text-xs sm:text-sm md:text-base text-wedding-navy/80 leading-relaxed font-serif">
+              <div className="text-sm sm:text-base md:text-lg lg:text-xl text-wedding-navy/80 leading-relaxed font-serif">
                 <p className="mb-2">श्री गणेशाय नमः</p>
                 <p className="mb-1">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।</p>
                 <p>निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</p>
@@ -108,6 +107,28 @@ export default function GuestInviteLayout({
             </div>
 
             <OrnamentalDivider variant="ornate" className="mb-8 sm:mb-10" />
+
+            {/* Engagement Ceremony Photos Title */}
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="relative inline-block">
+                {/* Decorative golden dots on sides */}
+                <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 hidden sm:block">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-wedding-gold rounded-full"></div>
+                    <div className="w-12 h-px bg-gradient-to-r from-wedding-gold to-transparent"></div>
+                  </div>
+                </div>
+                <div className="absolute right-0 top-1/2 translate-x-full -translate-y-1/2 hidden sm:block">
+                  <div className="flex items-center gap-2">
+                    <div className="w-12 h-px bg-gradient-to-l from-wedding-gold to-transparent"></div>
+                    <div className="w-1.5 h-1.5 bg-wedding-gold rounded-full"></div>
+                  </div>
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-script text-wedding-navy tracking-wide">
+                  Engagement Ceremony Photos
+                </h2>
+              </div>
+            </div>
 
             {/* Couple Images Side by Side with Moving Hearts */}
             <div className="mb-6 sm:mb-8 relative z-10">
@@ -240,41 +261,68 @@ export default function GuestInviteLayout({
             <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
           </motion.div>
 
-          {/* Event Cards Section */}
-          {availableEvents.length > 0 && (
-            <motion.section
+          {/* Transportation & Logistics Section */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-8 sm:mt-12 md:mt-16"
+          >
+            <div className="text-center mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-script text-wedding-navy mb-3 sm:mb-4">
+                Transportation & Logistics
+              </h2>
+              <OrnamentalDivider variant="simple" className="max-w-xs mx-auto" />
+            </div>
+
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-8 sm:mt-12 md:mt-16"
+              transition={{ delay: 0.5 }}
+              className="bg-gradient-to-br from-wedding-navy via-wedding-navy-light to-wedding-navy rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 text-white shadow-lg relative overflow-hidden"
             >
-              <div className="text-center mb-6 sm:mb-8">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-script text-wedding-navy mb-3 sm:mb-4">
-                  Our Celebrations
-                </h2>
-                <OrnamentalDivider variant="simple" className="max-w-xs mx-auto" />
+              {/* Decorative background pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 right-0 w-32 bg-white rounded-full -mr-16 -mt-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 bg-white rounded-full -ml-12 -mb-12"></div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:gap-8">
-                {availableEvents.map((event, index) => (
-                  <motion.div
-                    key={event.slug}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                  >
-                    <Link href={`/invite/${token}/events/${event.slug}`}>
-                      <EventCard
-                        slug={event.slug}
-                        title={event.title}
-                        onClick={() => setSelectedEvent(event.slug)}
-                      />
-                    </Link>
-                  </motion.div>
-                ))}
+              <div className="relative z-10 space-y-6">
+                {/* Airport Section */}
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-wedding-gold/20 rounded-full flex items-center justify-center">
+                    <span className="text-2xl sm:text-3xl">✈️</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-display mb-2 font-semibold">
+                      Nearest Airport
+                    </h3>
+                    <p className="text-base sm:text-lg md:text-xl font-serif opacity-95">
+                      John Wayne Airport
+                    </p>
+                  </div>
+                </div>
+
+                {/* Shuttle Section */}
+                <div className="flex items-start gap-4 pt-4 border-t border-white/20">
+                  <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-wedding-gold/20 rounded-full flex items-center justify-center">
+                    <span className="text-2xl sm:text-3xl">🚌</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-display mb-2 font-semibold">
+                      Airport Shuttle
+                    </h3>
+                    <p className="text-base sm:text-lg md:text-xl font-serif opacity-95">
+                      Complimentary every 30 minutes
+                    </p>
+                    <p className="text-sm sm:text-base md:text-lg font-serif opacity-90 mt-1">
+                      5:00 AM - 10:45 PM
+                    </p>
+                  </div>
+                </div>
               </div>
-            </motion.section>
-          )}
+            </motion.div>
+          </motion.section>
         </div>
       </main>
 

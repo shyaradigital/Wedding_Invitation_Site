@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import GuestEditor from './GuestEditor'
 
 interface Guest {
@@ -59,12 +60,21 @@ export default function AdminDashboard() {
               Admin Dashboard
             </h1>
           </div>
-          <button
-            onClick={handleLogout}
-            className="bg-wedding-gold text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-wedding-gold/90 transition-all duration-300 text-sm sm:text-base w-full sm:w-auto font-semibold shadow-sm hover:shadow-md"
-          >
-            Logout
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+            <Link
+              href="/admin/preview"
+              className="bg-wedding-navy text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-wedding-navy/90 transition-all duration-300 text-sm sm:text-base w-full sm:w-auto font-semibold shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+            >
+              <span>👁️</span>
+              <span>View as Guest</span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="bg-wedding-gold text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-wedding-gold/90 transition-all duration-300 text-sm sm:text-base w-full sm:w-auto font-semibold shadow-sm hover:shadow-md"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </header>
 

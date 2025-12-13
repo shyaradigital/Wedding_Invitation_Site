@@ -983,11 +983,11 @@ export default function GuestEditor({
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Mehndi & Pithi */}
+          {/* Mehndi */}
           <div className="bg-gradient-to-br from-wedding-cream-light to-white rounded-xl shadow-lg p-6 border-2 border-wedding-gold/40 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">🎨</span>
-              <h4 className="text-lg font-semibold text-wedding-navy">Mehndi & Pithi</h4>
+              <h4 className="text-lg font-semibold text-wedding-navy">Mehndi</h4>
             </div>
             <div className="space-y-3">
               <div className="bg-green-50 rounded-lg p-3 border border-green-200">
@@ -1931,7 +1931,7 @@ export default function GuestEditor({
                     <div className="space-y-3">
                       {viewingGuest.eventAccess && viewingGuest.eventAccess.map((eventSlug: string) => {
                         const eventNames: Record<string, string> = {
-                          mehndi: 'Mehndi & Pithi',
+                          mehndi: 'Mehndi',
                           wedding: 'Hindu Wedding',
                           reception: 'Reception',
                         }

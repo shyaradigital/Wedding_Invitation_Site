@@ -30,19 +30,23 @@ export async function GET(
       )
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       guest: {
         ...guest,
         eventAccess: ensureJsonArray(guest.eventAccess),
         allowedDevices: ensureJsonArray(guest.allowedDevices),
       },
     })
+    response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+    return response
   } catch (error) {
     console.error('Error fetching guest:', error)
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    errorResponse.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+    return errorResponse
   }
 }
 

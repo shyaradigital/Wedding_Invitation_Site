@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react'
 import InvitationNavigation from './InvitationNavigation'
+import AdminPreviewBanner from './AdminPreviewBanner'
 
 interface InvitationPageLayoutProps {
   token: string
@@ -16,8 +17,13 @@ export default function InvitationPageLayout({
   guestName,
   children,
 }: InvitationPageLayoutProps) {
+  const isAdminPreview = token === 'admin-preview'
+
   return (
     <div className="min-h-screen bg-gradient-wedding flex flex-col">
+      {/* Admin Preview Banner - Show only in admin preview mode */}
+      {isAdminPreview && <AdminPreviewBanner />}
+      
       {/* Navigation with integrated header */}
       <InvitationNavigation token={token} eventAccess={eventAccess} guestName={guestName} />
 

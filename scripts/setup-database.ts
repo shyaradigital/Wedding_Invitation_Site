@@ -40,8 +40,8 @@ async function main() {
   const events = [
     {
       slug: 'mehndi',
-      title: 'Mehndi & Pithi',
-      description: 'Join us for an evening of traditional Mehndi and Pithi ceremonies.',
+      title: 'Mehendi',
+      description: 'Join us for an evening of traditional Mehndi ceremonies.',
     },
     {
       slug: 'wedding',
@@ -58,7 +58,10 @@ async function main() {
   for (const event of events) {
     await prisma.event.upsert({
       where: { slug: event.slug },
-      update: {},
+      update: {
+        title: event.title,
+        description: event.description,
+      },
       create: event,
     })
   }

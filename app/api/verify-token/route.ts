@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { rateLimit } from '@/lib/rate-limit'
 import { ensureJsonArray } from '@/lib/utils'
+import { getAdminFromRequest } from '@/lib/admin-auth'
 import { z } from 'zod'
 
 const verifyTokenSchema = z.object({
@@ -14,14 +15,40 @@ export async function POST(request: NextRequest) {
     const rateLimitResult = rateLimit(`verify-token-${ip}`, 20, 60000)
     
     if (!rateLimitResult.allowed) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
         { status: 429 }
       )
+      response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+      return response
     }
 
     const body = await request.json()
     const { token } = verifyTokenSchema.parse(body)
+
+    // Handle admin-preview token for admin users
+    if (token === 'admin-preview') {
+      const admin = await getAdminFromRequest()
+      if (admin) {
+        // Return virtual guest with all events enabled
+        const response = NextResponse.json({
+          guest: {
+            id: 'admin-preview',
+            name: 'Admin Preview',
+            phone: null,
+            email: null,
+            eventAccess: ['mehndi', 'wedding', 'reception'],
+            allowedDevices: [],
+            hasPhone: false,
+            hasEmail: false,
+            tokenUsedFirstTime: null,
+            maxDevicesAllowed: 999,
+          },
+        })
+        response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+        return response
+      }
+    }
 
     const guest = await prisma.guest.findUnique({
       where: { token },
@@ -39,10 +66,12 @@ export async function POST(request: NextRequest) {
     })
 
     if (!guest) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid token' },
         { status: 404 }
       )
+      response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+      return response
     }
 
     // Check if token has expired
@@ -51,14 +80,16 @@ export async function POST(request: NextRequest) {
       expiryTime.setDate(expiryTime.getDate() + 30) // 30 days after first use
       
       if (new Date() > expiryTime) {
-        return NextResponse.json(
+        const response = NextResponse.json(
           { error: 'Token has expired' },
           { status: 410 }
         )
+        response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+        return response
       }
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       guest: {
         id: guest.id,
         name: guest.name,
@@ -72,19 +103,25 @@ export async function POST(request: NextRequest) {
         maxDevicesAllowed: guest.maxDevicesAllowed,
       },
     })
+    response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+    return response
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       )
+      response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+      return response
     }
 
     console.error('Error verifying token:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+    return response
   }
 }
 
