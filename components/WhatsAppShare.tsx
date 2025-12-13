@@ -71,11 +71,15 @@ export default function WhatsAppShare({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-colors text-xs sm:text-sm flex items-center gap-1 sm:gap-2 w-full sm:w-auto justify-center"
+        className="group relative bg-green-500 hover:bg-green-600 text-white px-2.5 py-1.5 rounded text-xs font-semibold transition-colors flex items-center gap-1.5 justify-center whitespace-nowrap w-full"
+        title="Generate WhatsApp Message"
       >
         <span>💬</span>
-        <span className="hidden sm:inline">Generate WhatsApp</span>
-        <span className="sm:hidden">WhatsApp</span>
+        <span className="hidden lg:inline">WhatsApp</span>
+        <span className="lg:hidden">Send</span>
+        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
+          Generate WhatsApp Message
+        </span>
       </button>
 
       <AnimatePresence>

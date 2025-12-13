@@ -1555,47 +1555,50 @@ export default function GuestEditor({
       </AnimatePresence>
 
       {/* Guests List */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200">
-        <table className="w-full divide-y divide-gray-200">
-          <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-            <tr>
-              <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider w-12 border-b-2 border-gray-200">
-                <input
-                  type="checkbox"
-                  checked={selectedGuests.size === filteredGuests.length && filteredGuests.length > 0}
-                  onChange={toggleSelectAll}
-                  className="rounded border-gray-300 text-wedding-gold focus:ring-wedding-gold"
-                />
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[140px]">
-                Name
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden sm:table-cell border-b-2 border-gray-200 w-[120px]">
-                Phone
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden sm:table-cell border-b-2 border-gray-200 w-[150px]">
-                Email
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[130px]">
-                Event Type
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[90px]">
-                Devices
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[90px]">
-                Attendees
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[140px]">
-                Menu Preference
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 min-w-[200px]">
-                RSVP Status
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[200px]">
-                Actions
-              </th>
-            </tr>
-          </thead>
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+              <tr>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-12">
+                  <input
+                    type="checkbox"
+                    checked={selectedGuests.size === filteredGuests.length && filteredGuests.length > 0}
+                    onChange={toggleSelectAll}
+                    className="rounded border-gray-300 text-wedding-gold focus:ring-wedding-gold"
+                  />
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[140px]">
+                  Name
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden md:table-cell border-b-2 border-gray-200 w-[130px]">
+                  Phone
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider hidden lg:table-cell border-b-2 border-gray-200 w-[180px]">
+                  Email
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[120px]">
+                  Event Type
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[80px]">
+                  Devices
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[80px]">
+                  Attendees
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[140px]">
+                  Menu Preference
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[160px]">
+                  RSVP Status
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[280px] sticky right-0 bg-gradient-to-r from-gray-50 to-gray-100 z-10 shadow-[0_0_8px_rgba(0,0,0,0.1)]">
+                  Actions
+                </th>
+              </tr>
+            </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredGuests.map((guest) => {
               const deviceCount = Array.isArray(guest.allowedDevices)
@@ -1609,15 +1612,15 @@ export default function GuestEditor({
 
               return (
                 <tr key={guest.id} className={`hover:bg-gray-50 ${isSelected ? 'bg-wedding-gold-light/10' : ''}`}>
-                  <td className="px-3 sm:px-6 py-4">
+                  <td className="px-3 py-4">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelectGuest(guest.id)}
-                      className="rounded"
+                      className="rounded border-gray-300 text-wedding-gold focus:ring-wedding-gold"
                     />
                   </td>
-                  <td className="px-2 sm:px-4 py-4 text-xs sm:text-sm font-medium text-gray-900">
+                  <td className="px-3 py-4 text-xs sm:text-sm font-medium text-gray-900">
                     {isEditingName ? (
                       <div className="flex gap-2">
                         <input
@@ -1636,21 +1639,21 @@ export default function GuestEditor({
                       </div>
                     ) : (
                       <div 
-                        className="font-semibold cursor-pointer hover:text-wedding-gold"
+                        className="font-semibold cursor-pointer hover:text-wedding-gold truncate"
                         onDoubleClick={() => handleInlineEdit(guest, 'name')}
-                        title="Double-click to edit"
+                        title={`Double-click to edit: ${guest.name}`}
                       >
                         {guest.name}
                       </div>
                     )}
-                    <div className="text-gray-500 text-xs sm:hidden mt-1">
+                    <div className="text-gray-500 text-xs md:hidden mt-1">
                       {guest.phone ? `Phone: ${guest.phone}` : ''}
                       {guest.phone && guest.email ? ' | ' : ''}
                       {guest.email ? `Email: ${guest.email}` : ''}
                       {!guest.phone && !guest.email ? 'No contact info' : ''}
                     </div>
                   </td>
-                  <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden sm:table-cell">
+                  <td className="px-3 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden md:table-cell">
                     {isEditingPhone ? (
                       <div className="flex gap-2">
                         <input
@@ -1677,13 +1680,13 @@ export default function GuestEditor({
                       </span>
                     )}
                   </td>
-                  <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden sm:table-cell">
+                  <td className="px-3 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden lg:table-cell truncate" title={guest.email || 'Not set'}>
                     {guest.email || 'Not set'}
                   </td>
-                  <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                  <td className="px-3 py-4 whitespace-nowrap">
                     <EventTypeBadge eventAccess={guest.eventAccess} size="sm" />
                   </td>
-                  <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
+                  <td className="px-3 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
                     <button
                       onClick={() => handleDeviceCountClick(guest)}
                       className="cursor-pointer hover:text-wedding-gold hover:underline transition-colors"
@@ -1692,10 +1695,10 @@ export default function GuestEditor({
                       {deviceCount} / {guest.maxDevicesAllowed}
                     </button>
                   </td>
-                  <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
+                  <td className="px-3 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
                     {guest.numberOfAttendees || 1}
                   </td>
-                  <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                  <td className="px-3 py-4 whitespace-nowrap">
                     {guest.menuPreference ? (
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                         guest.menuPreference === 'veg' 
@@ -1711,7 +1714,7 @@ export default function GuestEditor({
                     )}
                   </td>
                   <td 
-                    className="px-2 sm:px-4 py-4 cursor-pointer hover:bg-gray-50"
+                    className="px-3 py-4 cursor-pointer hover:bg-gray-50"
                     onClick={() => setViewingGuest(guest)}
                     title="Click to view RSVP details"
                   >
@@ -1763,48 +1766,68 @@ export default function GuestEditor({
                       )
                     })()}
                   </td>
-                  <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
+                  <td className={`px-3 py-4 whitespace-nowrap text-xs sm:text-sm font-medium sticky right-0 z-10 border-l-2 border-gray-300 ${isSelected ? 'bg-wedding-gold-light/10' : 'bg-white'} hover:bg-gray-50 shadow-[0_0_8px_rgba(0,0,0,0.1)]`}>
                     <div className="flex flex-col gap-2">
-                      <div className="flex flex-wrap gap-1 sm:gap-2">
+                      <div className="flex flex-wrap gap-1.5 justify-start">
                         <button
                           onClick={() => copyLink(guest.token)}
-                          className="text-wedding-gold hover:text-wedding-navy text-xs px-2 py-1 border border-wedding-gold rounded hover:bg-wedding-gold-light/10"
-                          title="Copy Link"
+                          className="group relative text-wedding-gold hover:text-wedding-navy text-xs px-2 py-1.5 border border-wedding-gold rounded hover:bg-wedding-gold-light/10 transition-colors flex items-center gap-1.5 min-w-[70px] justify-center"
+                          title="Copy Invitation Link"
                         >
-                          📋
+                          <span>📋</span>
+                          <span className="hidden lg:inline">Copy</span>
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
+                            Copy Link
+                          </span>
                         </button>
                         <button
                           onClick={() => handleQuickToggleEventType(guest.id, guest.eventAccess)}
-                          className="text-blue-600 hover:text-blue-800 text-xs px-2 py-1 border border-blue-200 rounded hover:bg-blue-50"
+                          className="group relative text-blue-600 hover:text-blue-800 text-xs px-2 py-1.5 border border-blue-200 rounded hover:bg-blue-50 transition-colors flex items-center gap-1.5 min-w-[70px] justify-center"
                           title="Toggle Event Type"
                         >
-                          🔄
+                          <span>🔄</span>
+                          <span className="hidden lg:inline">Toggle</span>
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
+                            Toggle Event Type
+                          </span>
                         </button>
                         <button
                           onClick={() => {
                             window.open(`/admin/preview/${guest.token}`, '_blank')
                           }}
-                          className="text-purple-600 hover:text-purple-800 text-xs px-2 py-1 border border-purple-200 rounded hover:bg-purple-50"
-                          title="Preview"
+                          className="group relative text-purple-600 hover:text-purple-800 text-xs px-2 py-1.5 border border-purple-200 rounded hover:bg-purple-50 transition-colors flex items-center gap-1.5 min-w-[70px] justify-center"
+                          title="Preview Invitation"
                         >
-                          👁️
+                          <span>👁️</span>
+                          <span className="hidden lg:inline">Preview</span>
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
+                            Preview Invitation
+                          </span>
                         </button>
                         <button
                           onClick={() => handleEditClick(guest)}
-                          className="text-green-600 hover:text-green-800 text-xs px-2 py-1 border border-green-200 rounded hover:bg-green-50"
-                          title="Edit"
+                          className="group relative text-green-600 hover:text-green-800 text-xs px-2 py-1.5 border border-green-200 rounded hover:bg-green-50 transition-colors flex items-center gap-1.5 min-w-[70px] justify-center"
+                          title="Edit Guest"
                         >
-                          ✏️
+                          <span>✏️</span>
+                          <span className="hidden lg:inline">Edit</span>
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
+                            Edit Guest
+                          </span>
                         </button>
                         <button
                           onClick={() => handleDeleteGuest(guest.id, guest.name)}
-                          className="text-red-600 hover:text-red-800 text-xs px-2 py-1 border border-red-200 rounded hover:bg-red-50"
-                          title="Delete"
+                          className="group relative text-red-600 hover:text-red-800 text-xs px-2 py-1.5 border border-red-200 rounded hover:bg-red-50 transition-colors flex items-center gap-1.5 min-w-[70px] justify-center"
+                          title="Delete Guest"
                         >
-                          🗑️
+                          <span>🗑️</span>
+                          <span className="hidden lg:inline">Delete</span>
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
+                            Delete Guest
+                          </span>
                         </button>
                       </div>
-                      <div className="mt-1">
+                      <div className="mt-0.5">
                         <WhatsAppShare
                           guestName={guest.name}
                           guestToken={guest.token}
@@ -1817,7 +1840,10 @@ export default function GuestEditor({
               )
             })}
           </tbody>
-        </table>
+              </table>
+            </div>
+          </div>
+        </div>
         {filteredGuests.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             {searchQuery || filterEvent !== 'all' || filterRsvp !== 'all'
