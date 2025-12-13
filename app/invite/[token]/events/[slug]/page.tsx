@@ -59,7 +59,7 @@ const eventContent: Record<string, {
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Bridal lounge, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
-    additionalInfo: 'Boxed Indian vegetarian dinner will be served',
+    additionalInfo: 'Indian vegetarian dinner will be served',
   },
   wedding: {
     date: '21st Day of March, 2026',
@@ -249,6 +249,23 @@ export default function EventDetailsPage() {
                 <OrnamentalDivider variant="ornate" />
               </div>
 
+              {/* About Pheras (Wedding only) - At the top */}
+              {isWedding && content.pherasDescription && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                >
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-display text-wedding-navy mb-3 sm:mb-4">
+                    About Pheras
+                  </h3>
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                    {content.pherasDescription}
+                  </p>
+                </motion.div>
+              )}
+
               {/* Date & Time */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -310,24 +327,6 @@ export default function EventDetailsPage() {
                     }`}
                   >
                     {content.programNote || content.note}
-                  </p>
-                </motion.div>
-              )}
-
-              {/* Pheras Description (Wedding only) */}
-              {content.pherasDescription && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
-                >
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-display text-wedding-navy mb-3 sm:mb-4">
-                    About Pheras
-                  </h3>
-                  <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
-                    {content.pherasDescription}
                   </p>
                 </motion.div>
               )}
