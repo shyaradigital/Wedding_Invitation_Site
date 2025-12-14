@@ -67,7 +67,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
   // Add event pages based on access (in chronological order)
   if (eventAccess && Array.isArray(eventAccess)) {
     if (eventAccess.includes('mehndi')) {
-      navItems.push({ href: `/invite/${token}/events/mehndi`, label: 'Mehndi', icon: '/icons/mehndi-icon.png', iconType: 'image' })
+      navItems.push({ href: `/invite/${token}/events/mehndi`, label: 'Mehendi', icon: '/icons/mehndi-icon.png', iconType: 'image' })
     }
     if (eventAccess.includes('wedding')) {
       navItems.push({ href: `/invite/${token}/events/wedding`, label: 'Wedding', icon: '/icons/wedding-icon.png', iconType: 'image' })

@@ -50,10 +50,12 @@ const eventContent: Record<string, {
   additionalInfo?: string
   cocktailHour?: string
   pherasDescription?: string
+  baraatDescription?: string
+  baraatTime?: string
 }> = {
   mehndi: {
     date: '20th Day of March, 2026',
-    time: 'Six O\'Clock in the evening',
+    time: 'Six O\'Clock in the Evening',
     programNote: 'Hand Painting with Henna',
     attire: 'Casual',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
@@ -63,18 +65,20 @@ const eventContent: Record<string, {
   },
   wedding: {
     date: '21st Day of March, 2026',
-    time: 'Ten O\'Clock in the morning',
+    time: 'Ten O\'Clock in the Morning',
     note: 'Lunch to be served after photo session',
     attire: 'Formal Indian Attire',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Poolside patio, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
     pherasDescription: 'Religious ceremony where the couple vows commitment around sacred fire',
+    baraatDescription: 'Baraat is an Indian wedding ceremony where the groom accompanied by his family and friends dance all the way to the bride\'s doorstep or wedding venue.',
+    baraatTime: '30 minutes past 9 O\'Clock in the Morning',
     additionalInfo: 'No boxed gifts/registry',
   },
   reception: {
     date: '21st Day of March, 2026',
-    time: 'Five O\'Clock in the evening',
+    time: 'Five O\'Clock in the Evening',
     note: 'Note: No boxed gifts / registry',
     attire: 'Formal Indian/Western Attire',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
@@ -208,8 +212,16 @@ export default function EventDetailsPage() {
     venue: event?.venue || fallbackContent.venue,
     address: event?.address || fallbackContent.address,
     attire: event?.dressCode || fallbackContent.attire,
-    additionalInfo: event?.description || fallbackContent.additionalInfo,
+    // For Mehndi: keep additionalInfo (dinner info) separate from description
+    // For Reception: remove additionalInfo since description is now at top
+    // For Wedding: keep additionalInfo (no boxed gifts)
+    additionalInfo: isReception 
+      ? null 
+      : fallbackContent.additionalInfo,
   }
+  
+  // Get description from database for Mehndi and Reception (display at top)
+  const eventDescription = (isMehendi || isReception) ? (event?.description || null) : null
   const isReception = slug === 'reception'
   const isMehendi = slug === 'mehndi'
   const isWedding = slug === 'wedding'
@@ -261,7 +273,21 @@ export default function EventDetailsPage() {
                 <OrnamentalDivider variant="ornate" />
               </div>
 
-              {/* About Pheras (Wedding only) - At the top */}
+              {/* Description (Mehndi and Reception only) - At the top after title */}
+              {eventDescription && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                >
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                    {eventDescription}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* About Pheras (Wedding only) - After description or title */}
               {isWedding && content.pherasDescription && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -272,6 +298,25 @@ export default function EventDetailsPage() {
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
                     {content.pherasDescription}
                   </p>
+                </motion.div>
+              )}
+
+              {/* Baraat Section (Wedding only) - After Pheras */}
+              {isWedding && content.baraatDescription && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.17 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                >
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed mb-3">
+                    {content.baraatDescription}
+                  </p>
+                  {content.baraatTime && (
+                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 font-semibold">
+                      {content.baraatTime}
+                    </p>
+                  )}
                 </motion.div>
               )}
 
@@ -332,24 +377,30 @@ export default function EventDetailsPage() {
                 </motion.div>
               )}
 
-              {/* Program Note or Note */}
-              {(content.programNote || content.note) && (
+              {/* Program Note (Mehndi only) - Below description */}
+              {isMehendi && content.programNote && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center ${
-                    isReception
-                      ? 'bg-wedding-gold/10 border border-wedding-gold/30'
-                      : 'bg-white/60 border border-wedding-gold/20'
-                  }`}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-white/60 border border-wedding-gold/20"
                 >
-                  <p
-                    className={`text-base sm:text-lg md:text-xl font-serif italic ${
-                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
-                    }`}
-                  >
-                    {content.programNote || content.note}
+                  <p className="text-base sm:text-lg md:text-xl font-serif italic text-gray-700">
+                    {content.programNote}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Note (Reception only) */}
+              {isReception && content.note && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30"
+                >
+                  <p className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light">
+                    {content.note}
                   </p>
                 </motion.div>
               )}
@@ -442,23 +493,15 @@ export default function EventDetailsPage() {
                 </div>
               </motion.div>
 
-              {/* Additional Info (for non-wedding pages) */}
-              {!isWedding && content.additionalInfo && (
+              {/* Additional Info (Mehndi only - dinner info) */}
+              {isMehendi && content.additionalInfo && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
-                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${
-                    isReception
-                      ? 'bg-wedding-gold/10 border border-wedding-gold/30'
-                      : 'bg-white/60 border border-wedding-gold/20'
-                  }`}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
                 >
-                  <p
-                    className={`text-base sm:text-lg md:text-xl font-serif ${
-                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
-                    }`}
-                  >
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700">
                     {content.additionalInfo}
                   </p>
                 </motion.div>

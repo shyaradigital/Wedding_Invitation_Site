@@ -303,23 +303,6 @@ export default function GuestInviteLayout({
                   </div>
                 </div>
 
-                {/* Shuttle Section */}
-                <div className="flex items-start gap-4 pt-4 border-t border-white/20">
-                  <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-wedding-gold/20 rounded-full flex items-center justify-center">
-                    <span className="text-2xl sm:text-3xl">🚌</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-display mb-2 font-semibold">
-                      Airport Shuttle
-                    </h3>
-                    <p className="text-base sm:text-lg md:text-xl font-serif opacity-95">
-                      Complimentary every 30 minutes
-                    </p>
-                    <p className="text-sm sm:text-base md:text-lg font-serif opacity-90 mt-1">
-                      5:00 AM - 10:45 PM
-                    </p>
-                  </div>
-                </div>
               </div>
             </motion.div>
           </motion.section>

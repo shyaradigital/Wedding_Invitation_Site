@@ -28,17 +28,27 @@ export default function PreviewVenueTravelContent({ token }: { token: string }) 
                 <div className="wedding-divider-thick max-w-md mx-auto"></div>
               </div>
 
-              <div className="space-y-8 sm:space-y-10">
+              <div className="space-y-6 sm:space-y-8">
+                {/* Airport Information */}
                 <motion.section
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
+                  className="bg-wedding-rose-pastel/30 rounded-xl p-6 sm:p-8 border border-wedding-rose/20"
                 >
-                  <p className="text-base sm:text-lg md:text-xl text-gray-700 mb-8 leading-relaxed text-center">
-                    We want your travel and stay to be as smooth and comfortable as possible. Below are all the venue details and recommended options to help you plan your visit.
+                  <div className="flex items-center mb-4">
+                    <span className="text-2xl mr-3">✈️</span>
+                    <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
+                      Airport Information
+                    </h2>
+                  </div>
+                  <div className="wedding-divider mb-4"></div>
+                  <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed">
+                    Nearest Airport is John Wayne Airport (SNA) and nearest International Airport is Los Angeles International Airport (LAX)
                   </p>
                 </motion.section>
 
+                {/* Venue Information */}
                 <motion.section
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -48,10 +58,13 @@ export default function PreviewVenueTravelContent({ token }: { token: string }) 
                   <div className="flex items-center mb-4">
                     <span className="text-2xl mr-3">🏨</span>
                     <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
-                      Main Venue
+                      Venue
                     </h2>
                   </div>
-                  <div className="wedding-divider mb-6"></div>
+                  <div className="wedding-divider mb-4"></div>
+                  <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed mb-4">
+                    <span className="font-semibold">Venue:</span> DoubleTree by Hilton Hotel Irvine – Spectrum provides complimentary shuttle. Guests are requested to call 949-471-8888 upon arrival.
+                  </p>
                   <p className="text-xl sm:text-2xl font-display font-semibold text-wedding-navy mb-2">
                     DoubleTree by Hilton Hotel Irvine - Spectrum
                   </p>
@@ -59,156 +72,22 @@ export default function PreviewVenueTravelContent({ token }: { token: string }) 
                     90 Pacifica, Irvine, CA 92618
                   </p>
                   
-                  {/* Google Maps Embed Placeholder */}
-                  <div className="bg-gradient-to-br from-wedding-cream to-wedding-rose-pastel rounded-xl p-4 h-48 sm:h-64 flex items-center justify-center overflow-hidden mb-4 border border-wedding-gold/20">
-                    <div className="text-center">
-                      <span className="text-4xl mb-2 block">🗺️</span>
-                      <p className="text-sm sm:text-base text-gray-600 mb-2">[Placeholder: Google Maps Embed]</p>
-                      <a 
-                        href="https://www.google.com/maps/search/?api=1&query=DoubleTree+by+Hilton+Hotel+Irvine+Spectrum+90+Pacifica+Irvine+CA+92618"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-wedding-gold hover:text-wedding-gold/80 underline text-sm"
-                      >
-                        Open in Google Maps
-                      </a>
-                    </div>
-                  </div>
-
-                  <p className="text-sm sm:text-base text-gray-700 italic bg-white/50 p-3 rounded-lg mb-4">
-                    <strong>Note:</strong> All ceremonies (Mehndi, Hindu Wedding, and Reception) will be held at this venue.
-                  </p>
-                </motion.section>
-
-                {/* Navigation Section */}
-                <motion.section
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="bg-wedding-gold-light/20 rounded-xl p-6 sm:p-8 border border-wedding-gold/20"
-                >
-                  <div className="flex items-center mb-4">
-                    <span className="text-2xl mr-3">🧭</span>
-                    <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
-                      Getting There
-                    </h2>
-                  </div>
-                  <div className="wedding-divider mb-6"></div>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-white/60 p-4 rounded-lg">
-                      <p className="text-base sm:text-lg text-gray-800 mb-2">
-                        <strong className="text-wedding-navy">From John Wayne Airport (SNA):</strong>
-                      </p>
-                      <p className="text-base sm:text-lg text-gray-700 mb-2">
-                        Approximately 5 miles (10-15 minutes drive)
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        [Placeholder: Detailed directions from airport - Take I-405 N, exit at Jamboree Rd, etc.]
-                      </p>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg">
-                      <p className="text-base sm:text-lg text-gray-800 mb-2">
-                        <strong className="text-wedding-navy">From Los Angeles International Airport (LAX):</strong>
-                      </p>
-                      <p className="text-base sm:text-lg text-gray-700 mb-2">
-                        Approximately 45 miles (45-60 minutes drive)
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        [Placeholder: Detailed directions from LAX - Take I-405 S, etc.]
-                      </p>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg">
-                      <p className="text-base sm:text-lg text-gray-800 mb-2">
-                        <strong className="text-wedding-navy">From Other Landmarks:</strong>
-                      </p>
-                      <p className="text-sm text-gray-600 mb-2">
-                        [Placeholder: Directions from major landmarks, hotels, or common starting points]
-                      </p>
-                      <ul className="text-sm text-gray-600 space-y-1 ml-4 list-disc">
-                        <li>[Placeholder: From Disneyland - approximately X miles]</li>
-                        <li>[Placeholder: From Newport Beach - approximately X miles]</li>
-                        <li>[Placeholder: From other notable locations]</li>
-                      </ul>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg">
-                      <p className="text-base sm:text-lg text-gray-800 mb-2">
-                        <strong className="text-wedding-navy">Transportation Options:</strong>
-                      </p>
-                      <ul className="text-base sm:text-lg text-gray-700 space-y-1 ml-4 list-disc">
-                        <li>Uber / Lyft</li>
-                        <li>Taxi / Cab services</li>
-                        <li>Rental car</li>
-                        <li>[Placeholder: Shuttle service if available]</li>
-                      </ul>
-                    </div>
+                  {/* Google Maps Embed */}
+                  <div className="rounded-lg overflow-hidden border-2 border-wedding-gold/30 shadow-lg mt-4">
+                    <iframe
+                      src="https://www.google.com/maps?q=DoubleTree+by+Hilton+Hotel+Irvine+Spectrum+90+Pacifica+Irvine+CA+92618&output=embed"
+                      width="100%"
+                      height="240"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="w-full"
+                      title="Venue Location"
+                    ></iframe>
                   </div>
                 </motion.section>
 
-                <motion.section
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="bg-wedding-cream-light rounded-xl p-6 sm:p-8 border border-wedding-gold/20"
-                >
-                  <div className="flex items-center mb-4">
-                    <span className="text-2xl mr-3">✈️</span>
-                    <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
-                      Travel & Accommodation
-                    </h2>
-                  </div>
-                  <div className="wedding-divider mb-6"></div>
-                  <div className="space-y-4">
-                    <div className="bg-white/60 p-4 rounded-lg">
-                      <p className="text-base sm:text-lg text-gray-800 mb-1">
-                        <strong className="text-wedding-navy">Nearest Airport:</strong>
-                      </p>
-                      <p className="text-base sm:text-lg text-gray-700">
-                        John Wayne Airport (SNA) - 5 miles away
-                      </p>
-                      <p className="text-base sm:text-lg text-gray-700 mt-1">
-                        Los Angeles International Airport (LAX) - 45 miles away
-                      </p>
-                    </div>
-                    <div className="bg-white/60 p-4 rounded-lg">
-                      <p className="text-base sm:text-lg text-gray-800 mb-1">
-                        <strong className="text-wedding-navy">Best travel options:</strong>
-                      </p>
-                      <p className="text-base sm:text-lg text-gray-700">
-                        Uber, Lyft, Taxi, Rental Car
-                      </p>
-                    </div>
-                    <div className="bg-white/60 p-4 rounded-lg mt-4">
-                      <p className="text-base sm:text-lg font-semibold text-wedding-navy mb-4">
-                        Recommended Hotels Near Venue:
-                      </p>
-                      <ul className="space-y-2 text-base sm:text-lg text-gray-700">
-                        <li className="flex items-center">
-                          <span className="text-wedding-gold mr-2">🏨</span>
-                          DoubleTree by Hilton Hotel Irvine - Spectrum (Venue Hotel)
-                        </li>
-                        <li className="flex items-center">
-                          <span className="text-wedding-gold mr-2">🏨</span>
-                          [Placeholder: Additional hotel option 1]
-                        </li>
-                        <li className="flex items-center">
-                          <span className="text-wedding-gold mr-2">🏨</span>
-                          [Placeholder: Additional hotel option 2]
-                        </li>
-                        <li className="flex items-center">
-                          <span className="text-wedding-gold mr-2">🏨</span>
-                          [Placeholder: Additional hotel option 3]
-                        </li>
-                      </ul>
-                      <p className="text-sm text-gray-600 mt-3 italic">
-                        [Placeholder: Hotel booking information, group rates, or contact details if available]
-                      </p>
-                    </div>
-                  </div>
-                </motion.section>
               </div>
 
               <div className="mt-10 sm:mt-12 text-center">

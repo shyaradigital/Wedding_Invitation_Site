@@ -12,12 +12,12 @@ async function main() {
     {
       slug: 'mehndi',
       title: 'Mehendi',
-      description: 'Join us for an evening of traditional Mehndi ceremonies.',
+      description: 'Henna painting ceremony, otherwise known as Mehndi, is to be held the night before the wedding as a way of wishing the bride good health and prosperity as she makes her journey on to marriage.',
     },
     {
       slug: 'wedding',
       title: 'Hindu Wedding',
-      description: 'The main wedding ceremony where we exchange vows and celebrate our union.',
+      description: null,
     },
     {
       slug: 'reception',

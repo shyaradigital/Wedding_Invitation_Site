@@ -9,7 +9,7 @@ import PreviewBanner from './PreviewBanner'
 export default function PreviewSaveTheDateContent({ token }: { token: string }) {
   const events = [
     {
-      name: 'Mehndi',
+      name: 'Mehendi',
       date: 'March 20, 2026',
       time: '6:00 PM',
       icon: '/icons/mehndi-icon.png',
