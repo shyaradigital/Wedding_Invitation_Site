@@ -204,6 +204,10 @@ export default function EventDetailsPage() {
 
   // Merge database event data with fallback content, prioritizing database values
   const fallbackContent = eventContent[slug] || eventContent.mehndi
+  const isReception = slug === 'reception'
+  const isMehendi = slug === 'mehndi'
+  const isWedding = slug === 'wedding'
+  
   const content = {
     ...fallbackContent,
     // Override with database values when they exist (not null/undefined/empty)
@@ -222,9 +226,6 @@ export default function EventDetailsPage() {
   
   // Get description from database for Mehndi and Reception (display at top)
   const eventDescription = (isMehendi || isReception) ? (event?.description || null) : null
-  const isReception = slug === 'reception'
-  const isMehendi = slug === 'mehndi'
-  const isWedding = slug === 'wedding'
 
   // Theme-specific background classes
   const backgroundClass = isMehendi
