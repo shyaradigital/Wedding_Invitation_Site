@@ -300,23 +300,36 @@ export default function EventDetailsPage() {
 
               {/* Baraat Section (Wedding only) - Content box after title */}
               {isWedding && content.baraatDescription && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.12 }}
-                  className="mb-6 sm:mb-8"
-                >
-                  <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
-                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed mb-3">
-                      {content.baraatDescription}
-                    </p>
-                    {content.baraatTime && (
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 font-semibold">
-                        {content.baraatTime}
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.12 }}
+                    className="mb-6 sm:mb-8"
+                  >
+                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                        {content.baraatDescription}
                       </p>
-                    )}
-                  </div>
-                </motion.div>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Baraat Time - Separate box in Date & Time format */}
+                  {isWedding && content.baraatTime && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.14 }}
+                      className="rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 bg-white/70 border border-wedding-gold/30"
+                    >
+                      <div className="text-center">
+                        <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700">
+                          at {content.baraatTime}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </>
               )}
 
               {/* Hindu Wedding Section (Wedding only) - After Baraat */}
