@@ -27,7 +27,7 @@ interface GuestInviteLayoutProps {
 }
 
 const eventSlugs: Record<string, { title: string; slug: string }> = {
-  mehndi: { title: 'Mehendi', slug: 'mehndi' },
+  mehndi: { title: 'Mehndi', slug: 'mehndi' },
   wedding: { title: 'Hindu Wedding Ceremony', slug: 'wedding' },
   reception: { title: 'Reception', slug: 'reception' },
 }
@@ -261,51 +261,6 @@ export default function GuestInviteLayout({
             <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
           </motion.div>
 
-          {/* Transportation & Logistics Section */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8 sm:mt-12 md:mt-16"
-          >
-            <div className="text-center mb-6 sm:mb-8">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-script text-wedding-navy mb-3 sm:mb-4">
-                Transportation & Logistics
-              </h2>
-              <OrnamentalDivider variant="simple" className="max-w-xs mx-auto" />
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-gradient-to-br from-wedding-navy via-wedding-navy-light to-wedding-navy rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 text-white shadow-lg relative overflow-hidden"
-            >
-              {/* Decorative background pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 right-0 w-32 bg-white rounded-full -mr-16 -mt-16"></div>
-                <div className="absolute bottom-0 left-0 w-24 bg-white rounded-full -ml-12 -mb-12"></div>
-              </div>
-
-              <div className="relative z-10 space-y-6">
-                {/* Airport Section */}
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-wedding-gold/20 rounded-full flex items-center justify-center">
-                    <span className="text-2xl sm:text-3xl">✈️</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-display mb-2 font-semibold">
-                      Nearest Airport
-                    </h3>
-                    <p className="text-base sm:text-lg md:text-xl font-serif opacity-95">
-                      John Wayne Airport
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-            </motion.div>
-          </motion.section>
         </div>
       </main>
 

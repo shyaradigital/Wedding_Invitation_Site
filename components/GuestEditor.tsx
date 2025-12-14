@@ -354,13 +354,13 @@ export default function GuestEditor({
 
     const selectedGuestList = normalizedGuests.filter(g => selectedGuests.has(g.id))
     const eventNames: Record<string, string> = {
-      mehndi: 'Mehendi',
+      mehndi: 'Mehndi',
       wedding: 'Wedding',
       reception: 'Reception',
     }
     
     const csv = [
-      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehendi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
+      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
       ...selectedGuestList.map(guest => {
         const rsvpStatus = guest.rsvpStatus || {}
         const overallStatus = getOverallRsvpStatus(guest)
@@ -550,13 +550,13 @@ export default function GuestEditor({
       ? normalizedGuests.filter(g => selectedGuests.has(g.id))
       : filteredGuests
     const eventNames: Record<string, string> = {
-      mehndi: 'Mehendi',
+      mehndi: 'Mehndi',
       wedding: 'Wedding',
       reception: 'Reception',
     }
     
     const csv = [
-      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehendi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
+      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
       ...guestsToExport.map(guest => {
         const rsvpStatus = guest.rsvpStatus || {}
         const overallStatus = getOverallRsvpStatus(guest)
@@ -983,7 +983,7 @@ export default function GuestEditor({
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Mehendi */}
+          {/* Mehndi */}
           <div className="bg-gradient-to-br from-wedding-cream-light to-white rounded-xl shadow-lg p-6 border-2 border-wedding-gold/40 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">🎨</span>
@@ -1721,7 +1721,7 @@ export default function GuestEditor({
                     {(() => {
                       const rsvpStatus = getOverallRsvpStatus(guest)
                       const eventNames: Record<string, string> = {
-                        mehndi: 'Mehendi',
+                        mehndi: 'Mehndi',
                         wedding: 'Wedding',
                         reception: 'Reception',
                       }
@@ -1957,7 +1957,7 @@ export default function GuestEditor({
                     <div className="space-y-3">
                       {viewingGuest.eventAccess && viewingGuest.eventAccess.map((eventSlug: string) => {
                         const eventNames: Record<string, string> = {
-                          mehndi: 'Mehendi',
+                          mehndi: 'Mehndi',
                           wedding: 'Hindu Wedding',
                           reception: 'Reception',
                         }

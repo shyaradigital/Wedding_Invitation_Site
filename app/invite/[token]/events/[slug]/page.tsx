@@ -21,7 +21,7 @@ const eventInfo: Record<
   { title: string; icon: string; color: string }
 > = {
   mehndi: {
-    title: 'Mehendi',
+    title: 'Mehndi',
     icon: '/icons/mehndi-icon.png',
     color: 'wedding-rose',
   },
@@ -56,7 +56,6 @@ const eventContent: Record<string, {
   mehndi: {
     date: '20th Day of March, 2026',
     time: 'Six O\'Clock in the Evening',
-    programNote: 'Hand Painting with Henna',
     attire: 'Casual',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Bridal lounge, DoubleTree',
@@ -71,7 +70,7 @@ const eventContent: Record<string, {
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Poolside patio, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
-    pherasDescription: 'Religious ceremony where the couple vows commitment around sacred fire',
+    pherasDescription: 'The Wedding Ceremony unites two souls spiritually, mentally and physically. The bond of matrimony is sacred and the ceremony of marriage is conducted according to Vedic traditions.',
     baraatDescription: 'Baraat is an Indian wedding ceremony where the groom accompanied by his family and friends dance all the way to the bride\'s doorstep or wedding venue.',
     baraatTime: '30 minutes past 9 O\'Clock in the Morning',
     additionalInfo: 'No boxed gifts/registry',
@@ -251,8 +250,8 @@ export default function EventDetailsPage() {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              {/* Title - For non-wedding pages, or Baraat for wedding */}
-              {!isWedding ? (
+              {/* Title - For non-wedding pages */}
+              {!isWedding && (
                 <div className="text-center mb-6 sm:mb-8">
                   <h1
                     className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 ${
@@ -274,14 +273,6 @@ export default function EventDetailsPage() {
                   </h1>
                   <OrnamentalDivider variant="ornate" />
                 </div>
-              ) : (
-                // For wedding, show Baraat as the main title
-                <div className="text-center mb-6 sm:mb-8">
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 text-wedding-navy">
-                    Baraat
-                  </h1>
-                  <OrnamentalDivider variant="ornate" />
-                </div>
               )}
 
               {/* Description (Mehndi and Reception only) - At the top after title */}
@@ -298,9 +289,15 @@ export default function EventDetailsPage() {
                 </motion.div>
               )}
 
-              {/* Baraat Section (Wedding only) - Content box after title */}
-              {isWedding && content.baraatDescription && (
+              {/* Hindu Wedding Section (Wedding only) - First section for wedding */}
+              {isWedding && content.pherasDescription && (
                 <>
+                  <div className="text-center mb-6 sm:mb-8">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 text-wedding-navy">
+                      Hindu Wedding
+                    </h1>
+                    <OrnamentalDivider variant="ornate" />
+                  </div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -309,49 +306,11 @@ export default function EventDetailsPage() {
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
                       <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
-                        {content.baraatDescription}
+                        {content.pherasDescription}
                       </p>
                     </div>
                   </motion.div>
-                  
-                  {/* Baraat Time - Separate box in Date & Time format */}
-                  {isWedding && content.baraatTime && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.14 }}
-                      className="rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 bg-white/70 border border-wedding-gold/30"
-                    >
-                      <div className="text-center">
-                        <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700">
-                          at {content.baraatTime}
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
                 </>
-              )}
-
-              {/* Hindu Wedding Section (Wedding only) - After Baraat */}
-              {isWedding && content.pherasDescription && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="mb-6 sm:mb-8"
-                >
-                  <div className="text-center mb-4 sm:mb-6">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 text-wedding-navy">
-                      Hindu Wedding
-                    </h1>
-                    <OrnamentalDivider variant="ornate" />
-                  </div>
-                  <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
-                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
-                      {content.pherasDescription}
-                    </p>
-                  </div>
-                </motion.div>
               )}
 
               {/* Date & Time */}
@@ -411,19 +370,6 @@ export default function EventDetailsPage() {
                 </motion.div>
               )}
 
-              {/* Program Note (Mehndi only) - Below description */}
-              {isMehendi && content.programNote && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-white/60 border border-wedding-gold/20"
-                >
-                  <p className="text-base sm:text-lg md:text-xl font-serif italic text-gray-700">
-                    {content.programNote}
-                  </p>
-                </motion.div>
-              )}
 
               {/* Note (Reception only) */}
               {isReception && content.note && (
@@ -481,6 +427,46 @@ export default function EventDetailsPage() {
                     {content.additionalInfo}
                   </p>
                 </motion.div>
+              )}
+
+              {/* Baraat Section (Wedding only) - After Attire, before Venue */}
+              {isWedding && content.baraatDescription && (
+                <>
+                  <div className="text-center mb-6 sm:mb-8">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 text-wedding-navy">
+                      Baraat
+                    </h1>
+                    <OrnamentalDivider variant="ornate" />
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.45 }}
+                    className="mb-6 sm:mb-8"
+                  >
+                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                        {content.baraatDescription}
+                      </p>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Baraat Time - Separate box in Date & Time format */}
+                  {isWedding && content.baraatTime && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.47 }}
+                      className="rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 bg-white/70 border border-wedding-gold/30"
+                    >
+                      <div className="text-center">
+                        <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700">
+                          at {content.baraatTime}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </>
               )}
 
               {/* Venue */}

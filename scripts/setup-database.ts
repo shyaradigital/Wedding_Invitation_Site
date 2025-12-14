@@ -40,18 +40,18 @@ async function main() {
   const events = [
     {
       slug: 'mehndi',
-      title: 'Mehendi',
+      title: 'Mehndi',
       description: 'Henna painting ceremony, otherwise known as Mehndi, is to be held the night before the wedding as a way of wishing the bride good health and prosperity as she makes her journey on to marriage.',
     },
     {
       slug: 'wedding',
       title: 'Hindu Wedding',
-      description: null,
+      description: 'The Wedding Ceremony unites two souls spiritually, mentally and physically. The bond of matrimony is sacred and the ceremony of marriage is conducted according to Vedic traditions.',
     },
     {
       slug: 'reception',
       title: 'Reception',
-      description: 'A grand celebration with dinner, music, and dancing.',
+      description: 'Reception ceremony is celebrated just after the main wedding day. It is the first public appearance of the newly wed couple after their marriage.',
     },
   ]
 

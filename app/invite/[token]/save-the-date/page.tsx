@@ -17,7 +17,7 @@ import { useGuestAccess } from '@/lib/use-guest-access'
 
 const eventData = {
   mehndi: {
-    name: 'Mehendi',
+    name: 'Mehndi',
     date: '20th Day of March',
     time: 'Six O\'Clock in the Evening',
     icon: '/icons/mehndi-icon.png',

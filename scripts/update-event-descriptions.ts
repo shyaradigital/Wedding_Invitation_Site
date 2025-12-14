@@ -11,44 +11,45 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Updating event descriptions...')
 
-  // Update mehndi description
+  // Update mehndi title and description
   await prisma.event.upsert({
     where: { slug: 'mehndi' },
     update: {
+      title: 'Mehndi',
       description: 'Henna painting ceremony, otherwise known as Mehndi, is to be held the night before the wedding as a way of wishing the bride good health and prosperity as she makes her journey on to marriage.',
     },
     create: {
       slug: 'mehndi',
-      title: 'Mehendi',
+      title: 'Mehndi',
       description: 'Henna painting ceremony, otherwise known as Mehndi, is to be held the night before the wedding as a way of wishing the bride good health and prosperity as she makes her journey on to marriage.',
     },
   })
-  console.log('✓ Updated mehndi description')
+  console.log('✓ Updated mehndi title and description')
 
-  // Update wedding description (remove old description)
+  // Update wedding description
   await prisma.event.upsert({
     where: { slug: 'wedding' },
     update: {
-      description: null,
+      description: 'The Wedding Ceremony unites two souls spiritually, mentally and physically. The bond of matrimony is sacred and the ceremony of marriage is conducted according to Vedic traditions.',
     },
     create: {
       slug: 'wedding',
       title: 'Hindu Wedding',
-      description: null,
+      description: 'The Wedding Ceremony unites two souls spiritually, mentally and physically. The bond of matrimony is sacred and the ceremony of marriage is conducted according to Vedic traditions.',
     },
   })
-  console.log('✓ Removed wedding description')
+  console.log('✓ Updated wedding description')
 
-  // Update reception description (ensure it's set)
+  // Update reception description
   await prisma.event.upsert({
     where: { slug: 'reception' },
     update: {
-      description: 'A grand celebration with dinner, music, and dancing.',
+      description: 'Reception ceremony is celebrated just after the main wedding day. It is the first public appearance of the newly wed couple after their marriage.',
     },
     create: {
       slug: 'reception',
       title: 'Reception',
-      description: 'A grand celebration with dinner, music, and dancing.',
+      description: 'Reception ceremony is celebrated just after the main wedding day. It is the first public appearance of the newly wed couple after their marriage.',
     },
   })
   console.log('✓ Updated reception description')

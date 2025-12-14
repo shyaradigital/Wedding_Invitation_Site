@@ -146,7 +146,7 @@ export default function VenueTravelPage() {
                   className="bg-white/80 rounded-xl p-6 sm:p-8 border-2 border-wedding-gold/30 shadow-lg"
                 >
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed text-center">
-                    Guests are requested to call <span className="font-semibold">949-471-8888</span> upon arrival.
+                    DoubleTree by Hilton Hotel Irvine – Spectrum provides complimentary shuttle from John Wayne Airport. Guests are requested to call <span className="font-semibold">949-471-8888</span> upon arrival. Guests arriving at LAX can use Uber, Lyft.
                   </p>
                 </motion.div>
 
@@ -164,9 +164,6 @@ export default function VenueTravelPage() {
                     </h2>
                   </div>
                   <OrnamentalDivider variant="simple" className="mb-4" />
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed mb-4">
-                    <span className="font-semibold">Venue:</span> DoubleTree by Hilton Hotel Irvine – Spectrum provides complimentary shuttle.
-                  </p>
                   <p className="text-base sm:text-lg md:text-xl font-serif font-semibold text-gray-800 mb-2">
                     DoubleTree by Hilton Hotel Irvine – Spectrum
                   </p>

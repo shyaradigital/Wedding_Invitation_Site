@@ -67,20 +67,20 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
   // Add event pages based on access (in chronological order)
   if (eventAccess && Array.isArray(eventAccess)) {
     if (eventAccess.includes('mehndi')) {
-      navItems.push({ href: `/invite/${token}/events/mehndi`, label: 'Mehendi', icon: '/icons/mehndi-icon.png', iconType: 'image' })
+      navItems.push({ href: `/invite/${token}/events/mehndi`, label: 'Mehndi', icon: '/icons/mehndi-icon.png', iconType: 'image' })
     }
     if (eventAccess.includes('wedding')) {
-      navItems.push({ href: `/invite/${token}/events/wedding`, label: 'Wedding', icon: '/icons/wedding-icon.png', iconType: 'image' })
+      navItems.push({ href: `/invite/${token}/events/wedding`, label: 'Baraat and Wedding', icon: '/icons/wedding-icon.png', iconType: 'image' })
     }
     if (eventAccess.includes('reception')) {
       navItems.push({ href: `/invite/${token}/events/reception`, label: 'Reception', icon: '/icons/reception-icon.png', iconType: 'image' })
     }
   }
 
-  // Add Save the Date, Venue & Travel, and RSVP - always include these
+  // Add Save the Date, Travel & Venue, and RSVP - always include these
   navItems.push(
     { href: `/invite/${token}/save-the-date`, label: 'Save the Date', icon: '📅', iconType: 'emoji' },
-    { href: `/invite/${token}/venue-travel`, label: 'Venue & Travel', icon: '📍', iconType: 'emoji' },
+    { href: `/invite/${token}/venue-travel`, label: 'Travel and Venue', icon: '📍', iconType: 'emoji' },
     { href: `/invite/${token}/rsvp`, label: 'RSVP', icon: '💌', iconType: 'emoji' }
   )
 
