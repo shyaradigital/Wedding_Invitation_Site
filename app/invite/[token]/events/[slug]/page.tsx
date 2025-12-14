@@ -84,7 +84,7 @@ const eventContent: Record<string, {
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Ballroom, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
-    cocktailHour: '5:30pm - 6:30pm',
+    cocktailHour: 'Half past Five O\'Clock in the Evening to Half past Six O\'Clock in the Evening',
   },
 }
 
