@@ -251,28 +251,38 @@ export default function EventDetailsPage() {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              {/* Title */}
-              <div className="text-center mb-6 sm:mb-8">
-                <h1
-                  className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 ${
-                    isReception
-                      ? 'text-wedding-gold drop-shadow-lg'
-                      : isMehendi
-                      ? 'text-wedding-forest-green'
-                      : 'text-wedding-navy'
-                  }`}
-                  style={
-                    isReception
-                      ? {
-                          textShadow: '0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)',
-                        }
-                      : {}
-                  }
-                >
-                  {event.title}
-                </h1>
-                <OrnamentalDivider variant="ornate" />
-              </div>
+              {/* Title - For non-wedding pages, or Baraat for wedding */}
+              {!isWedding ? (
+                <div className="text-center mb-6 sm:mb-8">
+                  <h1
+                    className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 ${
+                      isReception
+                        ? 'text-wedding-gold drop-shadow-lg'
+                        : isMehendi
+                        ? 'text-wedding-forest-green'
+                        : 'text-wedding-navy'
+                    }`}
+                    style={
+                      isReception
+                        ? {
+                            textShadow: '0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)',
+                          }
+                        : {}
+                    }
+                  >
+                    {event.title}
+                  </h1>
+                  <OrnamentalDivider variant="ornate" />
+                </div>
+              ) : (
+                // For wedding, show Baraat as the main title
+                <div className="text-center mb-6 sm:mb-8">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 text-wedding-navy">
+                    Baraat
+                  </h1>
+                  <OrnamentalDivider variant="ornate" />
+                </div>
+              )}
 
               {/* Description (Mehndi and Reception only) - At the top after title */}
               {eventDescription && (
@@ -288,7 +298,7 @@ export default function EventDetailsPage() {
                 </motion.div>
               )}
 
-              {/* Baraat Section (Wedding only) - First section for wedding */}
+              {/* Baraat Section (Wedding only) - Content box after title */}
               {isWedding && content.baraatDescription && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -296,9 +306,6 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.12 }}
                   className="mb-6 sm:mb-8"
                 >
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-script text-wedding-navy mb-4 sm:mb-6 text-center">
-                    Baraat
-                  </h2>
                   <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
                     <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed mb-3">
                       {content.baraatDescription}
@@ -320,9 +327,12 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.15 }}
                   className="mb-6 sm:mb-8"
                 >
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-script text-wedding-navy mb-4 sm:mb-6 text-center">
-                    Hindu Wedding
-                  </h2>
+                  <div className="text-center mb-4 sm:mb-6">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 text-wedding-navy">
+                      Hindu Wedding
+                    </h1>
+                    <OrnamentalDivider variant="ornate" />
+                  </div>
                   <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
                     <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
                       {content.pherasDescription}

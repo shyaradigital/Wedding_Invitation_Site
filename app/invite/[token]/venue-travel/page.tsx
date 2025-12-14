@@ -138,11 +138,23 @@ export default function VenueTravelPage() {
                   </p>
                 </motion.div>
 
-                {/* Venue Information */}
+                {/* Shuttle Contact Information */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
+                  className="bg-white/80 rounded-xl p-6 sm:p-8 border-2 border-wedding-gold/30 shadow-lg"
+                >
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed text-center">
+                    Guests are requested to call <span className="font-semibold">949-471-8888</span> upon arrival.
+                  </p>
+                </motion.div>
+
+                {/* Venue Information */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
                   className="bg-white/80 rounded-xl p-6 sm:p-8 border-2 border-wedding-gold/30 shadow-lg"
                 >
                   <div className="flex items-center mb-4">
@@ -153,7 +165,7 @@ export default function VenueTravelPage() {
                   </div>
                   <OrnamentalDivider variant="simple" className="mb-4" />
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed mb-4">
-                    <span className="font-semibold">Venue:</span> DoubleTree by Hilton Hotel Irvine – Spectrum provides complimentary shuttle. Guests are requested to call 949-471-8888 upon arrival.
+                    <span className="font-semibold">Venue:</span> DoubleTree by Hilton Hotel Irvine – Spectrum provides complimentary shuttle.
                   </p>
                   <p className="text-base sm:text-lg md:text-xl font-serif font-semibold text-gray-800 mb-2">
                     DoubleTree by Hilton Hotel Irvine – Spectrum
