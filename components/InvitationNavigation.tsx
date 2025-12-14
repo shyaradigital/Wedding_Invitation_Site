@@ -77,9 +77,10 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
     }
   }
 
-  // Add Save the Date and RSVP - always include these
+  // Add Save the Date, Venue & Travel, and RSVP - always include these
   navItems.push(
     { href: `/invite/${token}/save-the-date`, label: 'Save the Date', icon: '📅', iconType: 'emoji' },
+    { href: `/invite/${token}/venue-travel`, label: 'Venue & Travel', icon: '📍', iconType: 'emoji' },
     { href: `/invite/${token}/rsvp`, label: 'RSVP', icon: '💌', iconType: 'emoji' }
   )
 

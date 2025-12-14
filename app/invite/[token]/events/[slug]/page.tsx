@@ -288,36 +288,46 @@ export default function EventDetailsPage() {
                 </motion.div>
               )}
 
-              {/* About Pheras (Wedding only) - After description or title */}
+              {/* Baraat Section (Wedding only) - First section for wedding */}
+              {isWedding && content.baraatDescription && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.12 }}
+                  className="mb-6 sm:mb-8"
+                >
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-script text-wedding-navy mb-4 sm:mb-6 text-center">
+                    Baraat
+                  </h2>
+                  <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
+                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed mb-3">
+                      {content.baraatDescription}
+                    </p>
+                    {content.baraatTime && (
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 font-semibold">
+                        {content.baraatTime}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Hindu Wedding Section (Wedding only) - After Baraat */}
               {isWedding && content.pherasDescription && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                  className="mb-6 sm:mb-8"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
-                    {content.pherasDescription}
-                  </p>
-                </motion.div>
-              )}
-
-              {/* Baraat Section (Wedding only) - After Pheras */}
-              {isWedding && content.baraatDescription && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.17 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
-                >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed mb-3">
-                    {content.baraatDescription}
-                  </p>
-                  {content.baraatTime && (
-                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 font-semibold">
-                      {content.baraatTime}
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-script text-wedding-navy mb-4 sm:mb-6 text-center">
+                    Hindu Wedding
+                  </h2>
+                  <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
+                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                      {content.pherasDescription}
                     </p>
-                  )}
+                  </div>
                 </motion.div>
               )}
 
@@ -436,6 +446,20 @@ export default function EventDetailsPage() {
                 </p>
               </motion.div>
 
+              {/* Additional Info (Mehndi only - dinner info) - After Attire, before Venue */}
+              {isMehendi && content.additionalInfo && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                >
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700">
+                    {content.additionalInfo}
+                  </p>
+                </motion.div>
+              )}
+
               {/* Venue */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -493,20 +517,6 @@ export default function EventDetailsPage() {
                   ></iframe>
                 </div>
               </motion.div>
-
-              {/* Additional Info (Mehndi only - dinner info) */}
-              {isMehendi && content.additionalInfo && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
-                >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700">
-                    {content.additionalInfo}
-                  </p>
-                </motion.div>
-              )}
 
               {/* Botanical/Decorative elements for Mehendi */}
               {isMehendi && (
