@@ -9,6 +9,6 @@ export default async function AdminPage() {
     redirect('/admin/login')
   }
 
-  return <AdminDashboard />
+  return <AdminDashboard currentAdminId={admin.id} />
 }
 

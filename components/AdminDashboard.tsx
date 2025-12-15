@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import GuestEditor from './GuestEditor'
+import AdminStats from './AdminStats'
+import AdminEditor from './AdminEditor'
 
 interface Guest {
   id: string
@@ -19,10 +21,17 @@ interface Guest {
   createdAt: string
 }
 
-export default function AdminDashboard() {
+type TabType = 'stats' | 'guests' | 'admins'
+
+interface AdminDashboardProps {
+  currentAdminId: string
+}
+
+export default function AdminDashboard({ currentAdminId }: AdminDashboardProps) {
   const router = useRouter()
   const [guests, setGuests] = useState<Guest[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<TabType>('stats')
 
   useEffect(() => {
     fetchGuests()
@@ -78,13 +87,55 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* Guest Management */}
+      {/* Tabs */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <nav className="flex space-x-8" aria-label="Tabs">
+            <button
+              onClick={() => setActiveTab('stats')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'stats'
+                  ? 'border-wedding-gold text-wedding-navy'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              📊 Statistics
+            </button>
+            <button
+              onClick={() => setActiveTab('guests')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'guests'
+                  ? 'border-wedding-gold text-wedding-navy'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              👥 Guest Management
+            </button>
+            <button
+              onClick={() => setActiveTab('admins')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'admins'
+                  ? 'border-wedding-gold text-wedding-navy'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              ⚙️ Admin Management
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <GuestEditor
-          guests={guests}
-          onGuestsChange={fetchGuests}
-          isLoading={isLoading}
-        />
+        {activeTab === 'stats' && <AdminStats />}
+        {activeTab === 'guests' && (
+          <GuestEditor
+            guests={guests}
+            onGuestsChange={fetchGuests}
+            isLoading={isLoading}
+          />
+        )}
+        {activeTab === 'admins' && <AdminEditor currentAdminId={currentAdminId} />}
       </div>
     </div>
   )
