@@ -36,25 +36,6 @@ export async function GET() {
         adminEmails: admins.map(a => a.email),
       }),
     })
-    const response = NextResponse.json({
-      status: 'healthy',
-      database: 'connected',
-      tables: {
-        admin: adminCount,
-        guest: guestCount,
-        event: eventCount,
-      },
-      env: {
-        hasDatabaseUrl: !!process.env.DATABASE_URL,
-        hasJwtSecret: !!process.env.JWT_SECRET,
-        nodeEnv: process.env.NODE_ENV,
-        adminEmail: process.env.ADMIN_EMAIL || 'admin (default)',
-        hasAdminPassword: !!process.env.ADMIN_PASSWORD,
-      },
-      ...(process.env.NODE_ENV === 'development' && {
-        adminEmails: admins.map(a => a.email),
-      }),
-    })
     return setNoCacheHeaders(response)
   } catch (error) {
     console.error('Health check failed:', error)
