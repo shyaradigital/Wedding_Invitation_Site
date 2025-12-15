@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
 interface EventStats {
   totalAttendees: number
@@ -27,6 +28,12 @@ const EVENT_NAMES: Record<string, string> = {
   mehndi: 'Mehndi',
   wedding: 'Wedding',
   reception: 'Reception',
+}
+
+const EVENT_ICONS: Record<string, string> = {
+  mehndi: '/icons/mehndi-icon.png',
+  wedding: '/icons/wedding-icon.png',
+  reception: '/icons/reception-icon.png',
 }
 
 export default function AdminStats() {
@@ -108,18 +115,21 @@ export default function AdminStats() {
         <div className="mt-6 pt-6 border-t border-gray-200">
           <div className="text-sm font-semibold text-gray-700 mb-3">Attendees by Event (Invite-Based):</div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-wedding-gold/5 rounded-lg">
-              <div className="text-xs text-gray-600 mb-1">Mehndi</div>
-              <div className="text-xl font-bold text-wedding-navy">{stats.inviteBased.mehndi}</div>
-            </div>
-            <div className="text-center p-3 bg-wedding-rose/5 rounded-lg">
-              <div className="text-xs text-gray-600 mb-1">Wedding</div>
-              <div className="text-xl font-bold text-wedding-navy">{stats.inviteBased.wedding}</div>
-            </div>
-            <div className="text-center p-3 bg-wedding-navy/5 rounded-lg">
-              <div className="text-xs text-gray-600 mb-1">Reception</div>
-              <div className="text-xl font-bold text-wedding-navy">{stats.inviteBased.reception}</div>
-            </div>
+            {(['mehndi', 'wedding', 'reception'] as const).map((eventSlug) => (
+              <div key={eventSlug} className="text-center p-3 bg-wedding-gold/5 rounded-lg">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Image
+                    src={EVENT_ICONS[eventSlug]}
+                    alt={EVENT_NAMES[eventSlug]}
+                    width={24}
+                    height={24}
+                    className="object-contain"
+                  />
+                  <div className="text-xs text-gray-600">{EVENT_NAMES[eventSlug]}</div>
+                </div>
+                <div className="text-xl font-bold text-wedding-navy">{stats.inviteBased[eventSlug]}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -137,7 +147,16 @@ export default function AdminStats() {
           
           return (
             <div key={eventSlug} className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-              <h3 className="text-xl font-display text-wedding-navy mb-4">{eventName}</h3>
+              <h3 className="text-xl font-display text-wedding-navy mb-4 flex items-center gap-2">
+                <Image
+                  src={EVENT_ICONS[eventSlug]}
+                  alt={eventName}
+                  width={28}
+                  height={28}
+                  className="object-contain"
+                />
+                <span>{eventName}</span>
+              </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
