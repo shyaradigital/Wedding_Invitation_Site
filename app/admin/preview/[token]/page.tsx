@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma'
 import { ensureJsonArray } from '@/lib/utils'
 import AdminPreviewPage from '@/components/AdminPreviewPage'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PreviewPage({
   params,
 }: {

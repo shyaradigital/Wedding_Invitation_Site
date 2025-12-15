@@ -48,7 +48,7 @@ export default function RSVPPage() {
   // Load preferences when access is granted
   useEffect(() => {
     if (accessState === 'granted' && guest) {
-      fetch(`/api/guest/preferences?token=${token}`)
+      fetch(`/api/guest/preferences?token=${token}`, { cache: 'no-store' })
         .then((res) => res.json())
         .then((data) => {
             if (data && data.preferencesSubmitted) {
@@ -135,6 +135,7 @@ export default function RSVPPage() {
       const response = await fetch('/api/guest/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({
           token,
           rsvpStatus: formData.rsvpStatus,

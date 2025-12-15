@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { setNoCacheHeaders } from '@/lib/utils'
 
 export async function GET() {
   try {
@@ -16,7 +17,7 @@ export async function GET() {
       ? await prisma.admin.findMany({ select: { email: true } })
       : []
     
-    return NextResponse.json({
+    const response = NextResponse.json({
       status: 'healthy',
       database: 'connected',
       tables: {
@@ -35,13 +36,33 @@ export async function GET() {
         adminEmails: admins.map(a => a.email),
       }),
     })
+    const response = NextResponse.json({
+      status: 'healthy',
+      database: 'connected',
+      tables: {
+        admin: adminCount,
+        guest: guestCount,
+        event: eventCount,
+      },
+      env: {
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        nodeEnv: process.env.NODE_ENV,
+        adminEmail: process.env.ADMIN_EMAIL || 'admin (default)',
+        hasAdminPassword: !!process.env.ADMIN_PASSWORD,
+      },
+      ...(process.env.NODE_ENV === 'development' && {
+        adminEmails: admins.map(a => a.email),
+      }),
+    })
+    return setNoCacheHeaders(response)
   } catch (error) {
     console.error('Health check failed:', error)
     
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     const errorStack = error instanceof Error ? error.stack : undefined
     
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         status: 'unhealthy',
         error: errorMessage,
@@ -54,6 +75,7 @@ export async function GET() {
       },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 

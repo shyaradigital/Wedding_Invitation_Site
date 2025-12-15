@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin-auth'
+import { setNoCacheHeaders } from '@/lib/utils'
 import { z } from 'zod'
 
 const createEventSchema = z.object({
@@ -23,20 +24,23 @@ export async function GET() {
       orderBy: { createdAt: 'asc' },
     })
 
-    return NextResponse.json({ events })
+    const response = NextResponse.json({ events })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error fetching events:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 
@@ -61,26 +65,30 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ success: true, event })
+    const response = NextResponse.json({ success: true, event })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error creating event:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }

@@ -49,7 +49,7 @@ export default function AdminStats() {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await fetch('/api/admin/stats')
+      const response = await fetch('/api/admin/stats', { cache: 'no-store' })
       
       if (!response.ok) {
         throw new Error('Failed to fetch stats')

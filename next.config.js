@@ -21,6 +21,19 @@ const nextConfig = {
     }
     return config
   },
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, must-revalidate, max-age=0',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

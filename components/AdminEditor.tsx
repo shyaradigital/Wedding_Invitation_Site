@@ -37,7 +37,7 @@ export default function AdminEditor({ currentAdminId }: AdminEditorProps) {
   const fetchAdmins = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/admin/admins')
+      const response = await fetch('/api/admin/admins', { cache: 'no-store' })
       if (response.ok) {
         const data = await response.json()
         setAdmins(data.admins || [])
@@ -83,6 +83,7 @@ export default function AdminEditor({ currentAdminId }: AdminEditorProps) {
       const response = await fetch('/api/admin/admins', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify(formData),
       })
 
@@ -112,6 +113,7 @@ export default function AdminEditor({ currentAdminId }: AdminEditorProps) {
       const response = await fetch(`/api/admin/admins/${editingAdmin.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ email: formData.email }),
       })
 
@@ -139,6 +141,7 @@ export default function AdminEditor({ currentAdminId }: AdminEditorProps) {
       setError(null)
       const response = await fetch(`/api/admin/admins/${admin.id}`, {
         method: 'DELETE',
+        cache: 'no-store',
       })
 
       const data = await response.json()
@@ -178,6 +181,7 @@ export default function AdminEditor({ currentAdminId }: AdminEditorProps) {
       const response = await fetch(`/api/admin/admins/${changingPasswordFor.id}/password`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ password: passwordData.password }),
       })
 

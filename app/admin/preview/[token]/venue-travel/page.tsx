@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getAdminFromRequest } from '@/lib/admin-auth'
 import PreviewVenueTravelContent from '@/components/PreviewVenueTravelContent'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PreviewVenueTravelPage({
   params,
 }: {

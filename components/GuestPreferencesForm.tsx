@@ -25,7 +25,7 @@ export default function GuestPreferencesForm({
 
   useEffect(() => {
     // Check if preferences have already been submitted
-    fetch(`/api/guest/preferences?token=${token}`)
+    fetch(`/api/guest/preferences?token=${token}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (!data.preferencesSubmitted) {
@@ -54,6 +54,7 @@ export default function GuestPreferencesForm({
       const response = await fetch('/api/guest/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({
           token,
           menuPreference: formData.menuPreference,

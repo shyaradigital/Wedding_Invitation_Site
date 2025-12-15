@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getAdminFromRequest } from '@/lib/admin-auth'
 import AdminPreviewPage from '@/components/AdminPreviewPage'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminPreviewAllEventsPage() {
   // Check if user is admin
   const admin = await getAdminFromRequest()

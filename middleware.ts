@@ -2,17 +2,24 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  const response = NextResponse.next()
+  
+  // Add no-cache headers for all pages (except static assets)
+  if (!request.nextUrl.pathname.startsWith('/_next/')) {
+    response.headers.set('Cache-Control', 'no-store, must-revalidate, max-age=0')
+  }
+  
   // Allow public API routes
   if (request.nextUrl.pathname.startsWith('/api/verify-') ||
       request.nextUrl.pathname.startsWith('/api/guest/') ||
       request.nextUrl.pathname.startsWith('/api/events/')) {
-    return NextResponse.next()
+    return response
   }
 
   // Admin routes are protected by API route authentication
   // No need for middleware-level protection here
 
-  return NextResponse.next()
+  return response
 }
 
 export const config = {

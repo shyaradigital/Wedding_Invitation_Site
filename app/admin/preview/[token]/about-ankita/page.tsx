@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getAdminFromRequest } from '@/lib/admin-auth'
 import PreviewAboutAnkitaContent from '@/components/PreviewAboutAnkitaContent'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PreviewAboutAnkitaPage({
   params,
 }: {

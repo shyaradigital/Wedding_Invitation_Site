@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin, getAdminFromRequest } from '@/lib/admin-auth'
+import { setNoCacheHeaders } from '@/lib/utils'
 import { z } from 'zod'
 
 const updateAdminSchema = z.object({
@@ -57,30 +58,34 @@ export async function PATCH(
       },
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       admin: updatedAdmin,
     })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error updating admin:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 
@@ -126,23 +131,26 @@ export async function DELETE(
       where: { id },
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Admin deleted successfully',
     })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error deleting admin:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 

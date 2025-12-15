@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { rateLimit } from '@/lib/rate-limit'
-import { normalizePhoneNumber, validatePhoneNumber, validateEmail, ensureJsonArray } from '@/lib/utils'
+import { normalizePhoneNumber, validatePhoneNumber, validateEmail, ensureJsonArray, setNoCacheHeaders } from '@/lib/utils'
 import { z } from 'zod'
 
 const saveDeviceSchema = z.object({
@@ -16,10 +16,11 @@ export async function POST(request: NextRequest) {
     const rateLimitResult = rateLimit(`save-device-${ip}`, 10, 60000)
     
     if (!rateLimitResult.allowed) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
         { status: 429 }
       )
+      return setNoCacheHeaders(response)
     }
 
     const body = await request.json()
@@ -30,10 +31,11 @@ export async function POST(request: NextRequest) {
     const isPhone = validatePhoneNumber(phoneOrEmail)
 
     if (!isEmail && !isPhone) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid phone number or email format' },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     const guest = await prisma.guest.findUnique({
@@ -41,10 +43,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!guest) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid token' },
         { status: 404 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Verify phone or email matches
@@ -52,19 +55,21 @@ export async function POST(request: NextRequest) {
       const normalizedPhone = normalizePhoneNumber(phoneOrEmail)
       const normalizedGuestPhone = guest.phone ? normalizePhoneNumber(guest.phone) : null
       if (normalizedGuestPhone !== normalizedPhone) {
-        return NextResponse.json(
+        const response = NextResponse.json(
           { error: 'Phone number does not match' },
           { status: 403 }
         )
+        return setNoCacheHeaders(response)
       }
     } else if (isEmail) {
       const normalizedEmail = phoneOrEmail.trim().toLowerCase()
       const normalizedGuestEmail = guest.email ? guest.email.trim().toLowerCase() : null
       if (normalizedGuestEmail !== normalizedEmail) {
-        return NextResponse.json(
+        const response = NextResponse.json(
           { error: 'Email does not match' },
           { status: 403 }
         )
+        return setNoCacheHeaders(response)
       }
     }
 
@@ -73,23 +78,25 @@ export async function POST(request: NextRequest) {
 
     // Check if device already exists
     if (allowedDevices.includes(fingerprint)) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         message: 'Device already registered',
         isNewDevice: false,
       })
+      return setNoCacheHeaders(response)
     }
 
     // Check device limit
     const maxDevices = guest.maxDevicesAllowed || 1
     if (allowedDevices.length >= maxDevices) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         {
           error: 'Device limit reached',
           message: 'Please open from your original device.',
         },
         { status: 403 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Add new device
@@ -108,25 +115,28 @@ export async function POST(request: NextRequest) {
       data: updateData,
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Device registered successfully',
       isNewDevice: true,
       deviceCount: updatedDevices.length,
     })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error saving device:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 

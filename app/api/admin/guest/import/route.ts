@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin-auth'
-import { generateSecureToken, ensureJsonArray } from '@/lib/utils'
+import { generateSecureToken, ensureJsonArray, setNoCacheHeaders } from '@/lib/utils'
 const XLSX = require('xlsx')
 
 // Expected Excel format:
@@ -19,10 +19,11 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File
 
     if (!file) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'No file uploaded' },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Validate file type
@@ -33,10 +34,11 @@ export async function POST(request: NextRequest) {
       file.type === 'application/vnd.ms-excel'
 
     if (!isValidFileType) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid file type. Please upload an Excel file (.xlsx or .xls)' },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Read file buffer
@@ -55,10 +57,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!Array.isArray(data) || data.length === 0) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Excel file is empty or invalid format' },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     const results = {
@@ -174,7 +177,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       summary: {
         total: data.length,
@@ -184,19 +187,22 @@ export async function POST(request: NextRequest) {
       },
       results,
     })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error importing guests:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 
@@ -232,25 +238,28 @@ export async function GET() {
     // Generate buffer
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' })
 
-    return new NextResponse(buffer, {
+    const response = new NextResponse(buffer, {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': 'attachment; filename="guest-import-template.xlsx"',
       },
     })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error generating template:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 

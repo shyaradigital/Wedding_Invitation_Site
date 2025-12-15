@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { setNoCacheHeaders } from '@/lib/utils'
 
 export async function POST() {
   const response = NextResponse.json({ success: true })
@@ -12,6 +13,6 @@ export async function POST() {
     maxAge: 0,
     path: '/',
   })
-  return response
+  return setNoCacheHeaders(response)
 }
 

@@ -69,6 +69,7 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
         const verifyResponse = await fetch('/api/verify-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          cache: 'no-store',
           body: JSON.stringify({ token }),
         })
 
@@ -185,6 +186,7 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
       const verifyResponse = await fetch('/api/verify-phone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ token, phoneOrEmail }),
       })
 
@@ -209,6 +211,7 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
         const saveDeviceResponse = await fetch('/api/save-device', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          cache: 'no-store',
           body: JSON.stringify({ token, phoneOrEmail, fingerprint }),
         })
 

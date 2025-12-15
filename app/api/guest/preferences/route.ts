@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import { ensureJsonArray } from '@/lib/utils'
+import { ensureJsonArray, setNoCacheHeaders } from '@/lib/utils'
 
 const preferencesSchema = z.object({
   token: z.string().min(1),
@@ -22,18 +22,20 @@ export async function POST(request: NextRequest) {
     })
 
     if (!guest) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid invitation token' },
         { status: 404 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Check if preferences already submitted
     if (guest.preferencesSubmitted) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Preferences have already been submitted for this invitation' },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Get guest's accessible events
@@ -53,18 +55,20 @@ export async function POST(request: NextRequest) {
       
       // Ensure RSVP status is provided for all accessible events
       if (Object.keys(validRsvpStatus).length !== eventAccess.length) {
-        return NextResponse.json(
+        const response = NextResponse.json(
           { error: 'RSVP status is required for all accessible events' },
           { status: 400 }
         )
+        return setNoCacheHeaders(response)
       }
       
       rsvpStatusJson = JSON.stringify(validRsvpStatus)
     } else {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'RSVP status is required' },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Update guest preferences and RSVP
@@ -81,23 +85,26 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Preferences saved successfully',
     })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error saving preferences:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 
@@ -108,10 +115,11 @@ export async function GET(request: NextRequest) {
     const token = searchParams.get('token')
 
     if (!token) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Token is required' },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     const guest = await prisma.guest.findUnique({
@@ -129,10 +137,11 @@ export async function GET(request: NextRequest) {
     })
 
     if (!guest) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid invitation token' },
         { status: 404 }
       )
+      return setNoCacheHeaders(response)
     }
 
     let rsvpStatus = null
@@ -146,7 +155,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       preferencesSubmitted: guest.preferencesSubmitted,
       rsvpSubmitted: guest.rsvpSubmitted,
       rsvpStatus: rsvpStatus,
@@ -159,12 +168,14 @@ export async function GET(request: NextRequest) {
           }
         : null,
     })
+    return setNoCacheHeaders(response)
   } catch (error) {
     console.error('Error fetching preferences:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 

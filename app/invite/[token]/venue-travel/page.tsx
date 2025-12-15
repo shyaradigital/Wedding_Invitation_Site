@@ -112,7 +112,7 @@ export default function VenueTravelPage() {
                   <span className="text-4xl sm:text-5xl">📍</span>
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script text-wedding-navy mb-4 sm:mb-6">
-                  Venue & Travel Information
+                  Travel & Venue Information
                 </h1>
                 <OrnamentalDivider variant="ornate" />
               </div>

@@ -122,6 +122,7 @@ export default function GuestEditor({
       const response = await fetch('/api/admin/guest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({
           name: formData.name,
           phone: formData.phone.trim() || undefined,
@@ -169,6 +170,7 @@ export default function GuestEditor({
       const response = await fetch(`/api/admin/guest/${guestId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify(updates),
       })
 
@@ -196,6 +198,7 @@ export default function GuestEditor({
     try {
       const response = await fetch(`/api/admin/guest/${guestId}`, {
         method: 'DELETE',
+        cache: 'no-store',
       })
 
       if (response.ok) {
@@ -293,6 +296,7 @@ export default function GuestEditor({
         fetch(`/api/admin/guest/${guestId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
+          cache: 'no-store',
           body: JSON.stringify({ eventAccess: newType }),
         })
       )
@@ -326,7 +330,7 @@ export default function GuestEditor({
     setError(null)
     try {
       const promises = Array.from(selectedGuests).map(guestId =>
-        fetch(`/api/admin/guest/${guestId}`, { method: 'DELETE' })
+        fetch(`/api/admin/guest/${guestId}`, { method: 'DELETE', cache: 'no-store' })
       )
 
       const results = await Promise.all(promises)
@@ -461,6 +465,7 @@ export default function GuestEditor({
       const response = await fetch(`/api/admin/guest/${guestId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({
           allowedDevices: JSON.stringify([]),
         }),
@@ -494,6 +499,7 @@ export default function GuestEditor({
       const response = await fetch(`/api/admin/guest/${guestId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({
           maxDevicesAllowed: maxDevices,
         }),
@@ -767,7 +773,7 @@ export default function GuestEditor({
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await fetch('/api/admin/guest/import')
+      const response = await fetch('/api/admin/guest/import', { cache: 'no-store' })
       const blob = await response.blob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -815,6 +821,7 @@ export default function GuestEditor({
 
       const response = await fetch('/api/admin/guest/import', {
         method: 'POST',
+        cache: 'no-store',
         body: formData,
       })
 

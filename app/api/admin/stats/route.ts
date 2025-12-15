@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin-auth'
-import { ensureJsonArray } from '@/lib/utils'
+import { ensureJsonArray, setNoCacheHeaders } from '@/lib/utils'
 
 const EVENT_SLUGS = ['mehndi', 'wedding', 'reception'] as const
 
@@ -97,20 +97,23 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ stats })
+    const response = NextResponse.json({ stats })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error fetching stats:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { rateLimit } from '@/lib/rate-limit'
-import { normalizePhoneNumber, validatePhoneNumber, validateEmail } from '@/lib/utils'
+import { normalizePhoneNumber, validatePhoneNumber, validateEmail, setNoCacheHeaders } from '@/lib/utils'
 import { z } from 'zod'
 
 const verifyPhoneOrEmailSchema = z.object({
@@ -15,10 +15,11 @@ export async function POST(request: NextRequest) {
     const rateLimitResult = rateLimit(`verify-phone-${ip}`, 5, 60000)
     
     if (!rateLimitResult.allowed) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
         { status: 429 }
       )
+      return setNoCacheHeaders(response)
     }
 
     const body = await request.json()
@@ -29,10 +30,11 @@ export async function POST(request: NextRequest) {
     const isPhone = validatePhoneNumber(phoneOrEmail)
 
     if (!isEmail && !isPhone) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid phone number or email format' },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     const guest = await prisma.guest.findUnique({
@@ -40,10 +42,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!guest) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid token' },
         { status: 404 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Normalize the input
@@ -61,11 +64,12 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        return NextResponse.json({
+        const response = NextResponse.json({
           success: true,
           isFirstTime: true,
           message: 'Phone number saved successfully',
         })
+        return setNoCacheHeaders(response)
       }
 
       // Subsequent times - verify phone matches
@@ -81,21 +85,23 @@ export async function POST(request: NextRequest) {
           })
         }
 
-        return NextResponse.json({
+        const response = NextResponse.json({
           success: true,
           isFirstTime: !guest.tokenUsedFirstTime,
           message: 'Phone number verified',
         })
+        return setNoCacheHeaders(response)
       }
 
       // Phone doesn't match
-      return NextResponse.json(
+      const response = NextResponse.json(
         {
           success: false,
           error: 'Phone number does not match',
         },
         { status: 403 }
       )
+      return setNoCacheHeaders(response)
     }
 
     // Email verification
@@ -110,11 +116,12 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        return NextResponse.json({
+        const response = NextResponse.json({
           success: true,
           isFirstTime: true,
           message: 'Email saved successfully',
         })
+        return setNoCacheHeaders(response)
       }
 
       // Subsequent times - verify email matches
@@ -130,35 +137,39 @@ export async function POST(request: NextRequest) {
           })
         }
 
-        return NextResponse.json({
+        const response = NextResponse.json({
           success: true,
           isFirstTime: !guest.tokenUsedFirstTime,
           message: 'Email verified',
         })
+        return setNoCacheHeaders(response)
       }
 
       // Email doesn't match
-      return NextResponse.json(
+      const response = NextResponse.json(
         {
           success: false,
           error: 'Email does not match',
         },
         { status: 403 }
       )
+      return setNoCacheHeaders(response)
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error verifying phone or email:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 

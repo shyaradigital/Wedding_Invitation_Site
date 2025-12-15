@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin-auth'
 import { hashPassword } from '@/lib/auth'
+import { setNoCacheHeaders } from '@/lib/utils'
 import { z } from 'zod'
 
 const createAdminSchema = z.object({
@@ -24,20 +25,23 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ admins })
+    const response = NextResponse.json({ admins })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error fetching admins:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 
@@ -76,30 +80,34 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       admin,
     })
+    return setNoCacheHeaders(response)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       )
+      return setNoCacheHeaders(response)
     }
 
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
+      return setNoCacheHeaders(response)
     }
 
     console.error('Error creating admin:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return setNoCacheHeaders(response)
   }
 }
 

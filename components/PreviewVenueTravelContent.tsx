@@ -23,7 +23,7 @@ export default function PreviewVenueTravelContent({ token }: { token: string }) 
                   <span className="text-4xl sm:text-5xl">📍</span>
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-display text-wedding-navy mb-4">
-                  Venue & Travel Information
+                  Travel & Venue Information
                 </h1>
                 <div className="wedding-divider-thick max-w-md mx-auto"></div>
               </div>

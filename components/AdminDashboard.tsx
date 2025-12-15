@@ -39,7 +39,7 @@ export default function AdminDashboard({ currentAdminId }: AdminDashboardProps) 
 
   const fetchGuests = async () => {
     try {
-      const response = await fetch('/api/admin/guest')
+      const response = await fetch('/api/admin/guest', { cache: 'no-store' })
       if (response.ok) {
         const data = await response.json()
         setGuests(data.guests || [])
@@ -53,7 +53,7 @@ export default function AdminDashboard({ currentAdminId }: AdminDashboardProps) 
 
   const handleLogout = async () => {
     // Clear admin cookie
-    await fetch('/api/admin/logout', { method: 'POST' })
+    await fetch('/api/admin/logout', { method: 'POST', cache: 'no-store' })
     router.push('/admin/login')
     router.refresh()
   }
