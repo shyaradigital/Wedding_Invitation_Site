@@ -852,49 +852,10 @@ export default function GuestEditor({
 
   return (
     <div>
-      {/* Overview Statistics Section */}
+      {/* Statistics Section */}
       <div className="mb-8">
-        <div className="mb-6">
-          <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy mb-2">
-            Overview Statistics
-          </h2>
-          <p className="text-sm text-gray-600">
-            Key metrics about your guest list and invitations
-          </p>
-        </div>
-        
-        {/* Guest Count Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-wedding-gold to-wedding-gold-light rounded-xl shadow-lg p-5 border border-wedding-gold/30 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-3xl">👥</span>
-              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.total}</div>
-            </div>
-            <div className="text-sm font-semibold text-white/95 mb-1">Total Attendees</div>
-            <div className="text-xs text-white/80">All invited attendees</div>
-          </div>
-          
-          <div className="bg-gradient-to-br from-amber-500 to-amber-400 rounded-xl shadow-lg p-5 border border-amber-400/30 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-3xl">🎉</span>
-              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.allEvents}</div>
-            </div>
-            <div className="text-sm font-semibold text-white/95 mb-1">All Events</div>
-            <div className="text-xs text-white/80">Full event access</div>
-          </div>
-          
-          <div className="bg-gradient-to-br from-wedding-rose to-wedding-rose-light rounded-xl shadow-lg p-5 border border-wedding-rose/30 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-3xl">🥂</span>
-              <div className="text-3xl font-bold text-white drop-shadow-sm">{stats.receptionOnly}</div>
-            </div>
-            <div className="text-sm font-semibold text-white/95 mb-1">Reception Only</div>
-            <div className="text-xs text-white/80">Reception access only</div>
-          </div>
-        </div>
-
         {/* Menu Preference Stats */}
-        <div className="mb-6 mt-6">
+        <div className="mb-6">
           <h3 className="text-lg font-display text-wedding-navy mb-3">Menu Preference Overview</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-5 border border-green-400/30 hover:shadow-xl transition-all duration-300">
