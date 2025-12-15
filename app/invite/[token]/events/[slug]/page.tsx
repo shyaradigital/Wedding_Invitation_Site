@@ -60,7 +60,7 @@ const eventContent: Record<string, {
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Bridal lounge, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
-    additionalInfo: 'Indian vegetarian dinner will be served',
+    additionalInfo: 'Indian boxed vegetarian dinner will be served',
   },
   wedding: {
     date: '21st Day of March, 2026',
