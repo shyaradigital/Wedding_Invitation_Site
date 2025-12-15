@@ -18,7 +18,7 @@ export default function WhatsAppShare({
   const [isOpen, setIsOpen] = useState(false)
   const [phone, setPhone] = useState(guestPhone || '')
   const [message, setMessage] = useState(
-    `Hi ${guestName} 👋,\n\nYou are invited to Ankita & Jay's wedding celebrations!\n\nHere is your personalized invitation link:\n${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guestToken}\n\nLooking forward to celebrating with you! 💛`
+    `Hi ${guestName}👋,\n\nYou are invited to Ankita & Jay's wedding celebrations!\n\nBelow is your personalized event(s) invitation link:\n${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guestToken}\n\n*Please RSVP latest by January 10,2026.*\nLooking forward to celebrating with you! 💛`
   )
   const [copied, setCopied] = useState(false)
 
