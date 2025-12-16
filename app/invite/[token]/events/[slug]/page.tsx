@@ -60,7 +60,7 @@ const eventContent: Record<string, {
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Bridal lounge, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
-    additionalInfo: 'Indian boxed vegetarian dinner will be served',
+    additionalInfo: 'Boxed Punjabi Chhole and Rice Dinner will be served',
   },
   wedding: {
     date: '21st Day of March, 2026',
@@ -324,6 +324,20 @@ export default function EventDetailsPage() {
                           On {content.date} at {content.baraatTime}
                         </p>
                       </div>
+                    </motion.div>
+                  )}
+
+                  {/* Baraat Venue */}
+                  {isWedding && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.16 }}
+                      className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                    >
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed text-center">
+                        Upper Parking Area Behind Poolside Patio, DoubleTree by Hilton Hotel Irvine- Spectrum 90 Pacifica, Irvine, CA 92618
+                      </p>
                     </motion.div>
                   )}
                 </>
