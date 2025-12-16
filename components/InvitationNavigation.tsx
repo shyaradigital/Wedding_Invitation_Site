@@ -103,22 +103,22 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
       <nav className={`sticky top-0 z-[100] ${navBgClass} shadow-lg border-b-2 ${navBorderClass} transition-all duration-300`}>
         <div className="max-w-7xl mx-auto">
           {/* Mobile Header Bar - Always Visible */}
-          <div className="flex items-center justify-between px-4 py-3 md:px-6">
+          <div className="flex items-center justify-between px-4 py-3 md:px-6 gap-3">
             {/* Compact Header with Couple Names */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-shrink-0 min-w-[140px] md:min-w-[180px]">
               <Link href={`/invite/${token}`} className="block">
-                <h1 className={`text-base md:text-lg font-display font-bold truncate ${isReceptionPage && isScrolled ? 'text-wedding-gold' : ''}`}>
+                <h1 className={`text-base md:text-lg font-display font-bold ${isReceptionPage && isScrolled ? 'text-wedding-gold' : ''}`}>
                   <span className={isReceptionPage && isScrolled ? 'text-wedding-gold' : 'text-wedding-gold'}>From Jay and Ankita</span>
                 </h1>
                 {guestName && (
-                  <p className={`text-xs truncate ${isReceptionPage && isScrolled ? 'text-wedding-gold-light/80' : 'text-gray-600'}`}>Hi, {guestName.split(' ')[0]}!</p>
+                  <p className={`text-xs ${isReceptionPage && isScrolled ? 'text-wedding-gold-light/80' : 'text-gray-600'}`}>Hi, {guestName.split(' ')[0]}!</p>
                 )}
               </Link>
             </div>
 
             {/* Hamburger Menu Button - Larger touch target */}
             <button
-              className={`md:hidden p-3 -mr-2 rounded-xl transition-colors touch-manipulation flex items-center gap-2 ${
+              className={`md:hidden p-3 -mr-2 rounded-xl transition-colors touch-manipulation flex items-center gap-2 flex-shrink-0 ${
                 isReceptionPage && isScrolled 
                   ? 'active:bg-wedding-navy-light' 
                   : 'active:bg-wedding-cream'
@@ -163,7 +163,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
             </button>
 
             {/* Desktop Navigation - Hidden on mobile */}
-            <div className="hidden md:flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            <div className="hidden md:flex items-center gap-1.5 lg:gap-2 flex-1 min-w-0 overflow-x-auto scrollbar-hide px-2">
               {navItems && navItems.length > 0 ? (
                 navItems.map((item) => {
                   const isActive = pathname === item.href
@@ -171,7 +171,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap min-h-[44px] ${
+                      className={`flex items-center gap-1.5 px-2 lg:px-3 xl:px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap min-h-[44px] flex-shrink-0 ${
                         isActive
                           ? 'bg-wedding-gold text-white shadow-md font-semibold'
                           : isReceptionPage && isScrolled
@@ -190,9 +190,9 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                           />
                         </div>
                       ) : (
-                        <span className="text-base">{item.icon}</span>
+                        <span className="text-base flex-shrink-0">{item.icon}</span>
                       )}
-                      <span className="font-medium text-sm">{item.label}</span>
+                      <span className="font-medium text-xs lg:text-sm">{item.label}</span>
                     </Link>
                   )
                 })
