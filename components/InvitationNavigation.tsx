@@ -247,12 +247,12 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
 
                 {/* Menu Items - Scrollable */}
                 <div 
-                  className="flex-1 overflow-y-auto overscroll-contain px-4 pt-4 pb-8 min-h-0"
+                  className="flex-1 overflow-y-auto overscroll-contain px-4 pt-4 pb-12 min-h-0"
                   style={{ 
                     WebkitOverflowScrolling: 'touch',
                   }}
                 >
-                  <div className="space-y-2 pb-12">
+                  <div className="space-y-2 pb-20">
                     {navItems && navItems.length > 0 ? (
                       navItems.map((item, index) => {
                         const isActive = pathname === item.href
