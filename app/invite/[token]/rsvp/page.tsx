@@ -22,7 +22,7 @@ export default function RSVPPage() {
   const [submitted, setSubmitted] = useState(false)
   const [existingRsvp, setExistingRsvp] = useState<any>(null)
   const [formData, setFormData] = useState({
-    rsvpStatus: {} as Record<string, 'yes' | 'no' | 'pending'>,
+    rsvpStatus: {} as Record<string, 'yes' | 'no'>,
     menuPreference: '' as 'veg' | 'non-veg' | 'both' | '',
   })
 
@@ -348,43 +348,6 @@ export default function RSVPPage() {
                                     }`}>✗ Not Attending</span>
                                     {currentStatus === 'no' && (
                                       <span className="text-red-600 text-xl ml-2">✗</span>
-                                    )}
-                                  </label>
-                                  <label 
-                                    onClick={() => {
-                                      setFormData({
-                                        ...formData,
-                                        rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'pending' },
-                                      })
-                                    }}
-                                    className={`flex items-center p-4 sm:p-5 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
-                                      currentStatus === 'pending' 
-                                        ? 'bg-yellow-50 border-yellow-400 shadow-md scale-[1.02]' 
-                                        : 'bg-white/70 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
-                                    }`}
-                                    style={{ WebkitTapHighlightColor: 'transparent' }}
-                                  >
-                                    <input
-                                      type="radio"
-                                      name={`rsvp-${eventSlug}`}
-                                      value="pending"
-                                      checked={currentStatus === 'pending'}
-                                      onChange={() =>
-                                        setFormData({
-                                          ...formData,
-                                          rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'pending' },
-                                        })
-                                      }
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
-                                    />
-                                    <span className={`text-base sm:text-lg font-serif flex-1 ${
-                                      currentStatus === 'pending' 
-                                        ? 'text-yellow-800 font-semibold' 
-                                        : 'text-gray-700'
-                                    }`}>⏳ Pending</span>
-                                    {currentStatus === 'pending' && (
-                                      <span className="text-yellow-600 text-xl ml-2">⏳</span>
                                     )}
                                   </label>
                                 </div>

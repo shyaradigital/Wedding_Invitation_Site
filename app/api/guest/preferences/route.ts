@@ -5,7 +5,7 @@ import { ensureJsonArray, setNoCacheHeaders } from '@/lib/utils'
 
 const preferencesSchema = z.object({
   token: z.string().min(1),
-  rsvpStatus: z.record(z.enum(['yes', 'no', 'pending'])).optional(),
+  rsvpStatus: z.record(z.enum(['yes', 'no'])).optional(),
   menuPreference: z.enum(['veg', 'non-veg', 'both']).optional(),
   dietaryRestrictions: z.string().optional(),
   additionalInfo: z.string().optional(),
@@ -44,11 +44,11 @@ export async function POST(request: NextRequest) {
     // Validate RSVP status - only allow events the guest has access to
     let rsvpStatusJson: string | null = null
     if (data.rsvpStatus) {
-      const validRsvpStatus: Record<string, 'yes' | 'no' | 'pending'> = {}
+      const validRsvpStatus: Record<string, 'yes' | 'no'> = {}
       
       // Only include RSVP status for events the guest is invited to
       for (const [eventSlug, status] of Object.entries(data.rsvpStatus)) {
-        if (eventAccess.includes(eventSlug)) {
+        if (eventAccess.includes(eventSlug) && (status === 'yes' || status === 'no')) {
           validRsvpStatus[eventSlug] = status
         }
       }
