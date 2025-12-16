@@ -333,9 +333,13 @@ export default function EventDetailsPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.16 }}
-                      className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                      className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/80 border-2 border-wedding-gold/30"
                     >
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed text-center">
+                      <h2 className="text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
+                        Venue
+                      </h2>
+                      <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                      <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700">
                         Upper Parking Area Behind Poolside Patio, DoubleTree by Hilton Hotel Irvine- Spectrum 90 Pacifica, Irvine, CA 92618
                       </p>
                     </motion.div>
