@@ -13,20 +13,51 @@ export default function LazyVideoPlayer({ videoSrc, className = '' }: LazyVideoP
   const [isLoading, setIsLoading] = useState(false)
   const [hasLoaded, setHasLoaded] = useState(false)
   const [showControls, setShowControls] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const handlePlay = () => {
-    if (!hasLoaded && videoRef.current) {
-      // Set src only when play is clicked (lazy loading)
+  const handlePlay = async () => {
+    if (!videoRef.current) return
+
+    // If video hasn't been loaded yet, set src and load it
+    if (!hasLoaded) {
       setIsLoading(true)
-      videoRef.current.src = videoSrc
-      setHasLoaded(true)
-    }
-    
-    if (videoRef.current) {
-      videoRef.current.play()
-      setIsPlaying(true)
+      setError(null)
+      
+      try {
+        // Set the source
+        videoRef.current.src = videoSrc
+        // Explicitly load the video
+        await videoRef.current.load()
+        setHasLoaded(true)
+        
+        // Wait for video to be ready to play
+        const playPromise = videoRef.current.play()
+        
+        if (playPromise !== undefined) {
+          await playPromise
+          setIsPlaying(true)
+          setIsLoading(false)
+        }
+      } catch (err) {
+        console.error('Error loading video:', err)
+        setError('Failed to load video. Please try again.')
+        setIsLoading(false)
+        setHasLoaded(false)
+      }
+    } else {
+      // Video already loaded, just play it
+      try {
+        const playPromise = videoRef.current.play()
+        if (playPromise !== undefined) {
+          await playPromise
+          setIsPlaying(true)
+        }
+      } catch (err) {
+        console.error('Error playing video:', err)
+        setError('Failed to play video. Please try again.')
+      }
     }
   }
 
@@ -47,14 +78,21 @@ export default function LazyVideoPlayer({ videoSrc, className = '' }: LazyVideoP
 
   const handleLoadedData = () => {
     setIsLoading(false)
-    if (videoRef.current) {
-      videoRef.current.play()
-      setIsPlaying(true)
-    }
+  }
+
+  const handleCanPlay = () => {
+    setIsLoading(false)
   }
 
   const handleVideoEnd = () => {
     setIsPlaying(false)
+  }
+
+  const handleError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    console.error('Video error:', e)
+    setIsLoading(false)
+    setError('Video format not supported or file not found. Please check the video file.')
+    setHasLoaded(false)
   }
 
   // Show controls on hover/touch
@@ -86,10 +124,12 @@ export default function LazyVideoPlayer({ videoSrc, className = '' }: LazyVideoP
         preload="none"
         playsInline
         onLoadedData={handleLoadedData}
+        onCanPlay={handleCanPlay}
         onEnded={handleVideoEnd}
         onClick={handleVideoClick}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        onError={handleError}
       />
 
       {/* Loading Overlay */}
@@ -104,6 +144,35 @@ export default function LazyVideoPlayer({ videoSrc, className = '' }: LazyVideoP
             <div className="text-center">
               <div className="animate-spin rounded-full h-16 w-16 border-4 border-wedding-gold border-t-transparent mx-auto mb-4"></div>
               <p className="text-white text-lg font-medium">Loading video...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Error Overlay */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/80 flex items-center justify-center z-20"
+          >
+            <div className="text-center max-w-md mx-auto px-4">
+              <div className="text-5xl mb-4">⚠️</div>
+              <p className="text-white text-lg font-medium mb-4">{error}</p>
+              <button
+                onClick={() => {
+                  setError(null)
+                  setHasLoaded(false)
+                  if (videoRef.current) {
+                    videoRef.current.src = ''
+                  }
+                }}
+                className="bg-wedding-gold hover:bg-wedding-gold/80 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+              >
+                Try Again
+              </button>
             </div>
           </motion.div>
         )}
