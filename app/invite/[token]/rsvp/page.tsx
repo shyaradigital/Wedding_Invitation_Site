@@ -247,6 +247,9 @@ export default function RSVPPage() {
                       RSVP
                     </h1>
                     <OrnamentalDivider variant="ornate" className="mb-4 sm:mb-6" />
+                    <p className="text-base sm:text-lg md:text-xl font-bold text-wedding-burgundy mb-3 sm:mb-4">
+                      Please RSVP by January 10, 2026
+                    </p>
                     <p className="text-base sm:text-lg md:text-xl text-gray-700 font-serif">
                       Hi {guest.name}! Please share your preferences so we can make your experience special.
                     </p>

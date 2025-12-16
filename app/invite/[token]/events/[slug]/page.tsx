@@ -321,7 +321,7 @@ export default function EventDetailsPage() {
                     >
                       <div className="text-center">
                         <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700">
-                          at {content.baraatTime}
+                          On {content.date} at {content.baraatTime}
                         </p>
                       </div>
                     </motion.div>
