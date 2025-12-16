@@ -1,4 +1,4 @@
 {
   "buildCommand": "npx prisma generate && npx prisma db push --skip-generate && npm run seed:admin && npm run seed:events && npm run build",
-  "installCommand": "npm install"
+  "installCommand": "npm install && (command -v git-lfs >/dev/null 2>&1 && git lfs install && git lfs pull || echo 'Git LFS not available, skipping LFS pull')"
 }
