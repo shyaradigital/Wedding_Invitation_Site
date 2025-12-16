@@ -26,13 +26,47 @@ export default function LazyVideoPlayer({ videoSrc, className = '' }: LazyVideoP
       setError(null)
       
       try {
+        // First, verify the video file exists by making a HEAD request
+        try {
+          const response = await fetch(videoSrc, { method: 'HEAD' })
+          if (!response.ok) {
+            throw new Error(`Video file not found (${response.status})`)
+          }
+        } catch (fetchError) {
+          console.error('Video file check failed:', fetchError)
+          throw new Error('Video file not accessible. Please check if the file exists.')
+        }
+
         // Set the source
         videoRef.current.src = videoSrc
         // Explicitly load the video
-        await videoRef.current.load()
+        videoRef.current.load()
         setHasLoaded(true)
         
-        // Wait for video to be ready to play
+        // Wait for video metadata to load before playing
+        await new Promise<void>((resolve, reject) => {
+          if (!videoRef.current) {
+            reject(new Error('Video element not available'))
+            return
+          }
+
+          const handleCanPlay = () => {
+            videoRef.current?.removeEventListener('canplay', handleCanPlay)
+            videoRef.current?.removeEventListener('error', handleError)
+            resolve()
+          }
+
+          const handleError = (e: Event) => {
+            videoRef.current?.removeEventListener('canplay', handleCanPlay)
+            videoRef.current?.removeEventListener('error', handleError)
+            reject(new Error('Video failed to load'))
+          }
+
+          videoRef.current.addEventListener('canplay', handleCanPlay, { once: true })
+          videoRef.current.addEventListener('error', handleError, { once: true })
+        })
+        
+        // Now try to play
         const playPromise = videoRef.current.play()
         
         if (playPromise !== undefined) {
@@ -40,11 +74,16 @@ export default function LazyVideoPlayer({ videoSrc, className = '' }: LazyVideoP
           setIsPlaying(true)
           setIsLoading(false)
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error loading video:', err)
-        setError('Failed to load video. Please try again.')
+        const errorMessage = err?.message || 'Failed to load video. Please check if the video file exists and is accessible.'
+        setError(errorMessage)
         setIsLoading(false)
         setHasLoaded(false)
+        // Reset video source on error
+        if (videoRef.current) {
+          videoRef.current.src = ''
+        }
       }
     } else {
       // Video already loaded, just play it
@@ -89,9 +128,33 @@ export default function LazyVideoPlayer({ videoSrc, className = '' }: LazyVideoP
   }
 
   const handleError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.error('Video error:', e)
+    const video = e.currentTarget
+    const error = video.error
+    
+    let errorMessage = 'Video format not supported or file not found.'
+    
+    if (error) {
+      switch (error.code) {
+        case error.MEDIA_ERR_ABORTED:
+          errorMessage = 'Video loading was aborted.'
+          break
+        case error.MEDIA_ERR_NETWORK:
+          errorMessage = 'Network error while loading video. Please check your connection.'
+          break
+        case error.MEDIA_ERR_DECODE:
+          errorMessage = 'Video format not supported or corrupted file.'
+          break
+        case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          errorMessage = 'Video format not supported or file not found. Please verify the video file exists at: ' + videoSrc
+          break
+        default:
+          errorMessage = `Video error (code: ${error.code}). Please check if the video file exists.`
+      }
+    }
+    
+    console.error('Video error:', error, 'Source:', videoSrc)
     setIsLoading(false)
-    setError('Video format not supported or file not found. Please check the video file.')
+    setError(errorMessage)
     setHasLoaded(false)
   }
 
