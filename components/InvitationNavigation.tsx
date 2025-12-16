@@ -222,8 +222,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed top-0 right-0 w-80 max-w-[85vw] bg-white shadow-2xl z-[9999] md:hidden flex flex-col"
-                style={{ height: '100vh', maxHeight: '100vh' }}
+                className="fixed top-0 right-0 w-80 max-w-[85vw] bg-white shadow-2xl z-[9999] md:hidden flex flex-col h-screen"
               >
                 {/* Menu Header */}
                 <div className="flex-shrink-0 bg-white border-b-2 border-wedding-gold/20 px-4 py-4 flex items-center justify-between">
@@ -248,10 +247,9 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
 
                 {/* Menu Items - Scrollable */}
                 <div 
-                  className="flex-1 overflow-y-auto px-4 py-4"
+                  className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 min-h-0"
                   style={{ 
                     WebkitOverflowScrolling: 'touch',
-                    maxHeight: 'calc(100vh - 140px)' 
                   }}
                 >
                   <div className="space-y-2">
