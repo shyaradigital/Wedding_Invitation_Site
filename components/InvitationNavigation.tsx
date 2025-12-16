@@ -62,6 +62,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
   // Build navigation items in logical order - ensure we always have at least Home, Save the Date, and RSVP
   const navItems: Array<{ href: string; label: string; icon: string; iconType?: 'image' | 'emoji' }> = [
     { href: `/invite/${token}`, label: 'About Jay and Ankita', icon: '🏠', iconType: 'emoji' },
+    { href: `/invite/${token}/invitation-video`, label: 'Invitation Video', icon: '🎬', iconType: 'emoji' },
   ]
 
   // Add event pages based on access (in chronological order)
