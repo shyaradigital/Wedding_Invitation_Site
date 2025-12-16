@@ -339,8 +339,11 @@ export default function EventDetailsPage() {
                         Venue
                       </h2>
                       <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                      <p className="text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 text-gray-800">
+                        Upper Parking Area Behind Poolside Patio
+                      </p>
                       <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700">
-                        Upper Parking Area Behind Poolside Patio, DoubleTree by Hilton Hotel Irvine- Spectrum 90 Pacifica, Irvine, CA 92618
+                        DoubleTree by Hilton Hotel Irvine- Spectrum 90 Pacifica, Irvine, CA 92618
                       </p>
                     </motion.div>
                   )}
