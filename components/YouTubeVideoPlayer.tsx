@@ -8,7 +8,45 @@ interface YouTubeVideoPlayerProps {
   className?: string
 }
 
+/**
+ * Extracts YouTube video ID from various URL formats or returns the ID if already extracted
+ * Supports:
+ * - https://www.youtube.com/watch?v=VIDEO_ID
+ * - https://youtu.be/VIDEO_ID
+ * - https://www.youtube.com/shorts/VIDEO_ID
+ * - Just the video ID itself
+ */
+function extractVideoId(input: string): string {
+  // If it's already just a video ID (no slashes or special characters that indicate a URL)
+  if (!input.includes('youtube.com') && !input.includes('youtu.be') && !input.includes('http')) {
+    return input.trim()
+  }
+
+  // Handle YouTube Shorts format: https://www.youtube.com/shorts/VIDEO_ID
+  const shortsMatch = input.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/)
+  if (shortsMatch) {
+    return shortsMatch[1]
+  }
+
+  // Handle standard YouTube format: https://www.youtube.com/watch?v=VIDEO_ID
+  const watchMatch = input.match(/[?&]v=([a-zA-Z0-9_-]+)/)
+  if (watchMatch) {
+    return watchMatch[1]
+  }
+
+  // Handle short URL format: https://youtu.be/VIDEO_ID
+  const shortUrlMatch = input.match(/youtu\.be\/([a-zA-Z0-9_-]+)/)
+  if (shortUrlMatch) {
+    return shortUrlMatch[1]
+  }
+
+  // If no match, return the input as-is (might already be a video ID)
+  return input.trim()
+}
+
 export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeVideoPlayerProps) {
+  // Extract the actual video ID from the input (handles URLs and plain IDs)
+  const extractedVideoId = extractVideoId(videoId)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [hasLoaded, setHasLoaded] = useState(false)
@@ -36,7 +74,7 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
       controls: '1', // Show controls
       enablejsapi: '1', // Enable JavaScript API
     })
-    return `https://www.youtube.com/embed/${videoId}?${params.toString()}`
+    return `https://www.youtube.com/embed/${extractedVideoId}?${params.toString()}`
   }
 
   const handleIframeLoad = () => {

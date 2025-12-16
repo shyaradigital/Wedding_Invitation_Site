@@ -28,13 +28,15 @@ The invitation videos are now hosted on YouTube and embedded in the website. Thi
 
    **For All Events Video:**
    - **Name**: `NEXT_PUBLIC_YOUTUBE_ALL_EVENTS_VIDEO_ID`
-   - **Value**: Your YouTube video ID (e.g., `ABC123xyz`)
+   - **Value**: Your YouTube video ID or full URL (e.g., `ABC123xyz` or `https://www.youtube.com/shorts/ABC123xyz`)
    - **Environment**: Production, Preview, Development
 
    **For Reception Only Video:**
    - **Name**: `NEXT_PUBLIC_YOUTUBE_RECEPTION_ONLY_VIDEO_ID`
-   - **Value**: Your YouTube video ID (e.g., `XYZ789abc`)
+   - **Value**: Your YouTube video ID or full URL (e.g., `XYZ789abc` or `https://www.youtube.com/shorts/XYZ789abc`)
    - **Environment**: Production, Preview, Development
+
+   **Note:** You can paste the full YouTube URL (including Shorts URLs) or just the video ID - both work!
 
 3. **Redeploy** your application
 
@@ -65,10 +67,16 @@ Currently using demo video IDs for testing. Replace these with your actual video
 
 1. Upload video to YouTube
 2. Copy the video URL from browser address bar
-3. Extract the ID:
-   - Format: `https://www.youtube.com/watch?v=VIDEO_ID`
-   - Format: `https://youtu.be/VIDEO_ID`
-   - The part after `v=` or after `/` is your video ID
+3. **You can use the full URL or just the video ID** - the system automatically extracts the ID from:
+   - `https://www.youtube.com/watch?v=VIDEO_ID`
+   - `https://youtu.be/VIDEO_ID`
+   - `https://www.youtube.com/shorts/VIDEO_ID` ✅ **YouTube Shorts supported!**
+   - Or just the video ID itself: `VIDEO_ID`
+
+**Example for YouTube Shorts:**
+- Full URL: `https://www.youtube.com/shorts/-WhZJUE3kR8`
+- Or just the ID: `-WhZJUE3kR8`
+- Both formats work! 🎉
 
 ## Video Requirements
 
