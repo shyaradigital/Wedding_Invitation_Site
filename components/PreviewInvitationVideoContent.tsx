@@ -149,7 +149,7 @@ export default function PreviewInvitationVideoContent({
                   </div>
 
                   {/* Video Player */}
-                  <div className="relative z-10 max-w-2xl mx-auto">
+                  <div className="relative z-10 w-full">
                     <YouTubeVideoPlayer videoId={videoId} />
                   </div>
 

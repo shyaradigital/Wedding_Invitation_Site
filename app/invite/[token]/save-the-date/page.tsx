@@ -152,7 +152,7 @@ export default function SaveTheDatePage() {
                   Save the Date
                 </h1>
                 <OrnamentalDivider variant="ornate" className="mb-4 sm:mb-6" />
-                <p className="text-xl sm:text-2xl md:text-3xl font-script text-wedding-gold">
+                <p className="text-xl sm:text-2xl md:text-3xl font-script text-wedding-navy">
                   20th & 21st Day of March, 2026
                 </p>
               </div>

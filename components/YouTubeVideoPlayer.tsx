@@ -57,15 +57,17 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
   // Validate video ID - only check for missing/empty, allow demo IDs for testing
   if (!videoId || !extractedVideoId || extractedVideoId.trim() === '') {
     return (
-      <div className={`relative w-full rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-[400px] flex items-center justify-center ${className}`}>
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-5xl mb-4">⚠️</div>
-          <p className="text-white text-lg font-medium mb-2">
-            Video ID is missing. Please configure the environment variables.
-          </p>
-          <p className="text-gray-400 text-sm">
-            Set NEXT_PUBLIC_YOUTUBE_ALL_EVENTS_VIDEO_ID and NEXT_PUBLIC_YOUTUBE_RECEPTION_ONLY_VIDEO_ID
-          </p>
+      <div className={`relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center ${className}`} style={{ paddingBottom: '177.78%', height: 0 }}>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto px-4">
+            <div className="text-5xl mb-4">⚠️</div>
+            <p className="text-white text-base sm:text-lg font-medium mb-2">
+              Video ID is missing. Please configure the environment variables.
+            </p>
+            <p className="text-gray-400 text-xs sm:text-sm">
+              Set NEXT_PUBLIC_YOUTUBE_ALL_EVENTS_VIDEO_ID and NEXT_PUBLIC_YOUTUBE_RECEPTION_ONLY_VIDEO_ID
+            </p>
+          </div>
         </div>
       </div>
     )
@@ -108,11 +110,10 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
   return (
     <div
       ref={containerRef}
-      className={`relative w-full rounded-2xl overflow-hidden shadow-2xl bg-black ${className}`}
-      style={{ minHeight: '400px' }}
+      className={`relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto rounded-2xl overflow-hidden shadow-2xl bg-black ${className}`}
     >
-      {/* Aspect ratio container - Always present for consistent sizing */}
-      <div className="relative w-full" style={{ paddingBottom: '56.25%', height: 0 }}>
+      {/* Aspect ratio container - Always present for consistent sizing (9:16 vertical) */}
+      <div className="relative w-full" style={{ paddingBottom: '177.78%', height: 0 }}>
         {/* Placeholder/Background - Shows when video hasn't loaded */}
         {!hasLoaded && (
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
@@ -124,9 +125,9 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
               }}></div>
             </div>
             {/* YouTube-style placeholder icon */}
-            <div className="relative z-10 text-center">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-wedding-gold/20 flex items-center justify-center">
-                <svg className="w-12 h-12 text-wedding-gold" fill="currentColor" viewBox="0 0 24 24">
+            <div className="relative z-10 text-center px-4">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 rounded-full bg-wedding-gold/20 flex items-center justify-center">
+                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-wedding-gold" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
                 </svg>
               </div>
@@ -158,9 +159,9 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
             exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/70 flex items-center justify-center z-20"
           >
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-wedding-gold border-t-transparent mx-auto mb-4"></div>
-              <p className="text-white text-lg font-medium">Loading video...</p>
+            <div className="text-center px-4">
+              <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-4 border-wedding-gold border-t-transparent mx-auto mb-3 sm:mb-4"></div>
+              <p className="text-white text-base sm:text-lg font-medium">Loading video...</p>
             </div>
           </motion.div>
         )}
@@ -176,15 +177,15 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
             className="absolute inset-0 bg-black/80 flex items-center justify-center z-20"
           >
             <div className="text-center max-w-md mx-auto px-4">
-              <div className="text-5xl mb-4">⚠️</div>
-              <p className="text-white text-lg font-medium mb-4">{error}</p>
+              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">⚠️</div>
+              <p className="text-white text-sm sm:text-base md:text-lg font-medium mb-3 sm:mb-4 px-2">{error}</p>
               <button
                 onClick={() => {
                   setError(null)
                   setHasLoaded(false)
                   setIsPlaying(false)
                 }}
-                className="bg-wedding-gold hover:bg-wedding-gold/80 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                className="bg-wedding-gold hover:bg-wedding-gold/80 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-sm sm:text-base font-semibold transition-colors touch-manipulation"
               >
                 Try Again
               </button>
@@ -200,18 +201,17 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 flex items-center justify-center z-30 cursor-pointer"
+            className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 flex items-center justify-center z-30 cursor-pointer touch-manipulation"
             onClick={handlePlay}
-            style={{ minHeight: '400px' }}
           >
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-wedding-gold/90 hover:bg-wedding-gold text-white rounded-full p-6 sm:p-8 md:p-10 shadow-2xl transition-all duration-300 group relative"
+              className="bg-wedding-gold/90 hover:bg-wedding-gold active:bg-wedding-gold/80 text-white rounded-full p-4 sm:p-6 md:p-8 lg:p-10 shadow-2xl transition-all duration-300 group relative touch-manipulation"
               aria-label="Play video"
             >
               <svg
-                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 ml-1 relative z-10"
+                className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 ml-1 relative z-10"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -224,7 +224,7 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
       </AnimatePresence>
 
       {/* Decorative Border */}
-      <div className="absolute inset-0 pointer-events-none border-4 border-wedding-gold/30 rounded-2xl"></div>
+      <div className="absolute inset-0 pointer-events-none border-2 sm:border-4 border-wedding-gold/30 rounded-2xl"></div>
     </div>
   )
 }
