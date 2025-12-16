@@ -543,21 +543,6 @@ export default function EventDetailsPage() {
                   </svg>
                 </div>
               )}
-
-              {/* Decorative gold dots for Reception */}
-              {isReception && (
-                <div className="absolute top-10 right-10 opacity-30">
-                  <div className="flex space-x-2">
-                    {[...Array(5)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-2 h-2 bg-wedding-gold rounded-full"
-                        style={{ animationDelay: `${i * 0.2}s` }}
-                      ></div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </motion.div>
           </div>
         </div>
