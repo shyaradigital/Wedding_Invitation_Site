@@ -252,7 +252,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                     WebkitOverflowScrolling: 'touch',
                   }}
                 >
-                  <div className="space-y-2 pb-32">
+                  <div className="space-y-2 pb-48">
                     {navItems && navItems.length > 0 ? (
                       navItems.map((item, index) => {
                         const isActive = pathname === item.href
