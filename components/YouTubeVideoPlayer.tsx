@@ -54,6 +54,23 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
   const containerRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
+  // Validate video ID - only check for missing/empty, allow demo IDs for testing
+  if (!videoId || !extractedVideoId || extractedVideoId.trim() === '') {
+    return (
+      <div className={`relative w-full rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-[400px] flex items-center justify-center ${className}`}>
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-5xl mb-4">⚠️</div>
+          <p className="text-white text-lg font-medium mb-2">
+            Video ID is missing. Please configure the environment variables.
+          </p>
+          <p className="text-gray-400 text-sm">
+            Set NEXT_PUBLIC_YOUTUBE_ALL_EVENTS_VIDEO_ID and NEXT_PUBLIC_YOUTUBE_RECEPTION_ONLY_VIDEO_ID
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   const handlePlay = () => {
     if (!hasLoaded) {
       setIsLoading(true)
@@ -92,10 +109,33 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
     <div
       ref={containerRef}
       className={`relative w-full rounded-2xl overflow-hidden shadow-2xl bg-black ${className}`}
+      style={{ minHeight: '400px' }}
     >
-      {/* YouTube iframe - Only render when play is clicked */}
-      {hasLoaded && (
-        <div className="relative w-full" style={{ paddingBottom: '56.25%', height: 0 }}> {/* 16:9 aspect ratio container */}
+      {/* Aspect ratio container - Always present for consistent sizing */}
+      <div className="relative w-full" style={{ paddingBottom: '56.25%', height: 0 }}>
+        {/* Placeholder/Background - Shows when video hasn't loaded */}
+        {!hasLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+            {/* Decorative pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 left-0 w-full h-full" style={{
+                backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.3) 1px, transparent 0)',
+                backgroundSize: '40px 40px'
+              }}></div>
+            </div>
+            {/* YouTube-style placeholder icon */}
+            <div className="relative z-10 text-center">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-wedding-gold/20 flex items-center justify-center">
+                <svg className="w-12 h-12 text-wedding-gold" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* YouTube iframe - Only render when play is clicked */}
+        {hasLoaded && (
           <iframe
             ref={iframeRef}
             src={getYouTubeEmbedUrl()}
@@ -106,8 +146,8 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
             onError={handleIframeError}
             title="Wedding Invitation Video"
           />
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Loading Overlay */}
       <AnimatePresence>
@@ -160,17 +200,18 @@ export default function YouTubeVideoPlayer({ videoId, className = '' }: YouTubeV
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 flex items-center justify-center z-10 cursor-pointer"
+            className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 flex items-center justify-center z-30 cursor-pointer"
             onClick={handlePlay}
+            style={{ minHeight: '400px' }}
           >
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-wedding-gold/90 hover:bg-wedding-gold text-white rounded-full p-6 sm:p-8 md:p-10 shadow-2xl transition-all duration-300 group"
+              className="bg-wedding-gold/90 hover:bg-wedding-gold text-white rounded-full p-6 sm:p-8 md:p-10 shadow-2xl transition-all duration-300 group relative"
               aria-label="Play video"
             >
               <svg
-                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 ml-1"
+                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 ml-1 relative z-10"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
