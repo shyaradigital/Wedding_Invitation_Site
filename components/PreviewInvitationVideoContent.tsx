@@ -74,12 +74,34 @@ export default function PreviewInvitationVideoContent({
                   </p>
                 </div>
 
+                {/* Message Section - Moved above video player */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                  className="text-center mb-8"
+                >
+                  <div className="wedding-card rounded-2xl p-6 sm:p-8 border-2 border-wedding-gold/30">
+                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                      We are thrilled to share this moment with you and look forward to celebrating
+                      together on our special day.
+                    </p>
+                    <OrnamentalDivider variant="simple" className="my-6" />
+                    <p className="text-lg sm:text-xl md:text-2xl font-script text-wedding-gold">
+                      With Love,
+                    </p>
+                    <p className="text-xl sm:text-2xl md:text-3xl font-script text-wedding-navy mt-2">
+                      Jay & Ankita
+                    </p>
+                  </div>
+                </motion.div>
+
                 {/* Video Player Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.6 }}
-                  className="wedding-card rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 mb-8"
+                  transition={{ delay: 0.6, duration: 0.6 }}
+                  className="wedding-card rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12"
                   style={{
                     background: 'linear-gradient(135deg, #FFFEF7 0%, #FAF9F6 100%)',
                     border: '2px solid rgba(212, 175, 55, 0.3)',
@@ -139,28 +161,6 @@ export default function PreviewInvitationVideoContent({
                       Click the play button to watch our special invitation
                     </p>
                   </motion.div>
-                </motion.div>
-
-                {/* Additional Message Section */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.6 }}
-                  className="text-center"
-                >
-                  <div className="wedding-card rounded-2xl p-6 sm:p-8 border-2 border-wedding-gold/30">
-                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
-                      We are thrilled to share this moment with you and look forward to celebrating
-                      together on our special day.
-                    </p>
-                    <OrnamentalDivider variant="simple" className="my-6" />
-                    <p className="text-lg sm:text-xl md:text-2xl font-script text-wedding-gold">
-                      With Love,
-                    </p>
-                    <p className="text-xl sm:text-2xl md:text-3xl font-script text-wedding-navy mt-2">
-                      Jay & Ankita
-                    </p>
-                  </div>
                 </motion.div>
               </motion.div>
             </div>
