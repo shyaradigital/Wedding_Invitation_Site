@@ -6,7 +6,7 @@ import PreviewBanner from './PreviewBanner'
 import InvitationPageLayout from './InvitationPageLayout'
 import OrnamentalDivider from './OrnamentalDivider'
 import FloatingPetals from './FloatingPetals'
-import LazyVideoPlayer from './LazyVideoPlayer'
+import YouTubeVideoPlayer from './YouTubeVideoPlayer'
 
 interface Guest {
   id: string
@@ -34,9 +34,12 @@ export default function PreviewInvitationVideoContent({
     guest.eventAccess.includes('wedding') &&
     guest.eventAccess.includes('reception')
 
-  const videoSrc = isAllEvents
-    ? '/videos/invitation-all-events.mp4'
-    : '/videos/invitation-reception-only.mp4'
+  // Get YouTube video IDs from environment variables
+  // Demo video IDs as fallback (vertical wedding video samples)
+  const allEventsVideoId = process.env.NEXT_PUBLIC_YOUTUBE_ALL_EVENTS_VIDEO_ID || 'dQw4w9WgXcQ' // Demo: Replace with actual video ID
+  const receptionOnlyVideoId = process.env.NEXT_PUBLIC_YOUTUBE_RECEPTION_ONLY_VIDEO_ID || 'dQw4w9WgXcQ' // Demo: Replace with actual video ID
+  
+  const videoId = isAllEvents ? allEventsVideoId : receptionOnlyVideoId
 
   return (
     <>
@@ -146,8 +149,8 @@ export default function PreviewInvitationVideoContent({
                   </div>
 
                   {/* Video Player */}
-                  <div className="relative z-10">
-                    <LazyVideoPlayer videoSrc={videoSrc} />
+                  <div className="relative z-10 max-w-2xl mx-auto">
+                    <YouTubeVideoPlayer videoId={videoId} />
                   </div>
 
                   {/* Instructions */}

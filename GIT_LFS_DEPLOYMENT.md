@@ -89,5 +89,54 @@ To test locally, the videos work fine because Git LFS files are pulled locally. 
 
 ## Recommended Action
 
-**For immediate fix:** Use Option 2 (External Storage) or Option 4 (Vercel Blob Storage) to host the videos on a CDN, then update the video source paths in the code.
+**For immediate fix:** Use Option 2 (External Storage) or Option 4 (Vercel Blob Storage) to host the videos on a CDN, then set the `NEXT_PUBLIC_VIDEO_BASE_URL` environment variable.
+
+## Quick Fix: Environment Variable (Easiest Solution)
+
+The code now supports environment variables for video URLs. This is the easiest solution:
+
+### Steps:
+
+1. **Upload videos to a CDN or storage service:**
+   - Upload `invitation-all-events.mp4` and `invitation-reception-only.mp4` to your CDN
+   - Get the base URL where videos are hosted
+
+2. **Set environment variable in Vercel:**
+   - Go to Vercel Dashboard → Your Project → Settings → Environment Variables
+   - Add new variable:
+     - **Name**: `NEXT_PUBLIC_VIDEO_BASE_URL`
+     - **Value**: Your CDN base URL (e.g., `https://your-cdn.com/videos/`)
+     - **Environment**: Production, Preview, Development (or just Production)
+
+3. **Redeploy:**
+   - Vercel will automatically redeploy with the new environment variable
+   - Videos will now load from your CDN
+
+### Examples:
+
+**For Cloudinary:**
+```
+NEXT_PUBLIC_VIDEO_BASE_URL=https://res.cloudinary.com/your-cloud/video/upload/v1234567890/
+```
+
+**For AWS S3/CloudFront:**
+```
+NEXT_PUBLIC_VIDEO_BASE_URL=https://d1234567890.cloudfront.net/videos/
+```
+
+**For Vercel Blob Storage:**
+```
+NEXT_PUBLIC_VIDEO_BASE_URL=https://[your-blob-url].public.blob.vercel-storage.com/
+```
+
+**For local development (leave empty or use):**
+```
+NEXT_PUBLIC_VIDEO_BASE_URL=/videos/
+```
+
+### How It Works:
+
+- If `NEXT_PUBLIC_VIDEO_BASE_URL` is set, videos load from that URL
+- If not set, it defaults to `/videos/` (for local development)
+- No code changes needed - just set the environment variable and redeploy
 
