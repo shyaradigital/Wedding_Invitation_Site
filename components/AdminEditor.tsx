@@ -68,12 +68,23 @@ export default function AdminEditor({ currentAdminId }: AdminEditorProps) {
   }
 
   const handleCreateAdmin = async () => {
-    if (!formData.email || !formData.password) {
+    // Trim and validate email
+    const trimmedEmail = formData.email.trim()
+    const trimmedPassword = formData.password.trim()
+
+    if (!trimmedEmail || !trimmedPassword) {
       setError('Email and password are required')
       return
     }
 
-    if (formData.password.length < 6) {
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(trimmedEmail)) {
+      setError('Please enter a valid email address')
+      return
+    }
+
+    if (trimmedPassword.length < 6) {
       setError('Password must be at least 6 characters')
       return
     }
@@ -84,7 +95,10 @@ export default function AdminEditor({ currentAdminId }: AdminEditorProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         cache: 'no-store',
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password: trimmedPassword,
+        }),
       })
 
       const data = await response.json()
@@ -94,11 +108,20 @@ export default function AdminEditor({ currentAdminId }: AdminEditorProps) {
         resetForm()
         fetchAdmins()
       } else {
-        setError(data.error || 'Failed to create admin')
+        // Display detailed error message if available
+        let errorMessage = data.error || 'Failed to create admin'
+        if (data.details && Array.isArray(data.details)) {
+          const detailMessages = data.details.map((d: any) => 
+            `${d.path.join('.')}: ${d.message}`
+          ).join(', ')
+          errorMessage = `${errorMessage} - ${detailMessages}`
+        }
+        console.error('Admin creation error:', data)
+        setError(errorMessage)
       }
     } catch (err) {
       console.error('Error creating admin:', err)
-      setError('Failed to create admin')
+      setError('Failed to create admin. Please check your connection and try again.')
     }
   }
 

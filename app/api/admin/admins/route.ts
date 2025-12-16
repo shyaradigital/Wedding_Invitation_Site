@@ -49,7 +49,26 @@ export async function POST(request: NextRequest) {
   try {
     await requireAdmin()
 
-    const body = await request.json()
+    let body
+    try {
+      body = await request.json()
+    } catch (jsonError) {
+      console.error('Error parsing request body:', jsonError)
+      const response = NextResponse.json(
+        { error: 'Invalid JSON in request body' },
+        { status: 400 }
+      )
+      return setNoCacheHeaders(response)
+    }
+
+    if (!body || typeof body !== 'object') {
+      const response = NextResponse.json(
+        { error: 'Request body must be an object' },
+        { status: 400 }
+      )
+      return setNoCacheHeaders(response)
+    }
+
     const data = createAdminSchema.parse(body)
 
     // Check if admin with this email already exists
