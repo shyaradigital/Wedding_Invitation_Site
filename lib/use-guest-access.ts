@@ -41,36 +41,19 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
   const [error, setError] = useState<string | null>(null)
   const [showRestrictedPopup, setShowRestrictedPopup] = useState(false)
 
-  // Helper function to get type from URL query params
-  const getPreviewTypeFromURL = (): 'all-events' | 'reception-only' => {
-    if (typeof window === 'undefined') return 'all-events'
-    const params = new URLSearchParams(window.location.search)
-    const type = params.get('type')
-    return type === 'reception-only' ? 'reception-only' : 'all-events'
-  }
-
-  // Helper function to get event access based on type
-  const getEventAccessFromType = (type: 'all-events' | 'reception-only'): string[] => {
-    return type === 'reception-only' ? ['reception'] : ['mehndi', 'wedding', 'reception']
-  }
-
   const checkAccess = async () => {
     try {
       // Special handling for admin-preview token
       if (token === 'admin-preview') {
-        // Get type from URL query parameter
-        const previewType = getPreviewTypeFromURL()
-        const eventAccess = getEventAccessFromType(previewType)
-
         // Check if admin preview is already set in localStorage
         if (isAdminPreview(token)) {
-          // Grant immediate access for admin preview with correct event access
+          // Grant immediate access for admin preview
           setGuest({
             id: 'admin-preview',
             name: 'Admin Preview',
             phone: null,
             email: null,
-            eventAccess,
+            eventAccess: ['mehndi', 'wedding', 'reception'],
             allowedDevices: [],
             hasPhone: false,
             hasEmail: false,
@@ -87,7 +70,7 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           cache: 'no-store',
-          body: JSON.stringify({ token, type: previewType }),
+          body: JSON.stringify({ token }),
         })
 
         if (!verifyResponse.ok) {
@@ -101,14 +84,9 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
         
         // Verify this is the admin-preview guest
         if (guestData.id === 'admin-preview') {
-          // Override eventAccess with the type from URL
-          const guestWithCorrectAccess = {
-            ...guestData,
-            eventAccess,
-          }
           // Set admin preview flag in localStorage for future access
           setAdminPreview(token)
-          setGuest(guestWithCorrectAccess)
+          setGuest(guestData)
           setAccessState('granted')
           return
         }

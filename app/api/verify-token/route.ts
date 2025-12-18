@@ -7,7 +7,6 @@ import { z } from 'zod'
 
 const verifyTokenSchema = z.object({
   token: z.string().min(1),
-  type: z.enum(['all-events', 'reception-only']).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -25,25 +24,20 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { token, type } = verifyTokenSchema.parse(body)
+    const { token } = verifyTokenSchema.parse(body)
 
     // Handle admin-preview token for admin users
     if (token === 'admin-preview') {
       const admin = await getAdminFromRequest()
       if (admin) {
-        // Set event access based on type parameter
-        const eventAccess = type === 'reception-only' 
-          ? ['reception'] 
-          : ['mehndi', 'wedding', 'reception'] // Default to all events
-
-        // Return virtual guest with selected event access
+        // Return virtual guest with all events enabled
         const response = NextResponse.json({
           guest: {
             id: 'admin-preview',
             name: 'Admin Preview',
             phone: null,
             email: null,
-            eventAccess,
+            eventAccess: ['mehndi', 'wedding', 'reception'],
             allowedDevices: [],
             hasPhone: false,
             hasEmail: false,
