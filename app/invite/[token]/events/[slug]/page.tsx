@@ -219,7 +219,7 @@ export default function EventDetailsPage() {
             </h1>
             <div className="wedding-divider max-w-32 mx-auto mb-6"></div>
             <p className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed">
-              The event page you're looking for doesn't exist.
+              The event page you&apos;re looking for doesn&apos;t exist.
             </p>
             <button
               onClick={() => router.push(`/invite/${token}`)}
@@ -251,7 +251,7 @@ export default function EventDetailsPage() {
               This event page is not available for your invitation.
             </p>
             <p className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed">
-              Please return to your invitation home page to see the events you're invited to.
+              Please return to your invitation home page to see the events you&apos;re invited to.
             </p>
             <button
               onClick={() => router.push(`/invite/${token}`)}
