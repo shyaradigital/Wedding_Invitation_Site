@@ -66,7 +66,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
   return (
     <>
       {/* Desktop Left Sidebar - Fixed position, vertically scrollable */}
-      <aside className="hidden md:flex fixed left-0 top-0 h-screen w-64 bg-white/98 backdrop-blur-lg shadow-lg border-r-2 border-wedding-gold/30 z-[100] flex-col">
+      <aside className="hidden md:flex fixed left-0 top-0 h-screen w-64 bg-white shadow-lg border-r-2 border-wedding-gold/30 z-[100] flex-col">
         {/* Sidebar Header */}
         <div className="flex-shrink-0 px-4 py-4 border-b-2 border-wedding-gold/20">
           <Link href={`/invite/${token}`} className="block">
@@ -92,7 +92,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 min-h-[48px] ${
                       isActive
                         ? 'bg-wedding-gold text-white shadow-md font-semibold'
-                        : 'text-wedding-navy hover:bg-wedding-cream hover:text-wedding-gold'
+                        : 'bg-white/90 text-wedding-navy hover:bg-wedding-cream hover:text-wedding-gold'
                     }`}
                   >
                     {item.iconType === 'image' ? (
