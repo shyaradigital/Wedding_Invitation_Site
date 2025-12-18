@@ -84,13 +84,17 @@ export async function GET(request: NextRequest) {
             const eventStats = stats.rsvpBased[eventSlug]
             eventStats.totalAttendees += numberOfAttendees
 
-            // Calculate menu preferences
-            // Guests with "both" are counted in both categories
-            if (guest.menuPreference === 'veg' || guest.menuPreference === 'both') {
-              eventStats.veg += numberOfAttendees
-            }
-            if (guest.menuPreference === 'non-veg' || guest.menuPreference === 'both') {
-              eventStats.nonVeg += numberOfAttendees
+            // Only count menu preferences for Reception event
+            // Menu preference is only collected for Reception in the RSVP form
+            if (eventSlug === 'reception') {
+              // Calculate menu preferences
+              // Guests with "both" are counted in both categories
+              if (guest.menuPreference === 'veg' || guest.menuPreference === 'both') {
+                eventStats.veg += numberOfAttendees
+              }
+              if (guest.menuPreference === 'non-veg' || guest.menuPreference === 'both') {
+                eventStats.nonVeg += numberOfAttendees
+              }
             }
           }
         }

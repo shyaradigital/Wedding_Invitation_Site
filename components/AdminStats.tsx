@@ -158,25 +158,30 @@ export default function AdminStats() {
                 <span>{eventName}</span>
               </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className={`grid gap-4 mb-4 ${eventSlug === 'reception' ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1'}`}>
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                   <div className="text-sm text-gray-600 mb-1">Total Attendees</div>
                   <div className="text-2xl font-bold text-wedding-navy">{eventStats.totalAttendees}</div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-                  <div className="text-sm text-gray-600 mb-1">Veg</div>
-                  <div className="text-2xl font-bold text-green-700">{eventStats.veg}</div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-4 border border-red-200">
-                  <div className="text-sm text-gray-600 mb-1">Non-Veg</div>
-                  <div className="text-2xl font-bold text-red-700">{eventStats.nonVeg}</div>
-                </div>
+                {/* Only show menu analytics for Reception */}
+                {eventSlug === 'reception' && (
+                  <>
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                      <div className="text-sm text-gray-600 mb-1">Veg</div>
+                      <div className="text-2xl font-bold text-green-700">{eventStats.veg}</div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-4 border border-red-200">
+                      <div className="text-sm text-gray-600 mb-1">Non-Veg</div>
+                      <div className="text-2xl font-bold text-red-700">{eventStats.nonVeg}</div>
+                    </div>
+                  </>
+                )}
               </div>
 
-              {/* Visual Breakdown */}
-              {eventStats.totalAttendees > 0 && (
+              {/* Visual Breakdown - Only show for Reception */}
+              {eventSlug === 'reception' && eventStats.totalAttendees > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="text-sm font-semibold text-gray-700 mb-2">Menu Preference Breakdown:</div>
                   <div className="flex gap-2 h-8 rounded-lg overflow-hidden">
