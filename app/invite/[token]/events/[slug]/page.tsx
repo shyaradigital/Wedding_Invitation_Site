@@ -445,13 +445,19 @@ export default function EventDetailsPage() {
                           <span>Venue</span>
                         </h2>
                         <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                        <p className="text-base sm:text-lg md:text-xl font-serif mb-2 text-gray-800 leading-relaxed">
-                          Upper Parking Area Behind Poolside Patio
-                        </p>
-                        <p className="text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 text-gray-800 leading-relaxed">
+                        <p
+                          className="text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 leading-relaxed text-gray-800"
+                        >
                           DoubleTree by Hilton Hotel Irvine – Spectrum
                         </p>
-                        <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700 leading-relaxed">
+                        <p
+                          className="text-sm sm:text-base md:text-lg font-serif mb-2 leading-relaxed text-gray-700"
+                        >
+                          Upper Parking Area Behind Poolside Patio
+                        </p>
+                        <p
+                          className="text-sm sm:text-base md:text-lg font-serif mb-4 leading-relaxed text-gray-700"
+                        >
                           90 Pacifica, Irvine, CA 92618
                         </p>
                       </div>

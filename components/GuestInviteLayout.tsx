@@ -363,7 +363,7 @@ export default function GuestInviteLayout({
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-b from-wedding-navy to-wedding-navy-light text-white py-6 sm:py-8 md:py-12 mt-8 sm:mt-12 md:mt-16 relative z-10">
+      <footer className="bg-gradient-to-b from-wedding-navy to-wedding-navy-light text-white py-6 sm:py-8 md:py-12 mt-8 sm:mt-12 md:mt-16 md:ml-64 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <div className="flex justify-center mb-3 sm:mb-4">
             <span className="text-2xl sm:text-3xl">💛</span>
