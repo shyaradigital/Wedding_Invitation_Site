@@ -15,6 +15,7 @@
     "db:setup": "prisma db push && npm run seed:admin && npm run seed:events",
     "seed:admin": "tsx scripts/seed-admin.ts",
     "seed:events": "tsx scripts/seed-events.ts",
+    "enhance:mehndi": "tsx scripts/enhance-mehndi-images.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -44,6 +45,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "prisma": "^5.19.1"
+    "prisma": "^5.19.1",
+    "sharp": "^0.34.5"
   }
 }

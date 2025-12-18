@@ -395,22 +395,23 @@ input, textarea, select {
   background-attachment: scroll;
   /* Mask to show only odd tiles (1st, 3rd, 5th, 7th...) for seamless alignment */
   /* Only apply mask when height is set (greater than 0) - prevents blank page */
+  /* Use a more reasonable fallback for when height isn't set yet */
   mask-image: repeating-linear-gradient(
     to bottom,
     black 0,
-    black var(--mehndi-image-height, 9999px),
-    transparent var(--mehndi-image-height, 9999px),
-    transparent calc(var(--mehndi-image-height, 9999px) * 2)
+    black var(--mehndi-image-height, 2000px),
+    transparent var(--mehndi-image-height, 2000px),
+    transparent calc(var(--mehndi-image-height, 2000px) * 2)
   );
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     black 0,
-    black var(--mehndi-image-height, 9999px),
-    transparent var(--mehndi-image-height, 9999px),
-    transparent calc(var(--mehndi-image-height, 9999px) * 2)
+    black var(--mehndi-image-height, 2000px),
+    transparent var(--mehndi-image-height, 2000px),
+    transparent calc(var(--mehndi-image-height, 2000px) * 2)
   );
-  mask-size: 100% calc(var(--mehndi-image-height, 9999px) * 2);
-  -webkit-mask-size: 100% calc(var(--mehndi-image-height, 9999px) * 2);
+  mask-size: 100% calc(var(--mehndi-image-height, 2000px) * 2);
+  -webkit-mask-size: 100% calc(var(--mehndi-image-height, 2000px) * 2);
   mask-repeat: repeat-y;
   -webkit-mask-repeat: repeat-y;
   mask-position: center top;
@@ -426,33 +427,34 @@ input, textarea, select {
   left: 0;
   right: 0;
   bottom: 0;
-  min-height: 100vh;
+  min-height: 100%;
   background-image: url(/images/Mehndi_Background_Mirrored.jpg);
   background-repeat: repeat-y;
   background-size: 100% auto;
   background-position: center top;
   background-attachment: scroll;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
   /* Mask pattern: transparent for odd tiles (0→height, 2*height→3*height...), visible for even tiles (height→2*height, 3*height→4*height...) */
   /* This creates seamless edge-to-edge matching: Original -> Mirrored -> Original -> Mirrored... */
   /* Only apply mask when height is set (greater than 0) - prevents blank page */
+  /* Use a more reasonable fallback for when height isn't set yet */
   mask-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent var(--mehndi-image-height, 9999px),
-    black var(--mehndi-image-height, 9999px),
-    black calc(var(--mehndi-image-height, 9999px) * 2)
+    transparent var(--mehndi-image-height, 2000px),
+    black var(--mehndi-image-height, 2000px),
+    black calc(var(--mehndi-image-height, 2000px) * 2)
   );
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent var(--mehndi-image-height, 9999px),
-    black var(--mehndi-image-height, 9999px),
-    black calc(var(--mehndi-image-height, 9999px) * 2)
+    transparent var(--mehndi-image-height, 2000px),
+    black var(--mehndi-image-height, 2000px),
+    black calc(var(--mehndi-image-height, 2000px) * 2)
   );
-  mask-size: 100% calc(var(--mehndi-image-height, 9999px) * 2);
-  -webkit-mask-size: 100% calc(var(--mehndi-image-height, 9999px) * 2);
+  mask-size: 100% calc(var(--mehndi-image-height, 2000px) * 2);
+  -webkit-mask-size: 100% calc(var(--mehndi-image-height, 2000px) * 2);
   mask-repeat: repeat-y;
   -webkit-mask-repeat: repeat-y;
   mask-position: center top;
@@ -462,5 +464,11 @@ input, textarea, select {
 .mehndi-mirrored-background > * {
   position: relative;
   z-index: 1;
+}
+
+/* Ensure all direct children and nested content is above background */
+.mehndi-mirrored-background > * > * {
+  position: relative;
+  z-index: auto;
 }
 

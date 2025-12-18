@@ -9,6 +9,8 @@ import FloatingPetals from './FloatingPetals'
 import FloatingHearts from './FloatingHearts'
 import OrnamentalDivider from './OrnamentalDivider'
 import AdminPreviewBanner from './AdminPreviewBannerNew'
+import WistiaVideoPlayer from './WistiaVideoPlayer'
+import YouTubeVideoPlayer from './YouTubeVideoPlayer'
 
 interface Guest {
   id: string
@@ -37,6 +39,15 @@ export default function GuestInviteLayout({
   token,
 }: GuestInviteLayoutProps) {
   const isAdminPreview = token === 'admin-preview'
+
+  // Determine which video to show based on guest type
+  const isAllEvents =
+    guest.eventAccess.includes('mehndi') &&
+    guest.eventAccess.includes('wedding') &&
+    guest.eventAccess.includes('reception')
+
+  // Get YouTube video ID for reception-only guests
+  const receptionOnlyVideoId = process.env.NEXT_PUBLIC_YOUTUBE_RECEPTION_ONLY_VIDEO_ID || 'dQw4w9WgXcQ' // Demo: Replace with actual video ID
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-wedding-rose-pastel via-wedding-cream to-wedding-gold-light relative overflow-hidden">
@@ -259,6 +270,96 @@ export default function GuestInviteLayout({
             </div>
 
             <OrnamentalDivider variant="ornate" className="mb-6 sm:mb-8" />
+          </motion.div>
+
+          {/* Video Player Section - At the end of the page */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="wedding-card rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 mt-8 sm:mt-12 relative"
+            style={{
+              background: 'linear-gradient(135deg, #FFFEF7 0%, #FAF9F6 100%)',
+              border: '2px solid rgba(212, 175, 55, 0.3)',
+            }}
+          >
+            {/* Decorative corners */}
+            <div className="absolute top-0 left-0 w-16 h-16 opacity-30">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z"
+                  fill="#D4AF37"
+                  opacity="0.3"
+                />
+              </svg>
+            </div>
+            <div className="absolute top-0 right-0 w-16 h-16 opacity-30 transform rotate-90">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z"
+                  fill="#D4AF37"
+                  opacity="0.3"
+                />
+              </svg>
+            </div>
+            <div className="absolute bottom-0 left-0 w-16 h-16 opacity-30 transform -rotate-90">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z"
+                  fill="#D4AF37"
+                  opacity="0.3"
+                />
+              </svg>
+            </div>
+            <div className="absolute bottom-0 right-0 w-16 h-16 opacity-30 transform rotate-180">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z"
+                  fill="#D4AF37"
+                  opacity="0.3"
+                />
+              </svg>
+            </div>
+
+            {/* Header Section */}
+            <div className="text-center mb-6 sm:mb-8 relative z-10">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="mb-4 sm:mb-6"
+              >
+                <span className="text-5xl sm:text-6xl md:text-7xl">🎬</span>
+              </motion.div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script text-wedding-navy mb-4 sm:mb-6">
+                Our Invitation
+              </h2>
+              <OrnamentalDivider variant="ornate" className="mb-4 sm:mb-6" />
+              <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700 leading-relaxed max-w-2xl mx-auto">
+                A special message from Jay and Ankita
+              </p>
+            </div>
+
+            {/* Video Player */}
+            <div className="relative z-10 w-full">
+              {isAllEvents ? (
+                <WistiaVideoPlayer />
+              ) : (
+                <YouTubeVideoPlayer videoId={receptionOnlyVideoId} />
+              )}
+            </div>
+
+            {/* Instructions */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-6 sm:mt-8 text-center"
+            >
+              <p className="text-sm sm:text-base text-gray-600 font-serif italic">
+                Click the play button to watch our special invitation
+              </p>
+            </motion.div>
           </motion.div>
 
         </div>
