@@ -581,16 +581,16 @@ export default function EventDetailsPage() {
                 <div className="relative z-10">
                 <h2
                   className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
-                    isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-navy' : 'text-wedding-navy'
+                    isReception ? 'text-wedding-gold justify-center' : isWedding ? 'text-wedding-navy' : 'text-wedding-navy'
                   }`}
                 >
                   <span className="text-xl sm:text-2xl">👗</span>
                   <span>Attire</span>
                 </h2>
-                <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                <OrnamentalDivider variant="simple" className={`mb-3 sm:mb-4 ${isReception ? 'mx-auto' : ''}`} />
                 <p
                   className={`text-base sm:text-lg md:text-xl font-serif whitespace-pre-line leading-relaxed ${
-                    isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                    isReception ? 'text-wedding-gold-light text-center max-w-prose mx-auto' : 'text-gray-700'
                   } ${isMehendi || isWedding ? 'text-center max-w-prose mx-auto' : ''}`}
                 >
                   {content.attire}
