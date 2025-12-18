@@ -308,3 +308,63 @@ input, textarea, select {
   background: rgba(212, 175, 55, 0.5);
 }
 
+/* Subtle background patterns for event pages */
+.event-card-pattern {
+  background-image: 
+    radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.08) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.event-card-pattern-floral {
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.05'%3E%3Cpath d='M20 5 Q25 10 20 15 Q15 10 20 5' fill='%23D4AF37'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 40px 40px;
+}
+
+/* Twinkling star animation */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.star-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.star-twinkle:nth-child(2n) {
+  animation-delay: 0.5s;
+  animation-duration: 4s;
+}
+
+.star-twinkle:nth-child(3n) {
+  animation-delay: 1s;
+  animation-duration: 5s;
+}
+
+.star-twinkle:nth-child(4n) {
+  animation-delay: 1.5s;
+  animation-duration: 3.5s;
+}
+
+/* Decorative corner fade-in animation */
+@keyframes cornerFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+}
+
+.corner-decoration {
+  animation: cornerFadeIn 0.8s ease-out;
+}
+

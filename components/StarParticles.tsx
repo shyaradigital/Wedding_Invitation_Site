@@ -29,12 +29,14 @@ export default function StarParticles({ count = 12 }: { count?: number }) {
       {stars.map((star) => (
         <div
           key={star.id}
-          className="star-particle"
+          className="star-particle star-twinkle"
           style={{
             left: `${star.left}%`,
             top: `${star.top}%`,
             animationDelay: `${star.delay}s`,
             fontSize: `${star.size}px`,
+            opacity: 0.4,
+            color: '#D4AF37',
           }}
         >
           ✦

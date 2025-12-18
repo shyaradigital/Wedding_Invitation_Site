@@ -16,6 +16,32 @@ import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
 import { useGuestAccess } from '@/lib/use-guest-access'
 import { formatWrittenDate, formatWrittenTime, formatWrittenDateFromString } from '@/lib/date-formatter'
 
+// Corner decoration component for cards with animation
+const CornerDecorations = () => (
+  <>
+    <div className="absolute top-0 left-0 w-12 h-12 sm:w-16 sm:h-16 opacity-20 pointer-events-none corner-decoration">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
+      </svg>
+    </div>
+    <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 opacity-20 pointer-events-none transform rotate-90 corner-decoration" style={{ animationDelay: '0.1s' }}>
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
+      </svg>
+    </div>
+    <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 sm:h-16 opacity-20 pointer-events-none transform -rotate-90 corner-decoration" style={{ animationDelay: '0.2s' }}>
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
+      </svg>
+    </div>
+    <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-16 sm:h-16 opacity-20 pointer-events-none transform rotate-180 corner-decoration" style={{ animationDelay: '0.3s' }}>
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
+      </svg>
+    </div>
+  </>
+)
+
 const eventInfo: Record<
   string,
   { title: string; icon: string; color: string }
@@ -239,7 +265,7 @@ export default function EventDetailsPage() {
       eventAccess={guest.eventAccess}
       guestName={guest.name}
     >
-      {isReception && <StarParticles count={12} />}
+      <StarParticles count={15} />
       {!isReception && <FloatingPetals />}
       <PageTransition>
         <div className={`min-h-screen ${backgroundClass} relative`}>
@@ -281,9 +307,10 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
+                  <CornerDecorations />
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                     {eventDescription}
                   </p>
                 </motion.div>
@@ -304,8 +331,9 @@ export default function EventDetailsPage() {
                     transition={{ delay: 0.12 }}
                     className="mb-6 sm:mb-8"
                   >
-                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
+                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern">
+                      <CornerDecorations />
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                         {content.baraatDescription}
                       </p>
                     </div>
@@ -317,9 +345,10 @@ export default function EventDetailsPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.14 }}
-                      className="rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 bg-white/70 border border-wedding-gold/30"
+                      className="rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 bg-white/70 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                     >
-                      <div className="text-center">
+                      <CornerDecorations />
+                      <div className="text-center relative z-10">
                         <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700 leading-relaxed">
                           On {content.date} at {content.baraatTime}
                         </p>
@@ -333,19 +362,22 @@ export default function EventDetailsPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.16 }}
-                      className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/80 border-2 border-wedding-gold/30"
+                      className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/80 border-2 border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                     >
-                      <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
-                        <span className="text-xl sm:text-2xl">📍</span>
-                        <span>Venue</span>
-                      </h2>
-                      <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                      <p className="text-base sm:text-lg md:text-xl font-serif mb-2 text-gray-800 leading-relaxed">
-                        Upper Parking Area Behind Poolside Patio
-                      </p>
-                      <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700 leading-relaxed">
-                        DoubleTree by Hilton Hotel Irvine- Spectrum 90 Pacifica, Irvine, CA 92618
-                      </p>
+                      <CornerDecorations />
+                      <div className="relative z-10">
+                        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
+                          <span className="text-xl sm:text-2xl">📍</span>
+                          <span>Venue</span>
+                        </h2>
+                        <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                        <p className="text-base sm:text-lg md:text-xl font-serif mb-2 text-gray-800 leading-relaxed">
+                          Upper Parking Area Behind Poolside Patio
+                        </p>
+                        <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700 leading-relaxed">
+                          DoubleTree by Hilton Hotel Irvine- Spectrum 90 Pacifica, Irvine, CA 92618
+                        </p>
+                      </div>
                     </motion.div>
                   )}
                 </>
@@ -366,8 +398,9 @@ export default function EventDetailsPage() {
                     transition={{ delay: 0.15 }}
                     className="mb-6 sm:mb-8"
                   >
-                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
+                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern">
+                      <CornerDecorations />
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                         {content.pherasDescription}
                       </p>
                     </div>
@@ -378,8 +411,9 @@ export default function EventDetailsPage() {
                     transition={{ delay: 0.17 }}
                     className="mb-6 sm:mb-8"
                   >
-                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 text-center">
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 text-center relative overflow-hidden event-card-pattern">
+                      <CornerDecorations />
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed relative z-10">
                         Gujarati Vegetarian Lunch to be Served After Photo Session
                       </p>
                     </div>
@@ -392,13 +426,14 @@ export default function EventDetailsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className={`rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 ${
+                className={`rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern ${
                   isReception
                     ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
                     : 'bg-white/70 border border-wedding-gold/30'
                 }`}
               >
-                <div className="text-center space-y-3">
+                <CornerDecorations />
+                <div className="text-center space-y-3 relative z-10">
                   <p
                     className={`text-lg sm:text-xl md:text-2xl font-serif leading-relaxed ${
                       isReception ? 'text-wedding-gold-light' : 'text-gray-700'
@@ -422,9 +457,10 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 text-center"
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 text-center relative overflow-hidden event-card-pattern"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700">
+                  <CornerDecorations />
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 relative z-10">
                     {content.additionalInfo}
                   </p>
                 </motion.div>
@@ -436,9 +472,10 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30"
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed">
+                  <CornerDecorations />
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed relative z-10">
                     <span className="font-semibold">Cocktail hour:</span> {content.cocktailHour}
                   </p>
                 </motion.div>
@@ -451,9 +488,10 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30"
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light leading-relaxed">
+                  <CornerDecorations />
+                  <p className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light leading-relaxed relative z-10">
                     {content.note}
                   </p>
                 </motion.div>
@@ -464,7 +502,7 @@ export default function EventDetailsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${
+                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern ${
                   isWedding
                     ? 'bg-white/80 border-2 border-wedding-gold/40'
                     : isReception
@@ -472,6 +510,8 @@ export default function EventDetailsPage() {
                     : 'bg-white/60 border border-wedding-gold/20'
                 }`}
               >
+                <CornerDecorations />
+                <div className="relative z-10">
                 <h2
                   className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
                     isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-navy' : 'text-wedding-navy'
@@ -488,6 +528,7 @@ export default function EventDetailsPage() {
                 >
                   {content.attire}
                 </p>
+                </div>
               </motion.div>
 
               {/* Dinner (Reception only) - After Attire */}
@@ -496,16 +537,19 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.45 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-wedding-gold/10 border border-wedding-gold/30"
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
-                  <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold">
-                    <span className="text-xl sm:text-2xl">🍽️</span>
-                    <span>Dinner</span>
-                  </h2>
-                  <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed">
-                    Dinner to be served
-                  </p>
+                  <CornerDecorations />
+                  <div className="relative z-10">
+                    <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold">
+                      <span className="text-xl sm:text-2xl">🍽️</span>
+                      <span>Dinner</span>
+                    </h2>
+                    <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                    <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed">
+                      Dinner to be served
+                    </p>
+                  </div>
                 </motion.div>
               )}
 
@@ -515,9 +559,10 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.45 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
+                  <CornerDecorations />
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                     {content.additionalInfo}
                   </p>
                 </motion.div>
@@ -528,46 +573,48 @@ export default function EventDetailsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${
+                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern ${
                   isReception
                     ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
                     : 'bg-white/80 border-2 border-wedding-gold/30'
                 }`}
               >
-                <h2
-                  className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
-                    isReception ? 'text-wedding-gold' : 'text-wedding-navy'
-                  }`}
-                >
-                  <span className="text-xl sm:text-2xl">📍</span>
-                  <span>Venue</span>
-                </h2>
-                <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                <p
-                  className={`text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 leading-relaxed ${
-                    isReception ? 'text-wedding-gold-light' : 'text-gray-800'
-                  }`}
-                >
-                  {content.venue}
-                </p>
-                {content.venueDetails && (
+                <CornerDecorations />
+                <div className="relative z-10">
+                  <h2
+                    className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
+                      isReception ? 'text-wedding-gold' : 'text-wedding-navy'
+                    }`}
+                  >
+                    <span className="text-xl sm:text-2xl">📍</span>
+                    <span>Venue</span>
+                  </h2>
+                  <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
                   <p
-                    className={`text-sm sm:text-base md:text-lg font-serif mb-2 leading-relaxed ${
+                    className={`text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 leading-relaxed ${
+                      isReception ? 'text-wedding-gold-light' : 'text-gray-800'
+                    }`}
+                  >
+                    {content.venue}
+                  </p>
+                  {content.venueDetails && (
+                    <p
+                      className={`text-sm sm:text-base md:text-lg font-serif mb-2 leading-relaxed ${
+                        isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
+                      }`}
+                    >
+                      {content.venueDetails}
+                    </p>
+                  )}
+                  <p
+                    className={`text-sm sm:text-base md:text-lg font-serif mb-4 leading-relaxed ${
                       isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
                     }`}
                   >
-                    {content.venueDetails}
+                    {content.address}
                   </p>
-                )}
-                <p
-                  className={`text-sm sm:text-base md:text-lg font-serif mb-4 leading-relaxed ${
-                    isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
-                  }`}
-                >
-                  {content.address}
-                </p>
-                {/* Google Maps Embed */}
-                <div className="rounded-lg overflow-hidden border-2 border-wedding-gold/30 shadow-lg mt-4">
+                  {/* Google Maps Embed */}
+                  <div className="rounded-lg overflow-hidden border-2 border-wedding-gold/30 shadow-lg mt-4">
                   <iframe
                     src="https://www.google.com/maps?q=DoubleTree+by+Hilton+Hotel+Irvine+Spectrum+90+Pacifica+Irvine+CA+92618&output=embed"
                     width="100%"
@@ -579,6 +626,7 @@ export default function EventDetailsPage() {
                     className="w-full"
                     title="Venue Location"
                   ></iframe>
+                  </div>
                 </div>
               </motion.div>
 
