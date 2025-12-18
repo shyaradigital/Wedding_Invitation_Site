@@ -63,7 +63,7 @@ const eventContent: Record<string, {
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Bridal lounge, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
-    additionalInfo: 'Boxed Punjabi Chhole and Rice Dinner will be served',
+    additionalInfo: 'Boxed Punjabi Chhole and Rice Dinner will be Served',
   },
   wedding: {
     date: '21st Day of March, 2026',
@@ -76,12 +76,12 @@ const eventContent: Record<string, {
     pherasDescription: 'The Wedding Ceremony unites two souls spiritually, mentally and physically. The bond of matrimony is sacred and the ceremony of marriage is conducted according to Vedic traditions.',
     baraatDescription: 'Baraat is an Indian wedding ceremony where the groom accompanied by his family and friends dance all the way to the bride\'s doorstep or wedding venue.',
     baraatTime: '30 minutes past 9 O\'Clock in the Morning',
-    additionalInfo: 'No boxed gifts/registry',
+    additionalInfo: 'No Boxed Gifts/Registry',
   },
   reception: {
     date: '21st Day of March, 2026',
     time: 'Five O\'Clock in the Evening',
-    note: 'Note: No boxed gifts / registry',
+    note: 'Note: No Boxed Gifts/Registry',
     attire: 'Formal Indian/Western Attire',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Ballroom, DoubleTree',
@@ -448,8 +448,11 @@ export default function EventDetailsPage() {
                         <p className="text-base sm:text-lg md:text-xl font-serif mb-2 text-gray-800 leading-relaxed">
                           Upper Parking Area Behind Poolside Patio
                         </p>
+                        <p className="text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 text-gray-800 leading-relaxed">
+                          DoubleTree by Hilton Hotel Irvine – Spectrum
+                        </p>
                         <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700 leading-relaxed">
-                          DoubleTree by Hilton Hotel Irvine- Spectrum 90 Pacifica, Irvine, CA 92618
+                          90 Pacifica, Irvine, CA 92618
                         </p>
                       </div>
                     </motion.div>
@@ -572,7 +575,7 @@ export default function EventDetailsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern shadow-md ${
+                className={`rounded-xl ${(isMehendi || isWedding) ? 'p-3 sm:p-4' : 'p-4 sm:p-6'} mb-6 sm:mb-8 relative overflow-hidden event-card-pattern shadow-md ${
                   isWedding
                     ? 'bg-white/80 border-2 border-wedding-gold/40'
                     : isReception
@@ -584,7 +587,7 @@ export default function EventDetailsPage() {
               >
                 <div className="relative z-10">
                 <h2
-                  className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
+                  className={`flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
                     isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-navy' : 'text-wedding-navy'
                   }`}
                 >
@@ -623,7 +626,7 @@ export default function EventDetailsPage() {
                 </motion.div>
               )}
 
-              {/* Additional Info (Mehndi only - dinner info) - After Attire, before Venue */}
+              {/* Dinner (Mehndi only) - After Attire, before Venue */}
               {isMehendi && content.additionalInfo && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -631,9 +634,16 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.45 }}
                   className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-md ${isMehendi ? 'bg-white' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
-                    {content.additionalInfo}
-                  </p>
+                  <div className="relative z-10">
+                    <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
+                      <span className="text-xl sm:text-2xl">🍽️</span>
+                      <span>Dinner</span>
+                    </h2>
+                    <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                    <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
+                      {content.additionalInfo}
+                    </p>
+                  </div>
                 </motion.div>
               )}
 

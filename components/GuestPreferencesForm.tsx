@@ -160,7 +160,7 @@ export default function GuestPreferencesForm({
                           }
                           className="mr-3 w-5 h-5 text-wedding-gold focus:ring-wedding-gold touch-manipulation"
                         />
-                        <span className="text-sm sm:text-base text-gray-700">Both (No Preference)</span>
+                        <span className="text-sm sm:text-base text-gray-700">Both</span>
                       </label>
                     </div>
                   </div>

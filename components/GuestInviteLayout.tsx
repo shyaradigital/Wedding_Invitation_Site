@@ -335,9 +335,6 @@ export default function GuestInviteLayout({
                 Our Invitation
               </h2>
               <OrnamentalDivider variant="ornate" className="mb-4 sm:mb-6" />
-              <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700 leading-relaxed max-w-2xl mx-auto">
-                A special message from Jay and Ankita
-              </p>
             </div>
 
             {/* Video Player */}

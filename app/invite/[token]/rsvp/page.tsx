@@ -453,7 +453,7 @@ export default function RSVPPage() {
                             formData.menuPreference === 'both' 
                               ? 'text-purple-800 font-semibold' 
                               : 'text-gray-700'
-                          }`}>Both (No Preference)</span>
+                          }`}>Both</span>
                           {formData.menuPreference === 'both' && (
                             <span className="text-purple-600 text-xl ml-2">✓</span>
                           )}
