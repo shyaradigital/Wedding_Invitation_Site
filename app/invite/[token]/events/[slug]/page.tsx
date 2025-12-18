@@ -11,6 +11,7 @@ import InvitationPageLayout from '@/components/InvitationPageLayout'
 import OrnamentalDivider from '@/components/OrnamentalDivider'
 import FloatingPetals from '@/components/FloatingPetals'
 import StarParticles from '@/components/StarParticles'
+import InteractiveFloatingHearts from '@/components/InteractiveFloatingHearts'
 import PhoneVerificationForm from '@/components/PhoneVerificationForm'
 import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
 import { useGuestAccess } from '@/lib/use-guest-access'
@@ -154,6 +155,39 @@ export default function EventDetailsPage() {
         })
     }
   }, [hasEventAccess, isValidEventSlug, slug, event])
+
+  // Calculate Mehndi background image height for seamless alternating pattern
+  useEffect(() => {
+    if (slug === 'mehndi' && typeof window !== 'undefined') {
+      const calculateHeight = () => {
+        const container = document.querySelector('.mehndi-mirrored-background')
+        if (!container) return
+        
+        const containerWidth = container.clientWidth || window.innerWidth
+        const img = new window.Image()
+        
+        img.onload = () => {
+          // Calculate displayed height based on container width and image aspect ratio
+          const aspectRatio = img.naturalHeight / img.naturalWidth
+          const displayedHeight = containerWidth * aspectRatio
+          // Set CSS variable for mask pattern - ensures seamless edge-to-edge matching
+          // Round to avoid subpixel issues that could cause gaps
+          document.documentElement.style.setProperty('--mehndi-image-height', `${Math.round(displayedHeight * 100) / 100}px`)
+        }
+        
+        img.onerror = () => {
+          console.error('Failed to load Mehndi background image')
+        }
+        
+        img.src = '/images/Mehndi_Background.jpg'
+      }
+      
+      // Wait for next frame to ensure container is rendered
+      requestAnimationFrame(() => {
+        setTimeout(calculateHeight, 0)
+      })
+    }
+  }, [slug])
 
   // Show loading state
   if (accessState === 'loading') {
@@ -328,7 +362,7 @@ export default function EventDetailsPage() {
 
   // Theme-specific background classes
   const backgroundClass = isMehendi
-    ? 'bg-gradient-mehendi'
+    ? 'mehndi-mirrored-background' // Alternating original and mirrored images
     : isWedding
     ? 'bg-gradient-wedding-teal'
     : 'bg-gradient-reception'
@@ -340,9 +374,12 @@ export default function EventDetailsPage() {
       guestName={guest.name}
     >
       {isReception && <StarParticles count={75} />}
-      {!isReception && <FloatingPetals />}
+      {isWedding && <InteractiveFloatingHearts />}
+      {!isReception && !isWedding && <FloatingPetals />}
       <PageTransition>
-        <div className={`min-h-screen ${backgroundClass} relative`}>
+        <div 
+          className={`min-h-screen relative ${backgroundClass}`}
+        >
           <div className="max-w-[640px] mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-12 md:py-16 relative z-20">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -381,7 +418,7 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${isMehendi ? 'bg-white/90' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
+                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-md ${isMehendi ? 'bg-white' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
                 >
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                     {eventDescription}
@@ -494,11 +531,11 @@ export default function EventDetailsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className={`rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern ${
+                className={`rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern shadow-md ${
                   isReception
                     ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
                     : isMehendi
-                    ? 'bg-white/92 border border-wedding-gold/30'
+                    ? 'bg-white border border-wedding-gold/30'
                     : 'bg-white/70 border border-wedding-gold/30'
                 }`}
               >
@@ -568,13 +605,13 @@ export default function EventDetailsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern ${
+                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern shadow-md ${
                   isWedding
                     ? 'bg-white/80 border-2 border-wedding-gold/40'
                     : isReception
                     ? 'bg-wedding-gold/10 border border-wedding-gold/30'
                     : isMehendi
-                    ? 'bg-white/95 border border-wedding-gold/20'
+                    ? 'bg-white border border-wedding-gold/20'
                     : 'bg-white/60 border border-wedding-gold/20'
                 }`}
               >
@@ -625,7 +662,7 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.45 }}
-                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${isMehendi ? 'bg-white/90' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
+                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-md ${isMehendi ? 'bg-white' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
                 >
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                     {content.additionalInfo}
@@ -638,11 +675,11 @@ export default function EventDetailsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern ${
+                className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern shadow-md ${
                   isReception
                     ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
                     : isMehendi
-                    ? 'bg-white/95 border-2 border-wedding-gold/30'
+                    ? 'bg-white border-2 border-wedding-gold/30'
                     : 'bg-white/80 border-2 border-wedding-gold/30'
                 }`}
               >
