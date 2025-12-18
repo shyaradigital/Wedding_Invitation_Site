@@ -156,57 +156,6 @@ export default function EventDetailsPage() {
     }
   }, [hasEventAccess, isValidEventSlug, slug, event])
 
-  // Calculate Mehndi background image height for seamless alternating pattern
-  useEffect(() => {
-    if (slug === 'mehndi' && typeof window !== 'undefined') {
-      // Set a safe default height immediately to prevent blank page
-      // This ensures content is visible even before image loads
-      const setDefaultHeight = () => {
-        const containerWidth = window.innerWidth || 1200
-        // Assume a reasonable aspect ratio (16:9 or similar) as fallback
-        // This ensures content is visible even if image fails to load
-        const defaultHeight = containerWidth * 0.5625 // 16:9 aspect ratio fallback
-        document.documentElement.style.setProperty('--mehndi-image-height', `${Math.round(defaultHeight)}px`)
-      }
-      
-      // Set default immediately to prevent blank page
-      setDefaultHeight()
-      
-      const calculateHeight = () => {
-        const container = document.querySelector('.mehndi-mirrored-background')
-        if (!container) {
-          // Container not found, keep default height
-          return
-        }
-        
-        const containerWidth = container.clientWidth || window.innerWidth
-        const img = new window.Image()
-        
-        img.onload = () => {
-          // Calculate displayed height based on container width and image aspect ratio
-          const aspectRatio = img.naturalHeight / img.naturalWidth
-          const displayedHeight = containerWidth * aspectRatio
-          // Set CSS variable for mask pattern - ensures seamless edge-to-edge matching
-          // Round to avoid subpixel issues that could cause gaps
-          document.documentElement.style.setProperty('--mehndi-image-height', `${Math.round(displayedHeight * 100) / 100}px`)
-        }
-        
-        img.onerror = () => {
-          console.error('Failed to load Mehndi background image')
-          // On error, keep the default height we set earlier
-          // This ensures content remains visible even if image fails
-        }
-        
-        img.src = '/images/Mehndi_Background.jpg'
-      }
-      
-      // Wait for next frame to ensure container is rendered, then calculate actual height
-      requestAnimationFrame(() => {
-        setTimeout(calculateHeight, 0)
-      })
-    }
-  }, [slug])
-
   // Show loading state
   if (accessState === 'loading') {
     return (
@@ -380,7 +329,7 @@ export default function EventDetailsPage() {
 
   // Theme-specific background classes
   const backgroundClass = isMehendi
-    ? 'mehndi-mirrored-background' // Alternating original and mirrored images
+    ? 'bg-gradient-mehendi' // Warm gradient with rose and cream tones
     : isWedding
     ? 'bg-gradient-wedding-teal'
     : 'bg-gradient-reception'

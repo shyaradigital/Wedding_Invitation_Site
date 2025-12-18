@@ -36,7 +36,7 @@ const config: Config = {
       backgroundImage: {
         'gradient-wedding': 'linear-gradient(135deg, #F8E8E9 0%, #FAF9F6 50%, #F5D7DA 100%)',
         'gradient-gold': 'linear-gradient(135deg, #D4AF37 0%, #E8D5A3 100%)',
-        'gradient-mehendi': 'linear-gradient(135deg, #FFFEF7 0%, #D4E8D4 50%, #A8C5A8 100%)',
+        'gradient-mehendi': 'linear-gradient(135deg, #FFFEF7 0%, #F5D7DA 30%, #FAF9F6 60%, #E8B4B8 100%)',
         'gradient-wedding-teal': 'linear-gradient(135deg, #FFFEF7 0%, #D4E4E8 50%, #B8D4D8 100%)',
         'gradient-reception': 'linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%)',
         'gradient-rose-cream': 'linear-gradient(135deg, #E8B4B8 0%, #F5D7DA 50%, #FAF9F6 100%)',
