@@ -48,34 +48,34 @@ export default function StarParticles({ count = 100 }: { count?: number }) {
       {stars.map((star) => {
         const isWhite = star.color === 'white'
         
-        // Brightness-based opacity and text-shadow - reduced opacity for better visibility behind content
+        // Brightness-based opacity and text-shadow - balanced for visibility while staying behind content
         let baseOpacity: number
         let textShadow: string
         
         switch (star.brightness) {
           case 'dim':
-            baseOpacity = 0.15
+            baseOpacity = 0.25
             textShadow = isWhite
-              ? '0 0 2px rgba(255, 255, 255, 0.3), 0 0 4px rgba(255, 255, 255, 0.15)'
-              : '0 0 2px rgba(212, 175, 55, 0.3), 0 0 4px rgba(212, 175, 55, 0.15)'
+              ? '0 0 2px rgba(255, 255, 255, 0.4), 0 0 4px rgba(255, 255, 255, 0.2)'
+              : '0 0 2px rgba(212, 175, 55, 0.4), 0 0 4px rgba(212, 175, 55, 0.2)'
             break
           case 'normal':
-            baseOpacity = 0.3
+            baseOpacity = 0.5
             textShadow = isWhite
-              ? '0 0 4px rgba(255, 255, 255, 0.5), 0 0 8px rgba(255, 255, 255, 0.25)'
-              : '0 0 4px rgba(212, 175, 55, 0.5), 0 0 8px rgba(212, 175, 55, 0.25)'
+              ? '0 0 4px rgba(255, 255, 255, 0.6), 0 0 8px rgba(255, 255, 255, 0.3)'
+              : '0 0 4px rgba(212, 175, 55, 0.6), 0 0 8px rgba(212, 175, 55, 0.3)'
             break
           case 'bright':
-            baseOpacity = 0.45
+            baseOpacity = 0.7
             textShadow = isWhite
-              ? '0 0 6px rgba(255, 255, 255, 0.6), 0 0 12px rgba(255, 255, 255, 0.35), 0 0 18px rgba(255, 255, 255, 0.2)'
-              : '0 0 6px rgba(212, 175, 55, 0.6), 0 0 12px rgba(212, 175, 55, 0.35), 0 0 18px rgba(212, 175, 55, 0.2)'
+              ? '0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 255, 255, 0.5), 0 0 18px rgba(255, 255, 255, 0.3)'
+              : '0 0 6px rgba(212, 175, 55, 0.8), 0 0 12px rgba(212, 175, 55, 0.5), 0 0 18px rgba(212, 175, 55, 0.3)'
             break
           case 'very-bright':
-            baseOpacity = 0.6
+            baseOpacity = 0.85
             textShadow = isWhite
-              ? '0 0 8px rgba(255, 255, 255, 0.7), 0 0 16px rgba(255, 255, 255, 0.5), 0 0 24px rgba(255, 255, 255, 0.3)'
-              : '0 0 8px rgba(212, 175, 55, 0.7), 0 0 16px rgba(212, 175, 55, 0.5), 0 0 24px rgba(212, 175, 55, 0.3)'
+              ? '0 0 8px rgba(255, 255, 255, 0.9), 0 0 16px rgba(255, 255, 255, 0.6), 0 0 24px rgba(255, 255, 255, 0.4)'
+              : '0 0 8px rgba(212, 175, 55, 0.9), 0 0 16px rgba(212, 175, 55, 0.6), 0 0 24px rgba(212, 175, 55, 0.4)'
             break
         }
         
