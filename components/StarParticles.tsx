@@ -12,7 +12,7 @@ interface Star {
   brightness: 'dim' | 'normal' | 'bright' | 'very-bright'
 }
 
-export default function StarParticles({ count = 50 }: { count?: number }) {
+export default function StarParticles({ count = 100 }: { count?: number }) {
   const [stars, setStars] = useState<Star[]>([])
 
   useEffect(() => {
