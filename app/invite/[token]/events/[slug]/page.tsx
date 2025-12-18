@@ -239,7 +239,7 @@ export default function EventDetailsPage() {
       eventAccess={guest.eventAccess}
       guestName={guest.name}
     >
-      <StarParticles count={15} />
+      <StarParticles count={75} />
       {!isReception && <FloatingPetals />}
       <PageTransition>
         <div className={`min-h-screen ${backgroundClass} relative`}>
