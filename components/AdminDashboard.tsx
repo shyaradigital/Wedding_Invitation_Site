@@ -6,6 +6,7 @@ import Link from 'next/link'
 import GuestEditor from './GuestEditor'
 import AdminStats from './AdminStats'
 import AdminEditor from './AdminEditor'
+import GuestTypeSelectionModal from './GuestTypeSelectionModal'
 
 interface Guest {
   id: string
@@ -32,6 +33,7 @@ export default function AdminDashboard({ currentAdminId }: AdminDashboardProps) 
   const [guests, setGuests] = useState<Guest[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>('stats')
+  const [showGuestTypeModal, setShowGuestTypeModal] = useState(false)
 
   useEffect(() => {
     fetchGuests()
@@ -58,6 +60,14 @@ export default function AdminDashboard({ currentAdminId }: AdminDashboardProps) 
     router.refresh()
   }
 
+  const handleViewAsGuest = () => {
+    setShowGuestTypeModal(true)
+  }
+
+  const handleGuestTypeSelect = (type: 'all-events' | 'reception-only') => {
+    router.push(`/admin/preview?type=${type}`)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
@@ -70,13 +80,13 @@ export default function AdminDashboard({ currentAdminId }: AdminDashboardProps) 
             </h1>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-            <Link
-              href="/admin/preview"
+            <button
+              onClick={handleViewAsGuest}
               className="bg-wedding-navy text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-wedding-navy/90 transition-all duration-300 text-sm sm:text-base w-full sm:w-auto font-semibold shadow-sm hover:shadow-md flex items-center justify-center gap-2"
             >
               <span>👁️</span>
               <span>View as Guest</span>
-            </Link>
+            </button>
             <button
               onClick={handleLogout}
               className="bg-wedding-gold text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-wedding-gold/90 transition-all duration-300 text-sm sm:text-base w-full sm:w-auto font-semibold shadow-sm hover:shadow-md"
@@ -137,6 +147,13 @@ export default function AdminDashboard({ currentAdminId }: AdminDashboardProps) 
         )}
         {activeTab === 'admins' && <AdminEditor currentAdminId={currentAdminId} />}
       </div>
+
+      {/* Guest Type Selection Modal */}
+      <GuestTypeSelectionModal
+        isOpen={showGuestTypeModal}
+        onClose={() => setShowGuestTypeModal(false)}
+        onSelect={handleGuestTypeSelect}
+      />
     </div>
   )
 }
