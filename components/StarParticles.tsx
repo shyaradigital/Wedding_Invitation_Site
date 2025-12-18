@@ -44,38 +44,38 @@ export default function StarParticles({ count = 100 }: { count?: number }) {
   }, [count])
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[1]">
       {stars.map((star) => {
         const isWhite = star.color === 'white'
         
-        // Brightness-based opacity and text-shadow - balanced for visibility while staying behind content
+        // Brightness-based opacity and text-shadow - visible stars that stay behind content boxes
         let baseOpacity: number
         let textShadow: string
         
         switch (star.brightness) {
           case 'dim':
-            baseOpacity = 0.25
+            baseOpacity = 0.4
             textShadow = isWhite
-              ? '0 0 2px rgba(255, 255, 255, 0.4), 0 0 4px rgba(255, 255, 255, 0.2)'
-              : '0 0 2px rgba(212, 175, 55, 0.4), 0 0 4px rgba(212, 175, 55, 0.2)'
+              ? '0 0 2px rgba(255, 255, 255, 0.6), 0 0 4px rgba(255, 255, 255, 0.3)'
+              : '0 0 2px rgba(212, 175, 55, 0.6), 0 0 4px rgba(212, 175, 55, 0.3)'
             break
           case 'normal':
-            baseOpacity = 0.5
+            baseOpacity = 0.65
             textShadow = isWhite
-              ? '0 0 4px rgba(255, 255, 255, 0.6), 0 0 8px rgba(255, 255, 255, 0.3)'
-              : '0 0 4px rgba(212, 175, 55, 0.6), 0 0 8px rgba(212, 175, 55, 0.3)'
+              ? '0 0 4px rgba(255, 255, 255, 0.8), 0 0 8px rgba(255, 255, 255, 0.5)'
+              : '0 0 4px rgba(212, 175, 55, 0.8), 0 0 8px rgba(212, 175, 55, 0.5)'
             break
           case 'bright':
-            baseOpacity = 0.7
-            textShadow = isWhite
-              ? '0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 255, 255, 0.5), 0 0 18px rgba(255, 255, 255, 0.3)'
-              : '0 0 6px rgba(212, 175, 55, 0.8), 0 0 12px rgba(212, 175, 55, 0.5), 0 0 18px rgba(212, 175, 55, 0.3)'
-            break
-          case 'very-bright':
             baseOpacity = 0.85
             textShadow = isWhite
-              ? '0 0 8px rgba(255, 255, 255, 0.9), 0 0 16px rgba(255, 255, 255, 0.6), 0 0 24px rgba(255, 255, 255, 0.4)'
-              : '0 0 8px rgba(212, 175, 55, 0.9), 0 0 16px rgba(212, 175, 55, 0.6), 0 0 24px rgba(212, 175, 55, 0.4)'
+              ? '0 0 6px rgba(255, 255, 255, 1), 0 0 12px rgba(255, 255, 255, 0.7), 0 0 18px rgba(255, 255, 255, 0.4)'
+              : '0 0 6px rgba(212, 175, 55, 1), 0 0 12px rgba(212, 175, 55, 0.7), 0 0 18px rgba(212, 175, 55, 0.4)'
+            break
+          case 'very-bright':
+            baseOpacity = 1.0
+            textShadow = isWhite
+              ? '0 0 8px rgba(255, 255, 255, 1), 0 0 16px rgba(255, 255, 255, 0.8), 0 0 24px rgba(255, 255, 255, 0.6)'
+              : '0 0 8px rgba(212, 175, 55, 1), 0 0 16px rgba(212, 175, 55, 0.8), 0 0 24px rgba(212, 175, 55, 0.6)'
             break
         }
         
@@ -91,7 +91,7 @@ export default function StarParticles({ count = 100 }: { count?: number }) {
               opacity: baseOpacity,
               color: isWhite ? '#FFFFFF' : '#D4AF37',
               textShadow: textShadow,
-              zIndex: 0,
+              zIndex: 1,
             }}
           >
             ✦
