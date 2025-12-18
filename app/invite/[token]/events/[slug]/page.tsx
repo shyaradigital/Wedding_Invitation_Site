@@ -699,23 +699,6 @@ export default function EventDetailsPage() {
                   </div>
                 </div>
               </motion.div>
-
-              {/* Botanical/Decorative elements for Mehendi */}
-              {isMehendi && (
-                <div className="absolute bottom-0 left-0 right-0 h-24 opacity-20 pointer-events-none">
-                  <svg viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M50 80 Q75 40, 100 80 T150 80 T200 80 T250 80 T300 80 T350 80"
-                      stroke="#006400"
-                      strokeWidth="2"
-                      fill="none"
-                    />
-                    <circle cx="100" cy="80" r="4" fill="#006400" />
-                    <circle cx="200" cy="80" r="4" fill="#006400" />
-                    <circle cx="300" cy="80" r="4" fill="#006400" />
-                  </svg>
-                </div>
-              )}
             </motion.div>
           </div>
         </div>
