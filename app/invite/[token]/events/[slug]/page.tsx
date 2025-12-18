@@ -283,7 +283,7 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.1 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
                     {eventDescription}
                   </p>
                 </motion.div>
@@ -305,7 +305,7 @@ export default function EventDetailsPage() {
                     className="mb-6 sm:mb-8"
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
                         {content.baraatDescription}
                       </p>
                     </div>
@@ -320,7 +320,7 @@ export default function EventDetailsPage() {
                       className="rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 bg-white/70 border border-wedding-gold/30"
                     >
                       <div className="text-center">
-                        <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700">
+                        <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700 leading-relaxed">
                           On {content.date} at {content.baraatTime}
                         </p>
                       </div>
@@ -335,14 +335,15 @@ export default function EventDetailsPage() {
                       transition={{ delay: 0.16 }}
                       className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/80 border-2 border-wedding-gold/30"
                     >
-                      <h2 className="text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
-                        Venue
+                      <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
+                        <span className="text-xl sm:text-2xl">📍</span>
+                        <span>Venue</span>
                       </h2>
                       <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                      <p className="text-base sm:text-lg md:text-xl font-serif mb-2 text-gray-800">
+                      <p className="text-base sm:text-lg md:text-xl font-serif mb-2 text-gray-800 leading-relaxed">
                         Upper Parking Area Behind Poolside Patio
                       </p>
-                      <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700">
+                      <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700 leading-relaxed">
                         DoubleTree by Hilton Hotel Irvine- Spectrum 90 Pacifica, Irvine, CA 92618
                       </p>
                     </motion.div>
@@ -366,7 +367,7 @@ export default function EventDetailsPage() {
                     className="mb-6 sm:mb-8"
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
                         {content.pherasDescription}
                       </p>
                     </div>
@@ -378,7 +379,7 @@ export default function EventDetailsPage() {
                     className="mb-6 sm:mb-8"
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 text-center">
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700">
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
                         Gujarati Vegetarian Lunch to be Served After Photo Session
                       </p>
                     </div>
@@ -399,14 +400,14 @@ export default function EventDetailsPage() {
               >
                 <div className="text-center space-y-3">
                   <p
-                    className={`text-lg sm:text-xl md:text-2xl font-serif ${
+                    className={`text-lg sm:text-xl md:text-2xl font-serif leading-relaxed ${
                       isReception ? 'text-wedding-gold-light' : 'text-gray-700'
                     }`}
                   >
                     On {content.date}
                   </p>
                   <p
-                    className={`text-lg sm:text-xl md:text-2xl font-serif ${
+                    className={`text-lg sm:text-xl md:text-2xl font-serif leading-relaxed ${
                       isReception ? 'text-wedding-gold-light' : 'text-gray-700'
                     }`}
                   >
@@ -437,7 +438,7 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.3 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light">
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed">
                     <span className="font-semibold">Cocktail hour:</span> {content.cocktailHour}
                   </p>
                 </motion.div>
@@ -452,7 +453,7 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.3 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light">
+                  <p className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light leading-relaxed">
                     {content.note}
                   </p>
                 </motion.div>
@@ -472,17 +473,18 @@ export default function EventDetailsPage() {
                 }`}
               >
                 <h2
-                  className={`text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
+                  className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
                     isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-navy' : 'text-wedding-navy'
                   }`}
                 >
-                  Attire
+                  <span className="text-xl sm:text-2xl">👗</span>
+                  <span>Attire</span>
                 </h2>
                 <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
                 <p
-                  className={`text-base sm:text-lg md:text-xl font-serif whitespace-pre-line ${
+                  className={`text-base sm:text-lg md:text-xl font-serif whitespace-pre-line leading-relaxed ${
                     isReception ? 'text-wedding-gold-light' : 'text-gray-700'
-                  } ${isMehendi || isWedding ? 'text-center' : ''}`}
+                  } ${isMehendi || isWedding ? 'text-center max-w-prose mx-auto' : ''}`}
                 >
                   {content.attire}
                 </p>
@@ -496,11 +498,12 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.45 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-wedding-gold/10 border border-wedding-gold/30"
                 >
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold">
-                    Dinner
+                  <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold">
+                    <span className="text-xl sm:text-2xl">🍽️</span>
+                    <span>Dinner</span>
                   </h2>
                   <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light">
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed">
                     Dinner to be served
                   </p>
                 </motion.div>
@@ -514,7 +517,7 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.45 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700">
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto">
                     {content.additionalInfo}
                   </p>
                 </motion.div>
@@ -532,15 +535,16 @@ export default function EventDetailsPage() {
                 }`}
               >
                 <h2
-                  className={`text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
+                  className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
                     isReception ? 'text-wedding-gold' : 'text-wedding-navy'
                   }`}
                 >
-                  Venue
+                  <span className="text-xl sm:text-2xl">📍</span>
+                  <span>Venue</span>
                 </h2>
                 <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
                 <p
-                  className={`text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 ${
+                  className={`text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 leading-relaxed ${
                     isReception ? 'text-wedding-gold-light' : 'text-gray-800'
                   }`}
                 >
@@ -548,7 +552,7 @@ export default function EventDetailsPage() {
                 </p>
                 {content.venueDetails && (
                   <p
-                    className={`text-sm sm:text-base md:text-lg font-serif mb-2 ${
+                    className={`text-sm sm:text-base md:text-lg font-serif mb-2 leading-relaxed ${
                       isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
                     }`}
                   >
@@ -556,7 +560,7 @@ export default function EventDetailsPage() {
                   </p>
                 )}
                 <p
-                  className={`text-sm sm:text-base md:text-lg font-serif mb-4 ${
+                  className={`text-sm sm:text-base md:text-lg font-serif mb-4 leading-relaxed ${
                     isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
                   }`}
                 >

@@ -33,9 +33,19 @@ export default function InvitationPageLayout({
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-b from-wedding-navy to-wedding-navy-light text-white py-6 sm:py-8 mt-8 sm:mt-12">
+      <footer className="bg-gradient-to-b from-wedding-navy to-wedding-navy-light text-white py-6 sm:py-8 md:py-12 mt-8 sm:mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-sm sm:text-base opacity-75">
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <span className="text-2xl sm:text-3xl">💛</span>
+          </div>
+          <p className="text-base sm:text-lg md:text-xl mb-2 sm:mb-3 font-script text-wedding-gold-light">
+            Made with love for our special day
+          </p>
+          <p className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6">
+            Thank you for being a part of our celebration.
+          </p>
+          <div className="wedding-divider max-w-xs mx-auto mb-4 sm:mb-6 opacity-30"></div>
+          <p className="text-xs sm:text-sm opacity-75">
             © {new Date().getFullYear()} Ankita Brijesh Sharma & Jay Bhavan Mehta
           </p>
         </div>
