@@ -25,7 +25,7 @@ export default function StarParticles({ count = 12 }: { count?: number }) {
   }, [count])
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[1]">
       {stars.map((star) => (
         <div
           key={star.id}
@@ -35,8 +35,9 @@ export default function StarParticles({ count = 12 }: { count?: number }) {
             top: `${star.top}%`,
             animationDelay: `${star.delay}s`,
             fontSize: `${star.size}px`,
-            opacity: 0.4,
+            opacity: 0.6,
             color: '#D4AF37',
+            textShadow: '0 0 4px rgba(212, 175, 55, 0.8), 0 0 8px rgba(212, 175, 55, 0.4)',
           }}
         >
           ✦
