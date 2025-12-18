@@ -23,6 +23,13 @@ const eventData = {
     icon: '/icons/mehndi-icon.png',
     slug: 'mehndi',
   },
+  baraat: {
+    name: 'Baraat',
+    date: '21st Day of March',
+    time: '30 minutes past 9 O\'Clock in the Morning',
+    icon: '/icons/wedding-icon.png',
+    slug: 'baraat',
+  },
   wedding: {
     name: 'Hindu Wedding Ceremony',
     date: '21st Day of March',
@@ -121,12 +128,18 @@ export default function SaveTheDatePage() {
     .map((slug: string) => eventData[slug as keyof typeof eventData])
     .filter(Boolean) as Array<{ name: string; date: string; time: string; icon: string; slug: string }>
 
+  // Add Baraat if guest has wedding access
+  if (guest.eventAccess.includes('wedding') && eventData.baraat) {
+    events.push(eventData.baraat)
+  }
+
   // Sort events by date
   const sortedEvents = events.sort((a: { slug: string }, b: { slug: string }) => {
     const dateOrder: Record<string, number> = {
       'mehndi': 1,
-      'wedding': 2,
-      'reception': 3,
+      'baraat': 2,
+      'wedding': 3,
+      'reception': 4,
     }
     return (dateOrder[a.slug] || 0) - (dateOrder[b.slug] || 0)
   })

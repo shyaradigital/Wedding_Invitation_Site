@@ -48,8 +48,8 @@ export default function GuestInviteLayout({
       {/* Navigation */}
       <InvitationNavigation token={token} eventAccess={guest.eventAccess} guestName={guest.name} />
 
-      {/* Main Content */}
-      <main className="relative z-10">
+      {/* Main Content - Add left margin on desktop to account for sidebar */}
+      <main className="relative z-10 md:ml-64">
         <div className="max-w-[640px] mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-12 md:py-16">
           {/* Main Invitation Card */}
           <motion.div

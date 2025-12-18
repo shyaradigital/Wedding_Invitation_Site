@@ -27,8 +27,8 @@ export default function InvitationPageLayout({
       {/* Navigation with integrated header */}
       <InvitationNavigation token={token} eventAccess={eventAccess} guestName={guestName} />
 
-      {/* Page Content */}
-      <main className="flex-1">
+      {/* Page Content - Add left margin on desktop to account for sidebar */}
+      <main className="flex-1 md:ml-64">
         {children}
       </main>
 

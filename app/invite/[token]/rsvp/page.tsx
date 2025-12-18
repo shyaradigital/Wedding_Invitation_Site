@@ -361,7 +361,9 @@ export default function RSVPPage() {
                     {/* Menu Preference */}
                     <div>
                       <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
-                        Menu Preference <span className="text-red-500">*</span>
+                        {guest.eventAccess && guest.eventAccess.length === 1 && guest.eventAccess.includes('reception')
+                          ? 'Reception Menu Preference'
+                          : 'Menu Preference'} <span className="text-red-500">*</span>
                       </label>
                       <OrnamentalDivider variant="simple" className="mb-4" />
                       <div className="space-y-3">

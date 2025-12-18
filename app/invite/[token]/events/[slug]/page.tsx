@@ -68,7 +68,7 @@ const eventContent: Record<string, {
     note: 'Lunch to be served after photo session',
     attire: 'Formal Indian Attire',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
-    venueDetails: 'Poolside patio, DoubleTree',
+    venueDetails: 'Poolside Patio, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
     pherasDescription: 'The Wedding Ceremony unites two souls spiritually, mentally and physically. The bond of matrimony is sacred and the ceremony of marriage is conducted according to Vedic traditions.',
     baraatDescription: 'Baraat is an Indian wedding ceremony where the groom accompanied by his family and friends dance all the way to the bride\'s doorstep or wedding venue.',
@@ -339,7 +339,7 @@ export default function EventDetailsPage() {
                         Venue
                       </h2>
                       <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                      <p className="text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 text-gray-800">
+                      <p className="text-base sm:text-lg md:text-xl font-serif mb-2 text-gray-800">
                         Upper Parking Area Behind Poolside Patio
                       </p>
                       <p className="text-sm sm:text-base md:text-lg font-serif text-gray-700">
@@ -368,6 +368,18 @@ export default function EventDetailsPage() {
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20">
                       <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
                         {content.pherasDescription}
+                      </p>
+                    </div>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.17 }}
+                    className="mb-6 sm:mb-8"
+                  >
+                    <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 text-center">
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700">
+                        Gujarati Vegetarian Lunch to be Served After Photo Session
                       </p>
                     </div>
                   </motion.div>
@@ -470,11 +482,29 @@ export default function EventDetailsPage() {
                 <p
                   className={`text-base sm:text-lg md:text-xl font-serif whitespace-pre-line ${
                     isReception ? 'text-wedding-gold-light' : 'text-gray-700'
-                  }`}
+                  } ${isMehendi || isWedding ? 'text-center' : ''}`}
                 >
                   {content.attire}
                 </p>
               </motion.div>
+
+              {/* Dinner (Reception only) - After Attire */}
+              {isReception && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
+                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-wedding-gold/10 border border-wedding-gold/30"
+                >
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold">
+                    Dinner
+                  </h2>
+                  <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light">
+                    Dinner to be served
+                  </p>
+                </motion.div>
+              )}
 
               {/* Additional Info (Mehndi only - dinner info) - After Attire, before Venue */}
               {isMehendi && content.additionalInfo && (
