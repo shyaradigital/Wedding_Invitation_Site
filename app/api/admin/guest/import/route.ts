@@ -10,6 +10,7 @@ const XLSX = require('xlsx')
 // Column C: Email (optional)
 // Column D: Event Access (required: "all-events" or "reception-only")
 // Column E: Max Devices Allowed (optional, default: 1)
+// Column F: Number of Attendees (optional, default: 1)
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
     
     // Convert to JSON
     const data = XLSX.utils.sheet_to_json(worksheet, { 
-      header: ['name', 'phone', 'email', 'eventAccess', 'maxDevicesAllowed'],
+      header: ['name', 'phone', 'email', 'eventAccess', 'maxDevicesAllowed', 'numberOfAttendees'],
       defval: null,
       raw: false
     })
@@ -134,6 +135,15 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        // Parse number of attendees (optional, default 1)
+        let numberOfAttendees = 1
+        if (row.numberOfAttendees) {
+          const parsed = parseInt(String(row.numberOfAttendees), 10)
+          if (!isNaN(parsed) && parsed >= 1) {
+            numberOfAttendees = parsed
+          }
+        }
+
         // Check if guest with same name already exists (optional check)
         const existingGuest = await prisma.guest.findFirst({
           where: { name },
@@ -158,6 +168,7 @@ export async function POST(request: NextRequest) {
             token,
             eventAccess: JSON.stringify(actualEventAccess),
             maxDevicesAllowed,
+            numberOfAttendees,
             allowedDevices: JSON.stringify([]),
           },
         })
@@ -222,6 +233,7 @@ export async function GET() {
         email: 'john.doe@example.com',
         eventAccess: 'all-events',
         maxDevicesAllowed: 2,
+        numberOfAttendees: 2,
       },
       {
         name: 'Jane Smith',
@@ -229,6 +241,7 @@ export async function GET() {
         email: 'jane.smith@example.com',
         eventAccess: 'reception-only',
         maxDevicesAllowed: 1,
+        numberOfAttendees: 1,
       },
     ]
 

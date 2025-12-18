@@ -1863,6 +1863,7 @@ export default function GuestEditor({
                       <li><strong>Column C:</strong> Email (optional, but phone or email required)</li>
                       <li><strong>Column D:</strong> Event Access (required: &quot;all-events&quot; or &quot;reception-only&quot;)</li>
                       <li><strong>Column E:</strong> Max Devices Allowed (optional, default: 1)</li>
+                      <li><strong>Column F:</strong> Number of Attendees (optional, default: 1)</li>
                     </ul>
                     <button
                       onClick={handleDownloadTemplate}
