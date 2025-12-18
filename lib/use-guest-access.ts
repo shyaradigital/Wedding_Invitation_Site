@@ -201,7 +201,7 @@ export function useGuestAccess(token: string): UseGuestAccessResult {
       if (!success) {
         // Phone/email doesn't match database - show restricted popup
         setShowRestrictedPopup(true)
-        setError('Phone number or email does not match our records')
+        setError('Phone number or email does not match. Please contact Ankita for your invitation link.')
         return false
       }
 

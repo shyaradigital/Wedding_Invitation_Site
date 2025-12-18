@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       const normalizedGuestPhone = guest.phone ? normalizePhoneNumber(guest.phone) : null
       if (normalizedGuestPhone !== normalizedPhone) {
         const response = NextResponse.json(
-          { error: 'Phone number does not match' },
+          { error: 'Phone number does not match. Please contact Ankita for your invitation link.' },
           { status: 403 }
         )
         return setNoCacheHeaders(response)
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       const normalizedGuestEmail = guest.email ? guest.email.trim().toLowerCase() : null
       if (normalizedGuestEmail !== normalizedEmail) {
         const response = NextResponse.json(
-          { error: 'Email does not match' },
+          { error: 'Email does not match. Please contact Ankita for your invitation link.' },
           { status: 403 }
         )
         return setNoCacheHeaders(response)

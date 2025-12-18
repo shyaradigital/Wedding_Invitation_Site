@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
       const response = NextResponse.json(
         {
           success: false,
-          error: 'Phone number does not match',
+          error: 'Phone number does not match. Please contact Ankita for your invitation link.',
         },
         { status: 403 }
       )
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
       const response = NextResponse.json(
         {
           success: false,
-          error: 'Email does not match',
+          error: 'Email does not match. Please contact Ankita for your invitation link.',
         },
         { status: 403 }
       )

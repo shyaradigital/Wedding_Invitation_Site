@@ -16,6 +16,8 @@ import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
 import { useGuestAccess } from '@/lib/use-guest-access'
 import { formatWrittenDate, formatWrittenTime, formatWrittenDateFromString } from '@/lib/date-formatter'
 
+const ADMIN_CONTACT = process.env.NEXT_PUBLIC_ADMIN_CONTACT || '---'
+
 const eventInfo: Record<
   string,
   { title: string; icon: string; color: string }
@@ -117,46 +119,44 @@ export default function EventDetailsPage() {
     }
   }
 
-  useEffect(() => {
-    // Check if guest has access to this event
-    if (accessState === 'granted' && guest) {
-      if (!guest.eventAccess.includes(slug)) {
-        router.push(`/invite/${token}`)
-      }
-    }
-  }, [accessState, guest, slug, router, token])
+  // Check if guest has access to this specific event
+  const hasEventAccess = accessState === 'granted' && guest && guest.eventAccess.includes(slug)
+  const isValidEventSlug = eventInfo[slug] !== undefined
 
   useEffect(() => {
-    // Fetch event details with cache-busting to ensure fresh data
-    fetch(`/api/events/${slug}?t=${Date.now()}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.event) {
-          const mergedEvent = {
-            ...eventInfo[slug],
-            ...data.event,
+    // Only fetch event details if guest has access to this event
+    if (hasEventAccess && isValidEventSlug && !event) {
+      // Fetch event details with cache-busting to ensure fresh data
+      fetch(`/api/events/${slug}?t=${Date.now()}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.event) {
+            const mergedEvent = {
+              ...eventInfo[slug],
+              ...data.event,
+            }
+            setEvent(mergedEvent)
+          } else {
+            // Fallback to default info
+            const eventData = eventInfo[slug]
+            if (eventData) {
+              setEvent(eventData)
+            }
           }
-          setEvent(mergedEvent)
-        } else {
+        })
+        .catch((err) => {
+          console.error('Error fetching event:', err)
           // Fallback to default info
           const eventData = eventInfo[slug]
           if (eventData) {
             setEvent(eventData)
           }
-        }
-      })
-      .catch((err) => {
-        console.error('Error fetching event:', err)
-        // Fallback to default info
-        const eventData = eventInfo[slug]
-        if (eventData) {
-          setEvent(eventData)
-        }
-      })
-  }, [token, slug, router])
+        })
+    }
+  }, [hasEventAccess, isValidEventSlug, slug, event])
 
   // Show loading state
-  if (accessState === 'loading' || !event) {
+  if (accessState === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">
@@ -189,8 +189,108 @@ export default function EventDetailsPage() {
     )
   }
 
-  // Show access denied
-  if (accessState === 'access-denied' || accessState !== 'granted' || !guest) {
+  // Show access denied for invalid token
+  if (accessState === 'access-denied' || (accessState !== 'granted' && accessState !== 'loading')) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-gold mx-auto mb-4"></div>
+          <p className="text-wedding-navy">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error for invalid event slug or unauthorized event access
+  if (accessState === 'granted' && guest) {
+    // Check if event slug is valid
+    if (!isValidEventSlug) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-wedding p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-md w-full wedding-card rounded-2xl shadow-2xl p-6 sm:p-8 text-center"
+          >
+            <div className="text-5xl sm:text-6xl mb-4">🔍</div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display text-wedding-navy mb-4">
+              Page Not Found
+            </h1>
+            <div className="wedding-divider max-w-32 mx-auto mb-6"></div>
+            <p className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed">
+              The event page you're looking for doesn't exist.
+            </p>
+            <button
+              onClick={() => router.push(`/invite/${token}`)}
+              className="px-6 py-3 bg-wedding-gold text-white rounded-lg font-semibold hover:bg-wedding-gold/90 transition-colors"
+            >
+              Return to Home
+            </button>
+          </motion.div>
+        </div>
+      )
+    }
+
+    // Check if guest has access to this specific event - CRITICAL: Check BEFORE rendering content
+    if (!guest.eventAccess.includes(slug)) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-wedding p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-md w-full wedding-card rounded-2xl shadow-2xl p-6 sm:p-8 text-center"
+          >
+            <div className="text-5xl sm:text-6xl mb-4">🔒</div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display text-wedding-navy mb-4">
+              This Page Is Not Available
+            </h1>
+            <div className="wedding-divider max-w-32 mx-auto mb-6"></div>
+            <p className="text-base sm:text-lg text-gray-700 mb-4 leading-relaxed">
+              This event page is not available for your invitation.
+            </p>
+            <p className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed">
+              Please return to your invitation home page to see the events you're invited to.
+            </p>
+            <button
+              onClick={() => router.push(`/invite/${token}`)}
+              className="px-6 py-3 bg-wedding-gold text-white rounded-lg font-semibold hover:bg-wedding-gold/90 transition-colors mb-4"
+            >
+              Return to Home
+            </button>
+            <div className="bg-wedding-rose-pastel/30 rounded-lg p-4 border border-wedding-rose/20">
+              <p className="text-sm sm:text-base text-gray-600 mb-2">
+                Questions? Contact:
+              </p>
+              <a
+                href={`tel:${ADMIN_CONTACT}`}
+                className="text-lg sm:text-xl font-semibold text-wedding-gold hover:text-wedding-gold/80 transition-colors inline-flex items-center"
+              >
+                <span className="mr-2">📞</span>
+                {ADMIN_CONTACT}
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      )
+    }
+  }
+
+  // Show loading while event data is being fetched (only if guest has access)
+  if (!event && hasEventAccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-gold mx-auto mb-4"></div>
+          <p className="text-wedding-navy">Loading event details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Safety check: Don't render if we don't have a guest or event data
+  if (!guest || !event) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-wedding-cream">
         <div className="text-center">
