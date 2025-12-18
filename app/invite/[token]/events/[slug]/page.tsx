@@ -16,32 +16,6 @@ import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
 import { useGuestAccess } from '@/lib/use-guest-access'
 import { formatWrittenDate, formatWrittenTime, formatWrittenDateFromString } from '@/lib/date-formatter'
 
-// Corner decoration component for cards with animation
-const CornerDecorations = () => (
-  <>
-    <div className="absolute top-0 left-0 w-12 h-12 sm:w-16 sm:h-16 opacity-20 pointer-events-none corner-decoration">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
-      </svg>
-    </div>
-    <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 opacity-20 pointer-events-none transform rotate-90 corner-decoration" style={{ animationDelay: '0.1s' }}>
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
-      </svg>
-    </div>
-    <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 sm:h-16 opacity-20 pointer-events-none transform -rotate-90 corner-decoration" style={{ animationDelay: '0.2s' }}>
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
-      </svg>
-    </div>
-    <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-16 sm:h-16 opacity-20 pointer-events-none transform rotate-180 corner-decoration" style={{ animationDelay: '0.3s' }}>
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 8C20 8 12 16 12 28C12 40 20 48 32 48C44 48 52 40 52 28C52 16 44 8 32 8Z" fill="#D4AF37" opacity="0.3"/>
-      </svg>
-    </div>
-  </>
-)
-
 const eventInfo: Record<
   string,
   { title: string; icon: string; color: string }
@@ -309,7 +283,6 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.1 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern"
                 >
-                  <CornerDecorations />
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                     {eventDescription}
                   </p>
@@ -332,7 +305,6 @@ export default function EventDetailsPage() {
                     className="mb-6 sm:mb-8"
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern">
-                      <CornerDecorations />
                       <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                         {content.baraatDescription}
                       </p>
@@ -347,7 +319,6 @@ export default function EventDetailsPage() {
                       transition={{ delay: 0.14 }}
                       className="rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 bg-white/70 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                     >
-                      <CornerDecorations />
                       <div className="text-center relative z-10">
                         <p className="text-lg sm:text-xl md:text-2xl font-serif text-gray-700 leading-relaxed">
                           On {content.date} at {content.baraatTime}
@@ -364,7 +335,6 @@ export default function EventDetailsPage() {
                       transition={{ delay: 0.16 }}
                       className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/80 border-2 border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                     >
-                      <CornerDecorations />
                       <div className="relative z-10">
                         <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
                           <span className="text-xl sm:text-2xl">📍</span>
@@ -399,7 +369,6 @@ export default function EventDetailsPage() {
                     className="mb-6 sm:mb-8"
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern">
-                      <CornerDecorations />
                       <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                         {content.pherasDescription}
                       </p>
@@ -412,7 +381,6 @@ export default function EventDetailsPage() {
                     className="mb-6 sm:mb-8"
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 text-center relative overflow-hidden event-card-pattern">
-                      <CornerDecorations />
                       <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed relative z-10">
                         Gujarati Vegetarian Lunch to be Served After Photo Session
                       </p>
@@ -432,7 +400,6 @@ export default function EventDetailsPage() {
                     : 'bg-white/70 border border-wedding-gold/30'
                 }`}
               >
-                <CornerDecorations />
                 <div className="text-center space-y-3 relative z-10">
                   <p
                     className={`text-lg sm:text-xl md:text-2xl font-serif leading-relaxed ${
@@ -459,7 +426,6 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.25 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 text-center relative overflow-hidden event-card-pattern"
                 >
-                  <CornerDecorations />
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 relative z-10">
                     {content.additionalInfo}
                   </p>
@@ -474,7 +440,6 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.3 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
-                  <CornerDecorations />
                   <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed relative z-10">
                     <span className="font-semibold">Cocktail hour:</span> {content.cocktailHour}
                   </p>
@@ -490,7 +455,6 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.3 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
-                  <CornerDecorations />
                   <p className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light leading-relaxed relative z-10">
                     {content.note}
                   </p>
@@ -510,7 +474,6 @@ export default function EventDetailsPage() {
                     : 'bg-white/60 border border-wedding-gold/20'
                 }`}
               >
-                <CornerDecorations />
                 <div className="relative z-10">
                 <h2
                   className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
@@ -539,7 +502,6 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.45 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
-                  <CornerDecorations />
                   <div className="relative z-10">
                     <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold">
                       <span className="text-xl sm:text-2xl">🍽️</span>
@@ -561,7 +523,6 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.45 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern"
                 >
-                  <CornerDecorations />
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                     {content.additionalInfo}
                   </p>
@@ -579,7 +540,6 @@ export default function EventDetailsPage() {
                     : 'bg-white/80 border-2 border-wedding-gold/30'
                 }`}
               >
-                <CornerDecorations />
                 <div className="relative z-10">
                   <h2
                     className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
