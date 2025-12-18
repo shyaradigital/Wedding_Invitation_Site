@@ -321,7 +321,7 @@ input, textarea, select {
   background-size: 40px 40px;
 }
 
-/* Twinkling star animation */
+/* Twinkling star animation - faster */
 @keyframes twinkle {
   0%, 100% {
     opacity: 0.5;
@@ -334,22 +334,27 @@ input, textarea, select {
 }
 
 .star-twinkle {
-  animation: twinkle 3s ease-in-out infinite;
+  animation: twinkle 1.5s ease-in-out infinite;
 }
 
 .star-twinkle:nth-child(2n) {
-  animation-delay: 0.5s;
-  animation-duration: 4s;
+  animation-delay: 0.3s;
+  animation-duration: 2s;
 }
 
 .star-twinkle:nth-child(3n) {
-  animation-delay: 1s;
-  animation-duration: 5s;
+  animation-delay: 0.6s;
+  animation-duration: 1.8s;
 }
 
 .star-twinkle:nth-child(4n) {
-  animation-delay: 1.5s;
-  animation-duration: 3.5s;
+  animation-delay: 0.9s;
+  animation-duration: 2.2s;
+}
+
+.star-twinkle:nth-child(5n) {
+  animation-delay: 0.2s;
+  animation-duration: 1.6s;
 }
 
 /* Decorative corner fade-in animation */
