@@ -281,7 +281,7 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern"
+                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${isMehendi ? 'bg-white/90' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
                 >
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                     {eventDescription}
@@ -397,6 +397,8 @@ export default function EventDetailsPage() {
                 className={`rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern ${
                   isReception
                     ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
+                    : isMehendi
+                    ? 'bg-white/92 border border-wedding-gold/30'
                     : 'bg-white/70 border border-wedding-gold/30'
                 }`}
               >
@@ -471,6 +473,8 @@ export default function EventDetailsPage() {
                     ? 'bg-white/80 border-2 border-wedding-gold/40'
                     : isReception
                     ? 'bg-wedding-gold/10 border border-wedding-gold/30'
+                    : isMehendi
+                    ? 'bg-white/95 border border-wedding-gold/20'
                     : 'bg-white/60 border border-wedding-gold/20'
                 }`}
               >
@@ -521,7 +525,7 @@ export default function EventDetailsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.45 }}
-                  className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/60 border border-wedding-gold/20 relative overflow-hidden event-card-pattern"
+                  className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 ${isMehendi ? 'bg-white/90' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
                 >
                   <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
                     {content.additionalInfo}
@@ -537,6 +541,8 @@ export default function EventDetailsPage() {
                 className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern ${
                   isReception
                     ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
+                    : isMehendi
+                    ? 'bg-white/95 border-2 border-wedding-gold/30'
                     : 'bg-white/80 border-2 border-wedding-gold/30'
                 }`}
               >
