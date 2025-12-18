@@ -289,27 +289,6 @@ export default function EventDetailsPage() {
                 </motion.div>
               )}
 
-              {/* Mehndi Image - After description */}
-              {isMehendi && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="mb-6 sm:mb-8"
-                >
-                  <div className="rounded-2xl overflow-hidden shadow-lg">
-                    <Image
-                      src="/images/mehndi-page-image.png"
-                      alt="Mehndi celebration"
-                      width={800}
-                      height={600}
-                      className="w-full h-auto object-cover"
-                      priority
-                    />
-                  </div>
-                </motion.div>
-              )}
-
               {/* Baraat Section (Wedding only) - First section for wedding */}
               {isWedding && content.baraatDescription && (
                 <>
@@ -381,24 +360,6 @@ export default function EventDetailsPage() {
                     </h1>
                     <OrnamentalDivider variant="ornate" />
                   </div>
-                  {/* Wedding Image - After title, before description */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.14 }}
-                    className="mb-6 sm:mb-8"
-                  >
-                    <div className="rounded-2xl overflow-hidden shadow-lg">
-                      <Image
-                        src="/images/wedding-page-image.png"
-                        alt="Hindu Wedding ceremony"
-                        width={800}
-                        height={600}
-                        className="w-full h-auto object-cover"
-                        priority
-                      />
-                    </div>
-                  </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
