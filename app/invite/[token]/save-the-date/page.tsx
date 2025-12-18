@@ -255,7 +255,7 @@ export default function SaveTheDatePage() {
                       style={{ border: 0 }}
                       allowFullScreen
                       loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
+                      referrerPolicy="no-referrer"
                       className="w-full"
                       title="Venue Location"
                     ></iframe>
