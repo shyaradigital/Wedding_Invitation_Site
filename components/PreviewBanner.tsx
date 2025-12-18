@@ -6,7 +6,6 @@ export default function PreviewBanner() {
   return (
     <div className="bg-yellow-500 text-yellow-900 px-4 py-3 text-center font-semibold shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap">
-        <span className="text-xl">👁️</span>
         <span>ADMIN PREVIEW MODE - This view does not count as a device</span>
         <Link
           href="/admin"

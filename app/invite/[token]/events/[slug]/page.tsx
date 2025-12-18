@@ -159,9 +159,25 @@ export default function EventDetailsPage() {
   // Calculate Mehndi background image height for seamless alternating pattern
   useEffect(() => {
     if (slug === 'mehndi' && typeof window !== 'undefined') {
+      // Set a safe default height immediately to prevent blank page
+      // This ensures content is visible even before image loads
+      const setDefaultHeight = () => {
+        const containerWidth = window.innerWidth || 1200
+        // Assume a reasonable aspect ratio (16:9 or similar) as fallback
+        // This ensures content is visible even if image fails to load
+        const defaultHeight = containerWidth * 0.5625 // 16:9 aspect ratio fallback
+        document.documentElement.style.setProperty('--mehndi-image-height', `${Math.round(defaultHeight)}px`)
+      }
+      
+      // Set default immediately to prevent blank page
+      setDefaultHeight()
+      
       const calculateHeight = () => {
         const container = document.querySelector('.mehndi-mirrored-background')
-        if (!container) return
+        if (!container) {
+          // Container not found, keep default height
+          return
+        }
         
         const containerWidth = container.clientWidth || window.innerWidth
         const img = new window.Image()
@@ -177,12 +193,14 @@ export default function EventDetailsPage() {
         
         img.onerror = () => {
           console.error('Failed to load Mehndi background image')
+          // On error, keep the default height we set earlier
+          // This ensures content remains visible even if image fails
         }
         
         img.src = '/images/Mehndi_Background.jpg'
       }
       
-      // Wait for next frame to ensure container is rendered
+      // Wait for next frame to ensure container is rendered, then calculate actual height
       requestAnimationFrame(() => {
         setTimeout(calculateHeight, 0)
       })

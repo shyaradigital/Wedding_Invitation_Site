@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import Link from 'next/link'
 
@@ -6,7 +6,6 @@ export default function AdminPreviewBanner() {
   return (
     <div className="bg-yellow-500 text-yellow-900 px-3 sm:px-4 py-2.5 sm:py-3 text-center font-semibold shadow-md sticky top-0 z-[200]">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2">
-        <span className="text-lg sm:text-xl">ðŸ‘ï¸</span>
         <span className="text-xs sm:text-sm md:text-base">ADMIN PREVIEW MODE - This view does not count as a device</span>
         <Link
           href="/admin"

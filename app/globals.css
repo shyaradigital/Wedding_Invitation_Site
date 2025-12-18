@@ -394,22 +394,23 @@ input, textarea, select {
   background-position: center top;
   background-attachment: scroll;
   /* Mask to show only odd tiles (1st, 3rd, 5th, 7th...) for seamless alignment */
+  /* Only apply mask when height is set (greater than 0) - prevents blank page */
   mask-image: repeating-linear-gradient(
     to bottom,
     black 0,
-    black var(--mehndi-image-height, 0px),
-    transparent var(--mehndi-image-height, 0px),
-    transparent calc(var(--mehndi-image-height, 0px) * 2)
+    black var(--mehndi-image-height, 9999px),
+    transparent var(--mehndi-image-height, 9999px),
+    transparent calc(var(--mehndi-image-height, 9999px) * 2)
   );
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     black 0,
-    black var(--mehndi-image-height, 0px),
-    transparent var(--mehndi-image-height, 0px),
-    transparent calc(var(--mehndi-image-height, 0px) * 2)
+    black var(--mehndi-image-height, 9999px),
+    transparent var(--mehndi-image-height, 9999px),
+    transparent calc(var(--mehndi-image-height, 9999px) * 2)
   );
-  mask-size: 100% calc(var(--mehndi-image-height, 0px) * 2);
-  -webkit-mask-size: 100% calc(var(--mehndi-image-height, 0px) * 2);
+  mask-size: 100% calc(var(--mehndi-image-height, 9999px) * 2);
+  -webkit-mask-size: 100% calc(var(--mehndi-image-height, 9999px) * 2);
   mask-repeat: repeat-y;
   -webkit-mask-repeat: repeat-y;
   mask-position: center top;
@@ -434,22 +435,23 @@ input, textarea, select {
   pointer-events: none;
   /* Mask pattern: transparent for odd tiles (0→height, 2*height→3*height...), visible for even tiles (height→2*height, 3*height→4*height...) */
   /* This creates seamless edge-to-edge matching: Original -> Mirrored -> Original -> Mirrored... */
+  /* Only apply mask when height is set (greater than 0) - prevents blank page */
   mask-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent var(--mehndi-image-height, 0px),
-    black var(--mehndi-image-height, 0px),
-    black calc(var(--mehndi-image-height, 0px) * 2)
+    transparent var(--mehndi-image-height, 9999px),
+    black var(--mehndi-image-height, 9999px),
+    black calc(var(--mehndi-image-height, 9999px) * 2)
   );
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent var(--mehndi-image-height, 0px),
-    black var(--mehndi-image-height, 0px),
-    black calc(var(--mehndi-image-height, 0px) * 2)
+    transparent var(--mehndi-image-height, 9999px),
+    black var(--mehndi-image-height, 9999px),
+    black calc(var(--mehndi-image-height, 9999px) * 2)
   );
-  mask-size: 100% calc(var(--mehndi-image-height, 0px) * 2);
-  -webkit-mask-size: 100% calc(var(--mehndi-image-height, 0px) * 2);
+  mask-size: 100% calc(var(--mehndi-image-height, 9999px) * 2);
+  -webkit-mask-size: 100% calc(var(--mehndi-image-height, 9999px) * 2);
   mask-repeat: repeat-y;
   -webkit-mask-repeat: repeat-y;
   mask-position: center top;
