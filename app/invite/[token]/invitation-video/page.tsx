@@ -13,6 +13,7 @@ import PhoneVerificationForm from '@/components/PhoneVerificationForm'
 import AccessRestrictedPopup from '@/components/AccessRestrictedPopup'
 import { useGuestAccess } from '@/lib/use-guest-access'
 import YouTubeVideoPlayer from '@/components/YouTubeVideoPlayer'
+import WistiaVideoPlayer from '@/components/WistiaVideoPlayer'
 
 export default function InvitationVideoPage() {
   const params = useParams()
@@ -97,12 +98,9 @@ export default function InvitationVideoPage() {
     guest.eventAccess.includes('wedding') &&
     guest.eventAccess.includes('reception')
 
-  // Get YouTube video IDs from environment variables
-  // Demo video IDs as fallback (vertical wedding video samples)
-  const allEventsVideoId = process.env.NEXT_PUBLIC_YOUTUBE_ALL_EVENTS_VIDEO_ID || 'dQw4w9WgXcQ' // Demo: Replace with actual video ID
+  // Get YouTube video ID for reception-only guests
+  // Demo video ID as fallback
   const receptionOnlyVideoId = process.env.NEXT_PUBLIC_YOUTUBE_RECEPTION_ONLY_VIDEO_ID || 'dQw4w9WgXcQ' // Demo: Replace with actual video ID
-  
-  const videoId = isAllEvents ? allEventsVideoId : receptionOnlyVideoId
 
   return (
     <InvitationPageLayout
@@ -211,7 +209,11 @@ export default function InvitationVideoPage() {
 
                 {/* Video Player */}
                 <div className="relative z-10 w-full">
-                  <YouTubeVideoPlayer videoId={videoId} />
+                  {isAllEvents ? (
+                    <WistiaVideoPlayer />
+                  ) : (
+                    <YouTubeVideoPlayer videoId={receptionOnlyVideoId} />
+                  )}
                 </div>
 
                 {/* Instructions */}

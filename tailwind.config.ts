@@ -4,6 +4,7 @@ const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "!./components/AdminPreviewBanner.tsx", // Exclude problematic file with Windows file system issues
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {

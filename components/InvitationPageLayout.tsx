@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react'
 import InvitationNavigation from './InvitationNavigation'
-import AdminPreviewBanner from './AdminPreviewBanner'
+import AdminPreviewBanner from './AdminPreviewBannerNew'
 
 interface InvitationPageLayoutProps {
   token: string

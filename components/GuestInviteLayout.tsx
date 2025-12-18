@@ -8,7 +8,7 @@ import InvitationNavigation from './InvitationNavigation'
 import FloatingPetals from './FloatingPetals'
 import FloatingHearts from './FloatingHearts'
 import OrnamentalDivider from './OrnamentalDivider'
-import AdminPreviewBanner from './AdminPreviewBanner'
+import AdminPreviewBanner from './AdminPreviewBannerNew'
 
 interface Guest {
   id: string
