@@ -63,13 +63,15 @@ export default function RSVPPage() {
             if (data.preferences) {
               const rsvpStatus = data.rsvpStatus || {}
               const eventAccess = guest.eventAccess || []
+              const isReceptionOnly = eventAccess.length === 1 && eventAccess[0] === 'reception'
               
-              // Determine overallAttendanceChoice from existing RSVP data
-              const allYes = eventAccess.every((event: string) => rsvpStatus[event] === 'yes')
-              const allNo = eventAccess.every((event: string) => rsvpStatus[event] === 'no')
-              
-              if (allYes) {
-                setOverallAttendanceChoice('all')
+              // Determine overallAttendanceChoice from existing RSVP data (skip for Reception-only)
+              if (!isReceptionOnly) {
+                const allYes = eventAccess.every((event: string) => rsvpStatus[event] === 'yes')
+                const allNo = eventAccess.every((event: string) => rsvpStatus[event] === 'no')
+                
+                if (allYes) {
+                  setOverallAttendanceChoice('all')
                 // If all events are yes, get the attendee count from any event (prefer wedding or reception)
                 const attendeeCount = data.numberOfAttendeesPerEvent?.['wedding'] || 
                                      data.numberOfAttendeesPerEvent?.['reception'] || 
@@ -90,15 +92,24 @@ export default function RSVPPage() {
                     numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
                   }))
                 }
-              } else if (allNo) {
-                setOverallAttendanceChoice('none')
-                setFormData(prev => ({
-                  ...prev,
-                  rsvpStatus: rsvpStatus,
-                  numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
-                }))
+                } else if (allNo) {
+                  setOverallAttendanceChoice('none')
+                  setFormData(prev => ({
+                    ...prev,
+                    rsvpStatus: rsvpStatus,
+                    numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
+                  }))
+                } else {
+                  setOverallAttendanceChoice('some')
+                  setFormData(prev => ({
+                    ...prev,
+                    menuPreference: data.preferences.menuPreference || '',
+                    rsvpStatus: rsvpStatus,
+                    numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
+                  }))
+                }
               } else {
-                setOverallAttendanceChoice('some')
+                // Reception-only: just load the data without setting overallAttendanceChoice
                 setFormData(prev => ({
                   ...prev,
                   menuPreference: data.preferences.menuPreference || '',
@@ -111,17 +122,20 @@ export default function RSVPPage() {
             // RSVP already submitted but show existing status
             const rsvpStatus = data.rsvpStatus
             const eventAccess = guest.eventAccess || []
+            const isReceptionOnly = eventAccess.length === 1 && eventAccess[0] === 'reception'
             
-            // Determine overallAttendanceChoice from existing RSVP data
-            const allYes = eventAccess.every((event: string) => rsvpStatus[event] === 'yes')
-            const allNo = eventAccess.every((event: string) => rsvpStatus[event] === 'no')
-            
-            if (allYes) {
-              setOverallAttendanceChoice('all')
-            } else if (allNo) {
-              setOverallAttendanceChoice('none')
-            } else {
-              setOverallAttendanceChoice('some')
+            // Determine overallAttendanceChoice from existing RSVP data (skip for Reception-only)
+            if (!isReceptionOnly) {
+              const allYes = eventAccess.every((event: string) => rsvpStatus[event] === 'yes')
+              const allNo = eventAccess.every((event: string) => rsvpStatus[event] === 'no')
+              
+              if (allYes) {
+                setOverallAttendanceChoice('all')
+              } else if (allNo) {
+                setOverallAttendanceChoice('none')
+              } else {
+                setOverallAttendanceChoice('some')
+              }
             }
             
             setExistingRsvp(rsvpStatus)
@@ -160,12 +174,50 @@ export default function RSVPPage() {
     setError(null)
 
     const eventAccess = guest?.eventAccess || []
+    const isReceptionOnlyGuest = eventAccess.length === 1 && eventAccess[0] === 'reception'
     let finalRsvpStatus: Record<string, 'yes' | 'no'> = {}
     let finalAttendeesPerEvent: Record<string, number> = {}
     let finalMenuPreference: 'veg' | 'non-veg' | 'both' | '' = ''
 
+    // Handle Reception-only guests
+    if (isReceptionOnlyGuest) {
+      const receptionStatus = formData.rsvpStatus['reception']
+      
+      if (!receptionStatus) {
+        setError('Please select whether you will be attending')
+        return
+      }
+
+      finalRsvpStatus['reception'] = receptionStatus
+
+      if (receptionStatus === 'yes') {
+        // Validate attendee count
+        const attendeeCount = formData.numberOfAttendeesPerEvent['reception']
+        if (!attendeeCount || attendeeCount < 1) {
+          setError('Please enter the number of guests attending')
+          const element = document.querySelector('[name="attendees-reception"]')
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+          return
+        }
+        finalAttendeesPerEvent['reception'] = attendeeCount
+
+        // Validate menu preference
+        if (!formData.menuPreference) {
+          setError('Please select a menu preference')
+          const element = document.querySelector('[name="menuPreference"]')
+          if (element) {
+            element.closest('div')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+          return
+        }
+        finalMenuPreference = formData.menuPreference
+      }
+      // If 'no', no menu preference or attendee count needed
+
     // Handle different flows based on overallAttendanceChoice
-    if (overallAttendanceChoice === 'all') {
+    } else if (overallAttendanceChoice === 'all') {
       // All events flow: Set all to 'yes', apply attendee count to Wedding and Reception
       eventAccess.forEach((event: string) => {
         finalRsvpStatus[event] = 'yes'
@@ -270,8 +322,8 @@ export default function RSVPPage() {
         }
       }
 
-    } else {
-      // No choice made yet
+    } else if (!isReceptionOnlyGuest) {
+      // No choice made yet (only for guests with multiple events)
       setError('Please select whether you will be attending all events, some events, or none')
       return
     }
@@ -357,6 +409,9 @@ export default function RSVPPage() {
     )
   }
 
+  // Check if guest is Reception-only
+  const isReceptionOnly = guest.eventAccess && guest.eventAccess.length === 1 && guest.eventAccess[0] === 'reception'
+
   return (
     <InvitationPageLayout
       token={token}
@@ -405,8 +460,151 @@ export default function RSVPPage() {
 
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-                    {/* Preliminary Question - Show if no choice made yet */}
-                    {overallAttendanceChoice === null && guest.eventAccess && guest.eventAccess.length > 0 && (
+                    {/* Reception-Only Flow - Skip preliminary question */}
+                    {isReceptionOnly && (
+                      <div>
+                        <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
+                          Will you be attending? <span className="text-red-500">*</span>
+                        </label>
+                        <OrnamentalDivider variant="simple" className="mb-4" />
+                        <div className="space-y-2">
+                          <label 
+                            onClick={() => {
+                              setFormData({
+                                ...formData,
+                                rsvpStatus: { ...formData.rsvpStatus, reception: 'yes' },
+                                numberOfAttendeesPerEvent: {
+                                  ...formData.numberOfAttendeesPerEvent,
+                                  reception: formData.numberOfAttendeesPerEvent.reception || 1,
+                                },
+                              })
+                            }}
+                            className={`flex items-center p-4 sm:p-5 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                              formData.rsvpStatus['reception'] === 'yes' 
+                                ? 'bg-green-50 border-green-400 shadow-md scale-[1.02]' 
+                                : 'bg-white/70 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                            }`}
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <input
+                              type="radio"
+                              name="rsvp-reception"
+                              value="yes"
+                              checked={formData.rsvpStatus['reception'] === 'yes'}
+                              onChange={() =>
+                                setFormData({
+                                  ...formData,
+                                  rsvpStatus: { ...formData.rsvpStatus, reception: 'yes' },
+                                  numberOfAttendeesPerEvent: {
+                                    ...formData.numberOfAttendeesPerEvent,
+                                    reception: formData.numberOfAttendeesPerEvent.reception || 1,
+                                  },
+                                })
+                              }
+                              onClick={(e) => e.stopPropagation()}
+                              className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
+                            />
+                            <span className={`text-base sm:text-lg font-serif flex-1 ${
+                              formData.rsvpStatus['reception'] === 'yes' 
+                                ? 'text-green-800 font-semibold' 
+                                : 'text-gray-700'
+                            }`}>✓ Attending</span>
+                            {formData.rsvpStatus['reception'] === 'yes' && (
+                              <span className="text-green-600 text-xl ml-2">✓</span>
+                            )}
+                          </label>
+                          <label 
+                            onClick={() => {
+                              const newNumberOfAttendees = { ...formData.numberOfAttendeesPerEvent }
+                              delete newNumberOfAttendees.reception
+                              setFormData({
+                                ...formData,
+                                rsvpStatus: { ...formData.rsvpStatus, reception: 'no' },
+                                numberOfAttendeesPerEvent: newNumberOfAttendees,
+                              })
+                            }}
+                            className={`flex items-center p-4 sm:p-5 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                              formData.rsvpStatus['reception'] === 'no' 
+                                ? 'bg-red-50 border-red-400 shadow-md scale-[1.02]' 
+                                : 'bg-white/70 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                            }`}
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <input
+                              type="radio"
+                              name="rsvp-reception"
+                              value="no"
+                              checked={formData.rsvpStatus['reception'] === 'no'}
+                              onChange={() => {
+                                const newNumberOfAttendees = { ...formData.numberOfAttendeesPerEvent }
+                                delete newNumberOfAttendees.reception
+                                setFormData({
+                                  ...formData,
+                                  rsvpStatus: { ...formData.rsvpStatus, reception: 'no' },
+                                  numberOfAttendeesPerEvent: newNumberOfAttendees,
+                                })
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
+                            />
+                            <span className={`text-base sm:text-lg font-serif flex-1 ${
+                              formData.rsvpStatus['reception'] === 'no' 
+                                ? 'text-red-800 font-semibold' 
+                                : 'text-gray-700'
+                            }`}>✗ Not Attending</span>
+                            {formData.rsvpStatus['reception'] === 'no' && (
+                              <span className="text-red-600 text-xl ml-2">✗</span>
+                            )}
+                          </label>
+                          
+                          {/* Number of Guests Attending - Only show when "Yes" is selected */}
+                          {formData.rsvpStatus['reception'] === 'yes' && (
+                            <div className="mt-4 pt-4 border-t border-wedding-gold/20">
+                              <label className="block text-sm sm:text-base font-display text-wedding-navy mb-2">
+                                Number of Guests Attending <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="number"
+                                name="attendees-reception"
+                                min="1"
+                                value={formData.numberOfAttendeesPerEvent.reception || ''}
+                                onChange={(e) => {
+                                  const value = e.target.value === '' ? '' : parseInt(e.target.value, 10)
+                                  const newAttendees = { ...formData.numberOfAttendeesPerEvent }
+                                  if (value === '' || isNaN(value as number)) {
+                                    delete newAttendees.reception
+                                  } else {
+                                    newAttendees.reception = value as number
+                                  }
+                                  setFormData({
+                                    ...formData,
+                                    numberOfAttendeesPerEvent: newAttendees,
+                                  })
+                                }}
+                                className="w-full px-4 py-3 border-2 border-wedding-gold/30 rounded-lg bg-white/70 text-base sm:text-lg font-serif text-wedding-navy focus:outline-none focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold transition-all"
+                                placeholder="Enter number"
+                                required
+                              />
+                              <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">
+                                Including yourself
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Sorry message when not attending */}
+                          {formData.rsvpStatus['reception'] === 'no' && (
+                            <div className="mt-4 bg-red-50 border-2 border-red-200 rounded-xl p-6 sm:p-8 text-center">
+                              <p className="text-base sm:text-lg md:text-xl text-gray-700 font-serif mb-4">
+                                We&apos;re sorry you won&apos;t be able to make it. Your response will be recorded.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Preliminary Question - Show if no choice made yet and NOT Reception-only */}
+                    {!isReceptionOnly && overallAttendanceChoice === null && guest.eventAccess && guest.eventAccess.length > 0 && (
                       <div>
                         <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
                           Will you be attending all events, some events, or none? <span className="text-red-500">*</span>
@@ -660,7 +858,8 @@ export default function RSVPPage() {
                     )}
 
                     {/* Menu Preference - Conditional visibility */}
-                    {((overallAttendanceChoice === 'all' && guest.eventAccess && guest.eventAccess.includes('reception')) ||
+                    {((isReceptionOnly && formData.rsvpStatus['reception'] === 'yes') ||
+                      (overallAttendanceChoice === 'all' && guest.eventAccess && guest.eventAccess.includes('reception')) ||
                       (overallAttendanceChoice === 'some' && formData.rsvpStatus['reception'] === 'yes')) && (
                       <div>
                         <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
