@@ -61,7 +61,7 @@ const eventContent: Record<string, {
     time: 'Six O\'Clock in the Evening',
     attire: 'Casual',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
-    venueDetails: 'Bridal lounge, DoubleTree',
+    venueDetails: 'Bridal Lounge, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
     additionalInfo: 'Boxed Punjabi Chhole and Rice Dinner will be Served',
   },
@@ -81,7 +81,7 @@ const eventContent: Record<string, {
   reception: {
     date: '21st Day of March, 2026',
     time: 'Five O\'Clock in the Evening',
-    note: 'Note: No Boxed Gifts/Registry',
+    note: 'No Boxed Gifts/Registry',
     attire: 'Formal Indian/Western Attire',
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Ballroom, DoubleTree',
@@ -546,9 +546,16 @@ export default function EventDetailsPage() {
                     className="mb-6 sm:mb-8"
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 text-center relative overflow-hidden event-card-pattern">
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed relative z-10">
-                        Gujarati Vegetarian Lunch to be Served After Photo Session
-                      </p>
+                      <div className="relative z-10">
+                        <h2 className="flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
+                          <span className="text-xl sm:text-2xl">🍽️</span>
+                          <span>Lunch</span>
+                        </h2>
+                        <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
+                        <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
+                          Gujarati Vegetarian Lunch to be Served After Photo Session
+                        </p>
+                      </div>
                     </div>
                   </motion.div>
                 </>
@@ -670,7 +677,7 @@ export default function EventDetailsPage() {
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
                   <p 
-                    className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light leading-relaxed relative z-10"
+                    className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed relative z-10"
                     style={{
                       filter: 'brightness(1.2)',
                     }}
