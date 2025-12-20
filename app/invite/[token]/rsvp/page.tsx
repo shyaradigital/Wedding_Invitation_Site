@@ -158,18 +158,18 @@ export default function RSVPPage() {
     setIsSubmitting(true)
 
     try {
+      // Filter out undefined values from numberOfAttendeesPerEvent
+      const attendeesPerEvent: Record<string, number> = {}
+      for (const [eventSlug, count] of Object.entries(formData.numberOfAttendeesPerEvent)) {
+        if (count !== undefined && count >= 1) {
+          attendeesPerEvent[eventSlug] = count
+        }
+      }
+
       const response = await fetch('/api/guest/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         cache: 'no-store',
-        // Filter out undefined values from numberOfAttendeesPerEvent
-        const attendeesPerEvent: Record<string, number> = {}
-        for (const [eventSlug, count] of Object.entries(formData.numberOfAttendeesPerEvent)) {
-          if (count !== undefined && count >= 1) {
-            attendeesPerEvent[eventSlug] = count
-          }
-        }
-
         body: JSON.stringify({
           token,
           rsvpStatus: formData.rsvpStatus,
