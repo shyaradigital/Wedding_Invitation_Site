@@ -100,36 +100,10 @@ export default function AdminStats() {
           <span>Invite Statistics</span>
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <div className="bg-gradient-to-br from-wedding-gold/10 to-wedding-gold/5 rounded-lg p-4 border border-wedding-gold/20">
-            <div className="text-sm text-gray-600 mb-1">Total Invite Links Sent</div>
+            <div className="text-sm text-gray-600 mb-1">Total Invites Added</div>
             <div className="text-3xl font-bold text-wedding-navy">{stats.totalInviteLinks}</div>
-          </div>
-          
-          <div className="bg-gradient-to-br from-wedding-rose/10 to-wedding-rose/5 rounded-lg p-4 border border-wedding-rose/20">
-            <div className="text-sm text-gray-600 mb-1">Total Attendees (Invite-Based)</div>
-            <div className="text-3xl font-bold text-wedding-navy">{stats.totalAttendeesInviteBased}</div>
-          </div>
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <div className="text-sm font-semibold text-gray-700 mb-3">Attendees by Event (Invite-Based):</div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {(['mehndi', 'wedding', 'reception'] as const).map((eventSlug) => (
-              <div key={eventSlug} className="text-center p-3 bg-wedding-gold/5 rounded-lg">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Image
-                    src={EVENT_ICONS[eventSlug]}
-                    alt={EVENT_NAMES[eventSlug]}
-                    width={24}
-                    height={24}
-                    className="object-contain"
-                  />
-                  <div className="text-xs text-gray-600">{EVENT_NAMES[eventSlug]}</div>
-                </div>
-                <div className="text-xl font-bold text-wedding-navy">{stats.inviteBased[eventSlug]}</div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

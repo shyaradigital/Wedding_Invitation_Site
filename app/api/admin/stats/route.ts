@@ -106,7 +106,9 @@ export async function GET(request: NextRequest) {
             const eventStats = stats.rsvpBased[eventSlug]
             
             // Use per-event attendee count from RSVP data
-            const eventAttendeeCount = numberOfAttendeesPerEvent?.[eventSlug] || defaultAttendeeCount
+            // If numberOfAttendeesPerEvent exists and has the event, use it; otherwise default to 1
+            // This ensures we're using actual RSVP data, not the old numberOfAttendees field
+            const eventAttendeeCount = numberOfAttendeesPerEvent?.[eventSlug] || 1
             eventStats.totalAttendees += eventAttendeeCount
 
             // Only count menu preferences for Reception event
