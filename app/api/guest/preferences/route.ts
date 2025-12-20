@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
     
     // Validate RSVP status - only allow events the guest has access to
     let rsvpStatusJson: string | null = null
+    let validRsvpStatus: Record<string, 'yes' | 'no'> = {}
+    
     if (data.rsvpStatus) {
-      const validRsvpStatus: Record<string, 'yes' | 'no'> = {}
-      
       // Only include RSVP status for events the guest is invited to
       for (const [eventSlug, status] of Object.entries(data.rsvpStatus)) {
         if (eventAccess.includes(eventSlug) && (status === 'yes' || status === 'no')) {
