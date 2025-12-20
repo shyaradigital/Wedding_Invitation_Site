@@ -21,10 +21,12 @@ export default function RSVPPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [existingRsvp, setExistingRsvp] = useState<any>(null)
+  const [overallAttendanceChoice, setOverallAttendanceChoice] = useState<'all' | 'some' | 'none' | null>(null)
   const [formData, setFormData] = useState({
     rsvpStatus: {} as Record<string, 'yes' | 'no'>,
     menuPreference: '' as 'veg' | 'non-veg' | 'both' | '',
     numberOfAttendeesPerEvent: {} as Record<string, number | undefined>,
+    allEventsAttendeeCount: undefined as number | undefined,
   })
 
   // Use the shared access check hook
@@ -59,19 +61,73 @@ export default function RSVPPage() {
             }
             // Pre-populate form with existing data
             if (data.preferences) {
-              setFormData(prev => ({
-                ...prev,
-                menuPreference: data.preferences.menuPreference || '',
-                rsvpStatus: data.rsvpStatus || {},
-                numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
-              }))
+              const rsvpStatus = data.rsvpStatus || {}
+              const eventAccess = guest.eventAccess || []
+              
+              // Determine overallAttendanceChoice from existing RSVP data
+              const allYes = eventAccess.every((event: string) => rsvpStatus[event] === 'yes')
+              const allNo = eventAccess.every((event: string) => rsvpStatus[event] === 'no')
+              
+              if (allYes) {
+                setOverallAttendanceChoice('all')
+                // If all events are yes, get the attendee count from any event (prefer wedding or reception)
+                const attendeeCount = data.numberOfAttendeesPerEvent?.['wedding'] || 
+                                     data.numberOfAttendeesPerEvent?.['reception'] || 
+                                     data.numberOfAttendeesPerEvent?.[eventAccess.find((e: string) => e !== 'mehndi') || '']
+                if (attendeeCount) {
+                  setFormData(prev => ({
+                    ...prev,
+                    menuPreference: data.preferences.menuPreference || '',
+                    rsvpStatus: rsvpStatus,
+                    numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
+                    allEventsAttendeeCount: attendeeCount,
+                  }))
+                } else {
+                  setFormData(prev => ({
+                    ...prev,
+                    menuPreference: data.preferences.menuPreference || '',
+                    rsvpStatus: rsvpStatus,
+                    numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
+                  }))
+                }
+              } else if (allNo) {
+                setOverallAttendanceChoice('none')
+                setFormData(prev => ({
+                  ...prev,
+                  rsvpStatus: rsvpStatus,
+                  numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
+                }))
+              } else {
+                setOverallAttendanceChoice('some')
+                setFormData(prev => ({
+                  ...prev,
+                  menuPreference: data.preferences.menuPreference || '',
+                  rsvpStatus: rsvpStatus,
+                  numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
+                }))
+              }
             }
           } else if (data && data.rsvpStatus) {
             // RSVP already submitted but show existing status
-            setExistingRsvp(data.rsvpStatus)
+            const rsvpStatus = data.rsvpStatus
+            const eventAccess = guest.eventAccess || []
+            
+            // Determine overallAttendanceChoice from existing RSVP data
+            const allYes = eventAccess.every((event: string) => rsvpStatus[event] === 'yes')
+            const allNo = eventAccess.every((event: string) => rsvpStatus[event] === 'no')
+            
+            if (allYes) {
+              setOverallAttendanceChoice('all')
+            } else if (allNo) {
+              setOverallAttendanceChoice('none')
+            } else {
+              setOverallAttendanceChoice('some')
+            }
+            
+            setExistingRsvp(rsvpStatus)
             setFormData(prev => ({
               ...prev,
-              rsvpStatus: data.rsvpStatus || {},
+              rsvpStatus: rsvpStatus,
               numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
             }))
           }
@@ -103,78 +159,134 @@ export default function RSVPPage() {
     e.preventDefault()
     setError(null)
 
-    // Validate RSVP status for all accessible events - MANDATORY
     const eventAccess = guest?.eventAccess || []
-    const missingRsvp = eventAccess.filter((event: string) => {
-      const status = formData.rsvpStatus[event]
-      return !status
-    })
-    
-    if (missingRsvp.length > 0) {
-      const missingEventNames = missingRsvp.map((e: string) => eventNames[e] || e).join(', ')
-      setError(`Please provide RSVP status for all events. Missing: ${missingEventNames}`)
-      // Scroll to first missing field
-      const firstMissing = missingRsvp[0]
-      const element = document.querySelector(`[name="rsvp-${firstMissing}"]`)
-      if (element) {
-        element.closest('.border-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-      return
-    }
+    let finalRsvpStatus: Record<string, 'yes' | 'no'> = {}
+    let finalAttendeesPerEvent: Record<string, number> = {}
+    let finalMenuPreference: 'veg' | 'non-veg' | 'both' | '' = ''
 
-    // Validate attendee counts for events where guest is attending (excluding Mehndi)
-    const missingAttendeeCounts: string[] = []
-    for (const eventSlug of eventAccess) {
-      if (formData.rsvpStatus[eventSlug] === 'yes' && eventSlug !== 'mehndi') {
-        const attendeeCount = formData.numberOfAttendeesPerEvent[eventSlug]
-        if (!attendeeCount || attendeeCount < 1) {
-          missingAttendeeCounts.push(eventSlug)
+    // Handle different flows based on overallAttendanceChoice
+    if (overallAttendanceChoice === 'all') {
+      // All events flow: Set all to 'yes', apply attendee count to Wedding and Reception
+      eventAccess.forEach((event: string) => {
+        finalRsvpStatus[event] = 'yes'
+      })
+
+      // Apply attendee count to Wedding and Reception (not Mehndi)
+      if (formData.allEventsAttendeeCount && formData.allEventsAttendeeCount >= 1) {
+        eventAccess.forEach((event: string) => {
+          if (event !== 'mehndi') {
+            finalAttendeesPerEvent[event] = formData.allEventsAttendeeCount
+          }
+        })
+      } else {
+        setError('Please enter the number of guests attending')
+        const element = document.querySelector('[name="all-events-attendees"]')
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+        return
+      }
+
+      // Validate menu preference only if Reception is accessible
+      if (eventAccess.includes('reception')) {
+        if (!formData.menuPreference) {
+          setError('Please select a menu preference')
+          const element = document.querySelector('[name="menuPreference"]')
+          if (element) {
+            element.closest('div')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+          return
+        }
+        finalMenuPreference = formData.menuPreference
+      }
+
+    } else if (overallAttendanceChoice === 'none') {
+      // None flow: Set all to 'no', skip menu preference
+      eventAccess.forEach((event: string) => {
+        finalRsvpStatus[event] = 'no'
+      })
+      // No menu preference needed
+
+    } else if (overallAttendanceChoice === 'some') {
+      // Some events flow: Use existing validation logic
+      const missingRsvp = eventAccess.filter((event: string) => {
+        const status = formData.rsvpStatus[event]
+        return !status
+      })
+      
+      if (missingRsvp.length > 0) {
+        const missingEventNames = missingRsvp.map((e: string) => eventNames[e] || e).join(', ')
+        setError(`Please provide RSVP status for all events. Missing: ${missingEventNames}`)
+        const firstMissing = missingRsvp[0]
+        const element = document.querySelector(`[name="rsvp-${firstMissing}"]`)
+        if (element) {
+          element.closest('.border-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+        return
+      }
+
+      // Validate attendee counts for events where guest is attending (excluding Mehndi)
+      const missingAttendeeCounts: string[] = []
+      for (const eventSlug of eventAccess) {
+        if (formData.rsvpStatus[eventSlug] === 'yes' && eventSlug !== 'mehndi') {
+          const attendeeCount = formData.numberOfAttendeesPerEvent[eventSlug]
+          if (!attendeeCount || attendeeCount < 1) {
+            missingAttendeeCounts.push(eventSlug)
+          }
         }
       }
-    }
-    
-    if (missingAttendeeCounts.length > 0) {
-      const missingEventNames = missingAttendeeCounts.map((e: string) => eventNames[e] || e).join(', ')
-      setError(`Please enter the number of guests attending for: ${missingEventNames}`)
-      // Scroll to first missing field
-      const firstMissing = missingAttendeeCounts[0]
-      const element = document.querySelector(`[name="attendees-${firstMissing}"]`)
-      if (element) {
-        element.closest('.border-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      
+      if (missingAttendeeCounts.length > 0) {
+        const missingEventNames = missingAttendeeCounts.map((e: string) => eventNames[e] || e).join(', ')
+        setError(`Please enter the number of guests attending for: ${missingEventNames}`)
+        const firstMissing = missingAttendeeCounts[0]
+        const element = document.querySelector(`[name="attendees-${firstMissing}"]`)
+        if (element) {
+          element.closest('.border-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+        return
       }
-      return
-    }
 
-    // Validate menu preference - MANDATORY
-    if (!formData.menuPreference) {
-      setError('Please select a menu preference')
-      const element = document.querySelector('[name="menuPreference"]')
-      if (element) {
-        element.closest('div')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // Validate menu preference only if Reception RSVP is "yes"
+      if (formData.rsvpStatus['reception'] === 'yes') {
+        if (!formData.menuPreference) {
+          setError('Please select a menu preference')
+          const element = document.querySelector('[name="menuPreference"]')
+          if (element) {
+            element.closest('div')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+          return
+        }
+        finalMenuPreference = formData.menuPreference
       }
+
+      finalRsvpStatus = formData.rsvpStatus
+      
+      // Filter out undefined values from numberOfAttendeesPerEvent
+      for (const [eventSlug, count] of Object.entries(formData.numberOfAttendeesPerEvent)) {
+        if (count !== undefined && count >= 1) {
+          finalAttendeesPerEvent[eventSlug] = count
+        }
+      }
+
+    } else {
+      // No choice made yet
+      setError('Please select whether you will be attending all events, some events, or none')
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      // Filter out undefined values from numberOfAttendeesPerEvent
-      const attendeesPerEvent: Record<string, number> = {}
-      for (const [eventSlug, count] of Object.entries(formData.numberOfAttendeesPerEvent)) {
-        if (count !== undefined && count >= 1) {
-          attendeesPerEvent[eventSlug] = count
-        }
-      }
-
       const response = await fetch('/api/guest/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         cache: 'no-store',
         body: JSON.stringify({
           token,
-          rsvpStatus: formData.rsvpStatus,
-          menuPreference: formData.menuPreference,
-          numberOfAttendeesPerEvent: attendeesPerEvent,
+          rsvpStatus: finalRsvpStatus,
+          menuPreference: finalMenuPreference || undefined,
+          numberOfAttendeesPerEvent: finalAttendeesPerEvent,
         }),
       })
 
@@ -286,14 +398,117 @@ export default function RSVPPage() {
                       Please RSVP by January 10, 2026
                     </p>
                     <p className="text-base sm:text-lg md:text-xl text-gray-700 font-serif">
-                      Hi {guest.name}! Please share your preferences so we can make your experience special.
+                      Hi {guest.name}! Please provide accurate information below for planning purposes.
                     </p>
                   </div>
 
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-                    {/* RSVP Section - Dynamic based on eventAccess */}
-                    {guest.eventAccess && guest.eventAccess.length > 0 && (
+                    {/* Preliminary Question - Show if no choice made yet */}
+                    {overallAttendanceChoice === null && guest.eventAccess && guest.eventAccess.length > 0 && (
+                      <div>
+                        <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
+                          Will you be attending all events, some events, or none? <span className="text-red-500">*</span>
+                        </label>
+                        <OrnamentalDivider variant="simple" className="mb-4" />
+                        <div className="space-y-3">
+                          <label 
+                            onClick={() => setOverallAttendanceChoice('all')}
+                            className="flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40"
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <input
+                              type="radio"
+                              name="overall-attendance"
+                              value="all"
+                              checked={overallAttendanceChoice === 'all'}
+                              onChange={() => setOverallAttendanceChoice('all')}
+                              onClick={(e) => e.stopPropagation()}
+                              className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
+                            />
+                            <span className="text-base sm:text-lg font-serif flex-1 text-gray-700">All Events</span>
+                          </label>
+                          <label 
+                            onClick={() => setOverallAttendanceChoice('some')}
+                            className="flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40"
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <input
+                              type="radio"
+                              name="overall-attendance"
+                              value="some"
+                              checked={overallAttendanceChoice === 'some'}
+                              onChange={() => setOverallAttendanceChoice('some')}
+                              onClick={(e) => e.stopPropagation()}
+                              className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
+                            />
+                            <span className="text-base sm:text-lg font-serif flex-1 text-gray-700">Some Events</span>
+                          </label>
+                          <label 
+                            onClick={() => setOverallAttendanceChoice('none')}
+                            className="flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40"
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <input
+                              type="radio"
+                              name="overall-attendance"
+                              value="none"
+                              checked={overallAttendanceChoice === 'none'}
+                              onChange={() => setOverallAttendanceChoice('none')}
+                              onClick={(e) => e.stopPropagation()}
+                              className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
+                            />
+                            <span className="text-base sm:text-lg font-serif flex-1 text-gray-700">None of the Events</span>
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* All Events Flow */}
+                    {overallAttendanceChoice === 'all' && guest.eventAccess && guest.eventAccess.length > 0 && (
+                      <>
+                        <div>
+                          <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
+                            Number of Guests Attending <span className="text-red-500">*</span>
+                          </label>
+                          <OrnamentalDivider variant="simple" className="mb-4" />
+                          <p className="text-sm sm:text-base text-gray-600 mb-4 font-serif">
+                            This count will apply to all events (excluding Mehndi).
+                          </p>
+                          <input
+                            type="number"
+                            name="all-events-attendees"
+                            min="1"
+                            value={formData.allEventsAttendeeCount || ''}
+                            onChange={(e) => {
+                              const value = e.target.value === '' ? undefined : parseInt(e.target.value, 10)
+                              setFormData({
+                                ...formData,
+                                allEventsAttendeeCount: value && !isNaN(value) ? value : undefined,
+                              })
+                            }}
+                            className="w-full px-4 py-3 border-2 border-wedding-gold/30 rounded-lg bg-white/70 text-base sm:text-lg font-serif text-wedding-navy focus:outline-none focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold transition-all"
+                            placeholder="Enter number"
+                            required
+                          />
+                          <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">
+                            Including yourself
+                          </p>
+                        </div>
+                      </>
+                    )}
+
+                    {/* None Flow */}
+                    {overallAttendanceChoice === 'none' && (
+                      <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 sm:p-8 text-center">
+                        <p className="text-base sm:text-lg md:text-xl text-gray-700 font-serif mb-4">
+                          We're sorry you won't be able to make it. Your response will be recorded.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Some Events Flow - Show individual event questions */}
+                    {overallAttendanceChoice === 'some' && guest.eventAccess && guest.eventAccess.length > 0 && (
                       <div>
                         <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
                           Will you be attending? <span className="text-red-500">*</span>
@@ -443,108 +658,111 @@ export default function RSVPPage() {
                       </div>
                     )}
 
-                    {/* Menu Preference */}
-                    <div>
-                      <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
-                        Reception Menu Preference <span className="text-red-500">*</span>
-                      </label>
-                      <OrnamentalDivider variant="simple" className="mb-4" />
-                      <div className="space-y-3">
-                        <label 
-                          onClick={() => setFormData({ ...formData, menuPreference: 'veg' })}
-                          className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
-                            formData.menuPreference === 'veg'
-                              ? 'bg-green-50 border-green-400 shadow-md scale-[1.02]'
-                              : !formData.menuPreference 
-                                ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
-                                : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
-                          }`}
-                          style={{ WebkitTapHighlightColor: 'transparent' }}
-                        >
-                          <input
-                            type="radio"
-                            name="menuPreference"
-                            value="veg"
-                            checked={formData.menuPreference === 'veg'}
-                            onChange={(e) =>
-                              setFormData({ ...formData, menuPreference: e.target.value as 'veg' })
-                            }
-                            onClick={(e) => e.stopPropagation()}
-                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
-                          />
-                          <span className={`text-base sm:text-lg font-serif flex-1 ${
-                            formData.menuPreference === 'veg' 
-                              ? 'text-green-800 font-semibold' 
-                              : 'text-gray-700'
-                          }`}>Vegetarian</span>
-                          {formData.menuPreference === 'veg' && (
-                            <span className="text-green-600 text-xl ml-2">✓</span>
-                          )}
+                    {/* Menu Preference - Conditional visibility */}
+                    {((overallAttendanceChoice === 'all' && guest.eventAccess && guest.eventAccess.includes('reception')) ||
+                      (overallAttendanceChoice === 'some' && formData.rsvpStatus['reception'] === 'yes')) && (
+                      <div>
+                        <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
+                          Reception Menu Preference <span className="text-red-500">*</span>
                         </label>
-                        <label 
-                          onClick={() => setFormData({ ...formData, menuPreference: 'non-veg' })}
-                          className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
-                            formData.menuPreference === 'non-veg'
-                              ? 'bg-blue-50 border-blue-400 shadow-md scale-[1.02]'
-                              : !formData.menuPreference 
-                                ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
-                                : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
-                          }`}
-                          style={{ WebkitTapHighlightColor: 'transparent' }}
-                        >
-                          <input
-                            type="radio"
-                            name="menuPreference"
-                            value="non-veg"
-                            checked={formData.menuPreference === 'non-veg'}
-                            onChange={(e) =>
-                              setFormData({ ...formData, menuPreference: e.target.value as 'non-veg' })
-                            }
-                            onClick={(e) => e.stopPropagation()}
-                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
-                          />
-                          <span className={`text-base sm:text-lg font-serif flex-1 ${
-                            formData.menuPreference === 'non-veg' 
-                              ? 'text-blue-800 font-semibold' 
-                              : 'text-gray-700'
-                          }`}>Non-Vegetarian</span>
-                          {formData.menuPreference === 'non-veg' && (
-                            <span className="text-blue-600 text-xl ml-2">✓</span>
-                          )}
-                        </label>
-                        <label 
-                          onClick={() => setFormData({ ...formData, menuPreference: 'both' })}
-                          className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
-                            formData.menuPreference === 'both'
-                              ? 'bg-purple-50 border-purple-400 shadow-md scale-[1.02]'
-                              : !formData.menuPreference 
-                                ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
-                                : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
-                          }`}
-                          style={{ WebkitTapHighlightColor: 'transparent' }}
-                        >
-                          <input
-                            type="radio"
-                            name="menuPreference"
-                            value="both"
-                            checked={formData.menuPreference === 'both'}
-                            onChange={(e) =>
-                              setFormData({ ...formData, menuPreference: e.target.value as 'both' })
-                            }
-                            onClick={(e) => e.stopPropagation()}
-                            className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
-                          />
-                          <span className={`text-base sm:text-lg font-serif flex-1 ${
-                            formData.menuPreference === 'both' 
-                              ? 'text-purple-800 font-semibold' 
-                              : 'text-gray-700'
-                          }`}>Both</span>
-                          {formData.menuPreference === 'both' && (
-                            <span className="text-purple-600 text-xl ml-2">✓</span>
-                          )}
-                        </label>
+                        <OrnamentalDivider variant="simple" className="mb-4" />
+                        <div className="space-y-3">
+                          <label 
+                            onClick={() => setFormData({ ...formData, menuPreference: 'veg' })}
+                            className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                              formData.menuPreference === 'veg'
+                                ? 'bg-green-50 border-green-400 shadow-md scale-[1.02]'
+                                : !formData.menuPreference 
+                                  ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                  : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                            }`}
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <input
+                              type="radio"
+                              name="menuPreference"
+                              value="veg"
+                              checked={formData.menuPreference === 'veg'}
+                              onChange={(e) =>
+                                setFormData({ ...formData, menuPreference: e.target.value as 'veg' })
+                              }
+                              onClick={(e) => e.stopPropagation()}
+                              className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
+                            />
+                            <span className={`text-base sm:text-lg font-serif flex-1 ${
+                              formData.menuPreference === 'veg' 
+                                ? 'text-green-800 font-semibold' 
+                                : 'text-gray-700'
+                            }`}>Vegetarian</span>
+                            {formData.menuPreference === 'veg' && (
+                              <span className="text-green-600 text-xl ml-2">✓</span>
+                            )}
+                          </label>
+                          <label 
+                            onClick={() => setFormData({ ...formData, menuPreference: 'non-veg' })}
+                            className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                              formData.menuPreference === 'non-veg'
+                                ? 'bg-blue-50 border-blue-400 shadow-md scale-[1.02]'
+                                : !formData.menuPreference 
+                                  ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                  : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                            }`}
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <input
+                              type="radio"
+                              name="menuPreference"
+                              value="non-veg"
+                              checked={formData.menuPreference === 'non-veg'}
+                              onChange={(e) =>
+                                setFormData({ ...formData, menuPreference: e.target.value as 'non-veg' })
+                              }
+                              onClick={(e) => e.stopPropagation()}
+                              className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
+                            />
+                            <span className={`text-base sm:text-lg font-serif flex-1 ${
+                              formData.menuPreference === 'non-veg' 
+                                ? 'text-blue-800 font-semibold' 
+                                : 'text-gray-700'
+                            }`}>Non-Vegetarian</span>
+                            {formData.menuPreference === 'non-veg' && (
+                              <span className="text-blue-600 text-xl ml-2">✓</span>
+                            )}
+                          </label>
+                          <label 
+                            onClick={() => setFormData({ ...formData, menuPreference: 'both' })}
+                            className={`flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
+                              formData.menuPreference === 'both'
+                                ? 'bg-purple-50 border-purple-400 shadow-md scale-[1.02]'
+                                : !formData.menuPreference 
+                                  ? 'bg-white/50 border-red-300 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                                  : 'bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40'
+                            }`}
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <input
+                              type="radio"
+                              name="menuPreference"
+                              value="both"
+                              checked={formData.menuPreference === 'both'}
+                              onChange={(e) =>
+                                setFormData({ ...formData, menuPreference: e.target.value as 'both' })
+                              }
+                              onClick={(e) => e.stopPropagation()}
+                              className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
+                            />
+                            <span className={`text-base sm:text-lg font-serif flex-1 ${
+                              formData.menuPreference === 'both' 
+                                ? 'text-purple-800 font-semibold' 
+                                : 'text-gray-700'
+                            }`}>Both</span>
+                            {formData.menuPreference === 'both' && (
+                              <span className="text-purple-600 text-xl ml-2">✓</span>
+                            )}
+                          </label>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
 
                     {/* Error Message */}
@@ -578,4 +796,5 @@ export default function RSVPPage() {
     </InvitationPageLayout>
   )
 }
+
 
