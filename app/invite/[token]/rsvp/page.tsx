@@ -208,7 +208,7 @@ export default function RSVPPage() {
   // Show phone verification form
   if (accessState === 'phone-required' || accessState === 'phone-verification') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-wedding p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-rsvp p-4">
         <PhoneVerificationForm
           onSubmit={handlePhoneVerification}
           isLoading={isVerifyingPhone}
@@ -252,7 +252,7 @@ export default function RSVPPage() {
     >
       <FloatingPetals />
       <PageTransition>
-        <div className="min-h-screen bg-gradient-wedding relative">
+        <div className="min-h-screen bg-gradient-rsvp relative">
           <div className="max-w-[640px] mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-12 md:py-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -152,7 +152,7 @@ export default function SaveTheDatePage() {
     >
       <FloatingPetals />
       <PageTransition>
-        <div className="min-h-screen bg-gradient-rose-cream relative">
+        <div className="min-h-screen bg-gradient-save-date relative">
           <div className="max-w-[640px] mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-12 md:py-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
