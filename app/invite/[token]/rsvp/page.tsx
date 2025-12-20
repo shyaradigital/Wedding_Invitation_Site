@@ -172,10 +172,11 @@ export default function RSVPPage() {
       })
 
       // Apply attendee count to Wedding and Reception (not Mehndi)
-      if (formData.allEventsAttendeeCount && formData.allEventsAttendeeCount >= 1) {
+      const attendeeCount = formData.allEventsAttendeeCount
+      if (attendeeCount && attendeeCount >= 1) {
         eventAccess.forEach((event: string) => {
           if (event !== 'mehndi') {
-            finalAttendeesPerEvent[event] = formData.allEventsAttendeeCount
+            finalAttendeesPerEvent[event] = attendeeCount as number
           }
         })
       } else {
