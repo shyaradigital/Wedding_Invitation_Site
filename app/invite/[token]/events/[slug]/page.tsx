@@ -347,7 +347,20 @@ export default function EventDetailsPage() {
         <div 
           className={`min-h-screen relative ${backgroundClass}`}
         >
-          <div className="max-w-[640px] mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-12 md:py-16 relative z-20">
+          {/* Mehndi repeating background pattern */}
+          {isMehendi && (
+            <div 
+              className="absolute inset-0 pointer-events-none z-[1]"
+              style={{
+                backgroundImage: 'url(/images/mehndi-background-2.svg)',
+                backgroundSize: '400px 400px',
+                backgroundRepeat: 'repeat',
+                backgroundPosition: '0 0',
+                opacity: 0.35,
+              }}
+            />
+          )}
+          <div className={`max-w-[640px] mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-12 md:py-16 relative z-20 ${isMehendi ? 'overflow-visible' : ''}`}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -387,7 +400,18 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.1 }}
                   className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-md ${isMehendi ? 'bg-white' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed max-w-prose mx-auto relative z-10">
+                  <p 
+                    className={`text-base sm:text-lg md:text-xl font-serif leading-relaxed max-w-prose mx-auto relative z-10 ${
+                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                    }`}
+                    style={
+                      isReception
+                        ? {
+                            filter: 'brightness(1.2)',
+                          }
+                        : {}
+                    }
+                  >
                     {eventDescription}
                   </p>
                 </motion.div>
@@ -401,6 +425,20 @@ export default function EventDetailsPage() {
                       Baraat
                     </h1>
                     <OrnamentalDivider variant="ornate" />
+                    {/* Baraat Image */}
+                    <div className="mt-6 sm:mt-8 w-full flex justify-center overflow-hidden" style={{ height: 'auto', maxHeight: '450px' }}>
+                      <img 
+                        src="/images/baraat-image.svg" 
+                        alt=""
+                        className="w-full h-auto"
+                        style={{
+                          width: '100%',
+                          maxHeight: '500px',
+                          objectFit: 'contain',
+                          objectPosition: 'center',
+                        }}
+                      />
+                    </div>
                   </div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -474,6 +512,20 @@ export default function EventDetailsPage() {
                       Hindu Wedding
                     </h1>
                     <OrnamentalDivider variant="ornate" />
+                    {/* Wedding Hand Image */}
+                    <div className="mt-6 sm:mt-8 w-full flex justify-center overflow-hidden" style={{ height: 'auto', maxHeight: '250px' }}>
+                      <img 
+                        src="/images/wedding-hand.svg" 
+                        alt=""
+                        className="w-full h-auto"
+                        style={{
+                          width: '100%',
+                          maxHeight: '300px',
+                          objectFit: 'cover',
+                          objectPosition: 'center',
+                        }}
+                      />
+                    </div>
                   </div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -503,35 +555,70 @@ export default function EventDetailsPage() {
               )}
 
               {/* Date & Time */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className={`rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 relative overflow-hidden event-card-pattern shadow-md ${
-                  isReception
-                    ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
-                    : isMehendi
-                    ? 'bg-white border border-wedding-gold/30'
-                    : 'bg-white/70 border border-wedding-gold/30'
-                }`}
-              >
-                <div className="text-center space-y-3 relative z-10">
-                  <p
-                    className={`text-lg sm:text-xl md:text-2xl font-serif leading-relaxed ${
-                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
-                    }`}
+              <div className="relative mb-6 sm:mb-8">
+                {/* Mehndi Girl Image - positioned to the left of Date & Time box, outside the box, touching the edge */}
+                {isMehendi && (
+                  <div 
+                    className="absolute right-full top-0 bottom-0 flex items-center pointer-events-none z-[2]"
                   >
-                    On {content.date}
-                  </p>
-                  <p
-                    className={`text-lg sm:text-xl md:text-2xl font-serif leading-relaxed ${
-                      isReception ? 'text-wedding-gold-light' : 'text-gray-700'
-                    }`}
-                  >
-                    at {content.time}
-                  </p>
-                </div>
-              </motion.div>
+                    <img 
+                      src="/images/mehndi-girl-image.svg" 
+                      alt=""
+                      className="h-full w-auto"
+                      style={{
+                        height: '100%',
+                        width: 'auto',
+                      }}
+                    />
+                  </div>
+                )}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className={`rounded-2xl p-6 sm:p-8 relative overflow-hidden event-card-pattern shadow-md ${
+                    isReception
+                      ? 'bg-wedding-gold/20 border-2 border-wedding-gold/40'
+                      : isMehendi
+                      ? 'bg-white border border-wedding-gold/30'
+                      : 'bg-white/70 border border-wedding-gold/30'
+                  }`}
+                  style={{
+                    position: 'relative',
+                  }}
+                >
+                  <div className="text-center space-y-3 relative z-10">
+                    <p
+                      className={`text-lg sm:text-xl md:text-2xl font-serif leading-relaxed ${
+                        isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                      }`}
+                      style={
+                        isReception
+                          ? {
+                              filter: 'brightness(1.2)',
+                            }
+                          : {}
+                      }
+                    >
+                      On {content.date}
+                    </p>
+                    <p
+                      className={`text-lg sm:text-xl md:text-2xl font-serif leading-relaxed ${
+                        isReception ? 'text-wedding-gold-light' : 'text-gray-700'
+                      }`}
+                      style={
+                        isReception
+                          ? {
+                              filter: 'brightness(1.2)',
+                            }
+                          : {}
+                      }
+                    >
+                      at {content.time}
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
 
               {/* Additional Info for Wedding - Right after Date & Time */}
               {isWedding && content.additionalInfo && (
@@ -555,8 +642,20 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.3 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed relative z-10">
-                    <span className="font-semibold">Cocktail hour:</span> {content.cocktailHour}
+                  <p 
+                    className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed relative z-10"
+                    style={{
+                      filter: 'brightness(1.2)',
+                    }}
+                  >
+                    <span 
+                      className="font-semibold"
+                      style={{
+                        filter: 'brightness(1.3)',
+                      }}
+                    >
+                      Cocktail hour:
+                    </span> {content.cocktailHour}
                   </p>
                 </motion.div>
               )}
@@ -570,7 +669,12 @@ export default function EventDetailsPage() {
                   transition={{ delay: 0.3 }}
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-center bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
-                  <p className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light leading-relaxed relative z-10">
+                  <p 
+                    className="text-base sm:text-lg md:text-xl font-serif italic text-wedding-gold-light leading-relaxed relative z-10"
+                    style={{
+                      filter: 'brightness(1.2)',
+                    }}
+                  >
                     {content.note}
                   </p>
                 </motion.div>
@@ -596,6 +700,13 @@ export default function EventDetailsPage() {
                   className={`flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
                     isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-navy' : 'text-wedding-navy'
                   }`}
+                  style={
+                    isReception
+                      ? {
+                          filter: 'brightness(1.3)',
+                        }
+                      : {}
+                  }
                 >
                   <span className="text-xl sm:text-2xl">👗</span>
                   <span>Attire</span>
@@ -605,6 +716,13 @@ export default function EventDetailsPage() {
                   className={`text-base sm:text-lg md:text-xl font-serif whitespace-pre-line leading-relaxed ${
                     isReception ? 'text-wedding-gold-light text-center max-w-prose mx-auto' : 'text-gray-700'
                   } ${isMehendi || isWedding ? 'text-center max-w-prose mx-auto' : ''}`}
+                  style={
+                    isReception
+                      ? {
+                          filter: 'brightness(1.2)',
+                        }
+                      : {}
+                  }
                 >
                   {content.attire}
                 </p>
@@ -620,12 +738,22 @@ export default function EventDetailsPage() {
                   className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-wedding-gold/10 border border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                 >
                   <div className="relative z-10">
-                    <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold">
+                    <h2 
+                      className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold"
+                      style={{
+                        filter: 'brightness(1.3)',
+                      }}
+                    >
                       <span className="text-xl sm:text-2xl">🍽️</span>
                       <span>Dinner</span>
                     </h2>
                     <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
-                    <p className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed">
+                    <p 
+                      className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed"
+                      style={{
+                        filter: 'brightness(1.2)',
+                      }}
+                    >
                       Dinner to be served
                     </p>
                   </div>
@@ -671,6 +799,13 @@ export default function EventDetailsPage() {
                     className={`flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
                       isReception ? 'text-wedding-gold' : 'text-wedding-navy'
                     }`}
+                    style={
+                      isReception
+                        ? {
+                            filter: 'brightness(1.3)',
+                          }
+                        : {}
+                    }
                   >
                     <span className="text-xl sm:text-2xl">📍</span>
                     <span>Venue</span>
@@ -680,6 +815,13 @@ export default function EventDetailsPage() {
                     className={`text-base sm:text-lg md:text-xl font-serif font-semibold mb-2 leading-relaxed ${
                       isReception ? 'text-wedding-gold-light' : 'text-gray-800'
                     }`}
+                    style={
+                      isReception
+                        ? {
+                            filter: 'brightness(1.2)',
+                          }
+                        : {}
+                    }
                   >
                     {content.venue}
                   </p>
@@ -688,6 +830,13 @@ export default function EventDetailsPage() {
                       className={`text-sm sm:text-base md:text-lg font-serif mb-2 leading-relaxed ${
                         isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
                       }`}
+                      style={
+                        isReception
+                          ? {
+                              filter: 'brightness(1.2)',
+                            }
+                          : {}
+                      }
                     >
                       {content.venueDetails}
                     </p>
@@ -696,6 +845,13 @@ export default function EventDetailsPage() {
                     className={`text-sm sm:text-base md:text-lg font-serif mb-4 leading-relaxed ${
                       isReception ? 'text-wedding-gold-light/90' : 'text-gray-700'
                     }`}
+                    style={
+                      isReception
+                        ? {
+                            filter: 'brightness(1.2)',
+                          }
+                        : {}
+                    }
                   >
                     {content.address}
                   </p>

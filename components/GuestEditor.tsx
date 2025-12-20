@@ -15,7 +15,8 @@ interface Guest {
   allowedDevices: string[]
   tokenUsedFirstTime: string | null
   maxDevicesAllowed: number
-  numberOfAttendees: number
+  numberOfAttendees: number // Kept for backward compatibility, but should use getAttendeeCount helper
+  numberOfAttendeesPerEvent?: Record<string, number> | null
   rsvpSubmitted?: boolean
   rsvpStatus?: Record<string, 'yes' | 'no' | 'pending'> | null
   rsvpSubmittedAt?: string | null
@@ -56,14 +57,12 @@ export default function GuestEditor({
     email: string
     eventAccess: 'all-events' | 'reception-only'
     maxDevicesAllowed: number | ''
-    numberOfAttendees: number | ''
   }>({
     name: '',
     phone: '',
     email: '',
     eventAccess: 'all-events',
     maxDevicesAllowed: '',
-    numberOfAttendees: '',
   })
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -87,6 +86,41 @@ export default function GuestEditor({
     return value as T
   }
 
+  // Helper function to get attendee count from RSVP data or fallback
+  const getAttendeeCount = useCallback((guest: Guest, eventSlug?: string): number => {
+    // If eventSlug is provided, get count for that specific event
+    if (eventSlug && guest.numberOfAttendeesPerEvent && guest.numberOfAttendeesPerEvent[eventSlug]) {
+      return guest.numberOfAttendeesPerEvent[eventSlug]
+    }
+    
+    // If RSVP data exists, calculate from per-event counts
+    if (guest.numberOfAttendeesPerEvent && Object.keys(guest.numberOfAttendeesPerEvent).length > 0) {
+      // Return maximum count across all events (for overall display)
+      return Math.max(...Object.values(guest.numberOfAttendeesPerEvent), 1)
+    }
+    
+    // Fallback to numberOfAttendees for backward compatibility
+    return guest.numberOfAttendees || 1
+  }, [])
+
+  // Helper function to get attendee count for a specific event
+  const getAttendeeCountForEvent = useCallback((guest: Guest, eventSlug: string): number => {
+    // Check if guest is attending this event
+    const isAttending = guest.rsvpStatus && guest.rsvpStatus[eventSlug] === 'yes'
+    
+    if (isAttending && guest.numberOfAttendeesPerEvent && guest.numberOfAttendeesPerEvent[eventSlug]) {
+      return guest.numberOfAttendeesPerEvent[eventSlug]
+    }
+    
+    // If not attending or no RSVP data, return 0 for not attending, 1 for no RSVP
+    if (guest.rsvpStatus && guest.rsvpStatus[eventSlug] === 'no') {
+      return 0
+    }
+    
+    // If no RSVP data, return 1 as default
+    return 1
+  }, [])
+
   // Normalize guest data to ensure consistent structure
   const normalizedGuests = useMemo(() => {
     return guests.map(guest => ({
@@ -96,7 +130,10 @@ export default function GuestEditor({
         : safeParseJson<string[]>(guest.eventAccess as any, []),
       rsvpStatus: guest.rsvpStatus && typeof guest.rsvpStatus === 'object' && !Array.isArray(guest.rsvpStatus)
         ? guest.rsvpStatus
-        : safeParseJson<Record<string, 'yes' | 'no' | 'pending'>>(guest.rsvpStatus as any, {})
+        : safeParseJson<Record<string, 'yes' | 'no' | 'pending'>>(guest.rsvpStatus as any, {}),
+      numberOfAttendeesPerEvent: guest.numberOfAttendeesPerEvent && typeof guest.numberOfAttendeesPerEvent === 'object'
+        ? guest.numberOfAttendeesPerEvent
+        : safeParseJson<Record<string, number>>(guest.numberOfAttendeesPerEvent as any, {})
     }))
   }, [guests])
 
@@ -129,7 +166,6 @@ export default function GuestEditor({
           email: formData.email.trim() || undefined,
           eventAccess: formData.eventAccess,
           maxDevicesAllowed: formData.maxDevicesAllowed || 1,
-          numberOfAttendees: formData.numberOfAttendees || 1,
         }),
       })
 
@@ -146,7 +182,6 @@ export default function GuestEditor({
           email: '',
           eventAccess: formData.eventAccess, // Keep last used
           maxDevicesAllowed: '',
-          numberOfAttendees: '',
         })
         setLastEventAccess(formData.eventAccess)
         // Auto-focus name field in quick-add mode
@@ -223,7 +258,6 @@ export default function GuestEditor({
       email: guest.email || '',
       eventAccess: getEventAccessType(guest.eventAccess),
       maxDevicesAllowed: guest.maxDevicesAllowed || '',
-      numberOfAttendees: guest.numberOfAttendees || '',
     })
     setShowCreateForm(false)
     setHideEventAccess(false)
@@ -247,7 +281,6 @@ export default function GuestEditor({
       email: formData.email.trim() || null,
       eventAccess: formData.eventAccess,
       maxDevicesAllowed: formData.maxDevicesAllowed || 1,
-      numberOfAttendees: formData.numberOfAttendees || 1,
     })
   }
 
@@ -266,7 +299,6 @@ export default function GuestEditor({
       email: '',
       eventAccess: lastEventAccess || 'all-events',
       maxDevicesAllowed: '',
-      numberOfAttendees: '',
     })
     setEditingGuest(null)
     setShowCreateForm(false)
@@ -364,7 +396,7 @@ export default function GuestEditor({
     }
     
     const csv = [
-      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
+      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'First Access', 'Created At', 'Invitation Link'].join(','),
       ...selectedGuestList.map(guest => {
         const rsvpStatus = guest.rsvpStatus || {}
         const overallStatus = getOverallRsvpStatus(guest)
@@ -389,7 +421,6 @@ export default function GuestEditor({
           guest.rsvpSubmittedAt ? new Date(guest.rsvpSubmittedAt).toLocaleString() : '',
           guest.allowedDevices.length,
           guest.maxDevicesAllowed,
-          guest.numberOfAttendees || 1,
           guest.tokenUsedFirstTime ? new Date(guest.tokenUsedFirstTime).toLocaleString() : 'Never',
           new Date(guest.createdAt).toLocaleString(),
           `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
@@ -562,7 +593,7 @@ export default function GuestEditor({
     }
     
     const csv = [
-      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'Number of Attendees', 'First Access', 'Created At', 'Invitation Link'].join(','),
+      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'First Access', 'Created At', 'Invitation Link'].join(','),
       ...guestsToExport.map(guest => {
         const rsvpStatus = guest.rsvpStatus || {}
         const overallStatus = getOverallRsvpStatus(guest)
@@ -587,7 +618,6 @@ export default function GuestEditor({
           guest.rsvpSubmittedAt ? new Date(guest.rsvpSubmittedAt).toLocaleString() : '',
           guest.allowedDevices.length,
           guest.maxDevicesAllowed,
-          guest.numberOfAttendees || 1,
           guest.tokenUsedFirstTime ? new Date(guest.tokenUsedFirstTime).toLocaleString() : 'Never',
           new Date(guest.createdAt).toLocaleString(),
           `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
@@ -625,7 +655,7 @@ export default function GuestEditor({
         const status = getOverallRsvpStatus(g)
         return status === 'attending'
       })
-      .reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+      .reduce((sum, guest) => sum + getAttendeeCount(guest), 0)
     
     // RSVP stats
     const rsvpAttending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'attending').length
@@ -665,12 +695,12 @@ export default function GuestEditor({
         return !g.rsvpSubmitted || !rsvpStatus[eventSlug]
       })
 
-      const totalAttendees = attending.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+      const totalAttendees = attending.reduce((sum, guest) => sum + getAttendeeCountForEvent(guest, eventSlug), 0)
 
       // Calculate total attendees for each status
-      const notAttendingAttendees = notAttending.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
-      const pendingAttendees = pending.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
-      const notSubmittedAttendees = notSubmitted.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+      const notAttendingAttendees = notAttending.reduce((sum, guest) => sum + getAttendeeCountForEvent(guest, eventSlug), 0)
+      const pendingAttendees = pending.reduce((sum, guest) => sum + getAttendeeCountForEvent(guest, eventSlug), 0)
+      const notSubmittedAttendees = notSubmitted.reduce((sum, guest) => sum + getAttendeeCountForEvent(guest, eventSlug), 0)
 
       return {
         attending: totalAttendees, // Total attendees attending
@@ -693,7 +723,7 @@ export default function GuestEditor({
     }
 
     // Total attendees across all guests (not just attending)
-    const totalAllAttendees = normalizedGuests.reduce((sum, guest) => sum + (guest.numberOfAttendees || 1), 0)
+    const totalAllAttendees = normalizedGuests.reduce((sum, guest) => sum + getAttendeeCount(guest), 0)
 
     return {
       total: totalAllAttendees,
@@ -1225,25 +1255,6 @@ export default function GuestEditor({
                   placeholder="1"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Number of Attendees
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  value={formData.numberOfAttendees === '' ? '' : formData.numberOfAttendees}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      numberOfAttendees: e.target.value === '' ? '' : (parseInt(e.target.value) || ''),
-                    })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  placeholder="1"
-                />
-                <p className="text-xs text-gray-500 mt-1">Total number of people attending (including the guest)</p>
-              </div>
               <div className="flex gap-4">
                 <button
                   onClick={editingGuest ? handleSaveEdit : handleCreateGuest}
@@ -1293,9 +1304,6 @@ export default function GuestEditor({
                 </th>
                 <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[80px]">
                   Devices
-                </th>
-                <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[80px]">
-                  Attendees
                 </th>
                 <th className="px-3 py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 w-[140px]">
                   Menu Preference
@@ -1403,9 +1411,6 @@ export default function GuestEditor({
                     >
                       {deviceCount} / {guest.maxDevicesAllowed}
                     </button>
-                  </td>
-                  <td className="px-3 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                    {guest.numberOfAttendees || 1}
                   </td>
                   <td className="px-3 py-4 whitespace-nowrap">
                     {guest.menuPreference ? (
@@ -1646,15 +1651,6 @@ export default function GuestEditor({
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of Attendees
-                  </label>
-                  <p className="text-gray-900">
-                    {viewingGuest.numberOfAttendees || 1}
-                  </p>
-                </div>
-
                 {/* RSVP Section */}
                 <div className="border-t pt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -1863,7 +1859,6 @@ export default function GuestEditor({
                       <li><strong>Column C:</strong> Email (optional, but phone or email required)</li>
                       <li><strong>Column D:</strong> Event Access (required: &quot;all-events&quot; or &quot;reception-only&quot;)</li>
                       <li><strong>Column E:</strong> Max Devices Allowed (optional, default: 1)</li>
-                      <li><strong>Column F:</strong> Number of Attendees (optional, default: 1)</li>
                     </ul>
                     <button
                       onClick={handleDownloadTemplate}

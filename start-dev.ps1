@@ -6,6 +6,22 @@ Write-Host "Wedding Invitation Site - Dev Server" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
+# Check if .env file exists
+if (-not (Test-Path ".env")) {
+    Write-Host "ERROR: .env file not found!" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Please create a .env file with the following content:" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "DATABASE_URL=`"postgresql://user:password@localhost:5432/wedsite?schema=public`"" -ForegroundColor Cyan
+    Write-Host "JWT_SECRET=`"your-secret-key-here`"" -ForegroundColor Cyan
+    Write-Host "ADMIN_CONTACT_PHONE=`"`"" -ForegroundColor Cyan
+    Write-Host "NODE_ENV=`"development`"" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "Update DATABASE_URL with your PostgreSQL connection details." -ForegroundColor Yellow
+    Write-Host ""
+    exit 1
+}
+
 # Check if node_modules exists
 if (-not (Test-Path "node_modules")) {
     Write-Host "Installing dependencies..." -ForegroundColor Yellow
@@ -25,6 +41,11 @@ if (-not (Test-Path "prisma\dev.db")) {
     
     Write-Host "Seeding events..." -ForegroundColor Yellow
     npm run seed:events
+    Write-Host ""
+} else {
+    # Apply any pending schema changes
+    Write-Host "Applying database schema changes..." -ForegroundColor Yellow
+    npx prisma db push --accept-data-loss
     Write-Host ""
 }
 

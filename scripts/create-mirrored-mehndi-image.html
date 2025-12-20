@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Mirrored Mehndi Background</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+        }
+        button {
+            background: #D4AF37;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #B8941F;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #preview {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #preview img {
+            max-width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin: 10px;
+        }
+        .instructions {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #006400;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Mirrored Mehndi Background Image</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Click "Choose File" and select <code>public/images/Mehndi_Background.jpg</code></li>
+                <li>Click "Create Mirrored Image" button</li>
+                <li>The mirrored image will be displayed below</li>
+                <li>Right-click the mirrored image and select "Save image as..."</li>
+                <li>Save it as <code>Mehndi_Background_Mirrored.jpg</code> in the <code>public/images/</code> folder</li>
+            </ol>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*">
+        <button id="mirrorBtn" onclick="createMirroredImage()" disabled>Create Mirrored Image</button>
+        <button onclick="downloadImage()" id="downloadBtn" disabled>Download Mirrored Image</button>
+
+        <div id="preview"></div>
+    </div>
+
+    <script>
+        let mirroredImageDataUrl = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('mirrorBtn').disabled = false;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    document.getElementById('preview').innerHTML = '<h3>Original Image:</h3>';
+                    document.getElementById('preview').appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function createMirroredImage() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image file first.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Create canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+
+                    // Mirror the image horizontally (scaleX = -1)
+                    ctx.translate(canvas.width, 0);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, 0, 0);
+
+                    // Convert to data URL
+                    mirroredImageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+                    // Display the mirrored image
+                    const mirroredImg = document.createElement('img');
+                    mirroredImg.src = mirroredImageDataUrl;
+                    mirroredImg.id = 'mirroredImage';
+                    document.getElementById('preview').innerHTML = '<h3>Mirrored Image (Right-click to save):</h3>';
+                    document.getElementById('preview').appendChild(mirroredImg);
+                    document.getElementById('downloadBtn').disabled = false;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function downloadImage() {
+            if (!mirroredImageDataUrl) {
+                alert('Please create the mirrored image first.');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'Mehndi_Background_Mirrored.jpg';
+            link.href = mirroredImageDataUrl;
+            link.click();
+        }
+    </script>
+</body>
+</html>

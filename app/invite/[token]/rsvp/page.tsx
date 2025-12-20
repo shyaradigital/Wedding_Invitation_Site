@@ -24,6 +24,7 @@ export default function RSVPPage() {
   const [formData, setFormData] = useState({
     rsvpStatus: {} as Record<string, 'yes' | 'no'>,
     menuPreference: '' as 'veg' | 'non-veg' | 'both' | '',
+    numberOfAttendeesPerEvent: {} as Record<string, number>,
   })
 
   // Use the shared access check hook
@@ -62,6 +63,7 @@ export default function RSVPPage() {
                 ...prev,
                 menuPreference: data.preferences.menuPreference || '',
                 rsvpStatus: data.rsvpStatus || {},
+                numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
               }))
             }
           } else if (data && data.rsvpStatus) {
@@ -70,6 +72,7 @@ export default function RSVPPage() {
             setFormData(prev => ({
               ...prev,
               rsvpStatus: data.rsvpStatus || {},
+              numberOfAttendeesPerEvent: data.numberOfAttendeesPerEvent || {},
             }))
           }
         })
@@ -119,6 +122,29 @@ export default function RSVPPage() {
       return
     }
 
+    // Validate attendee counts for events where guest is attending
+    const missingAttendeeCounts: string[] = []
+    for (const eventSlug of eventAccess) {
+      if (formData.rsvpStatus[eventSlug] === 'yes') {
+        const attendeeCount = formData.numberOfAttendeesPerEvent[eventSlug]
+        if (!attendeeCount || attendeeCount < 1) {
+          missingAttendeeCounts.push(eventSlug)
+        }
+      }
+    }
+    
+    if (missingAttendeeCounts.length > 0) {
+      const missingEventNames = missingAttendeeCounts.map((e: string) => eventNames[e] || e).join(', ')
+      setError(`Please enter the number of guests attending for: ${missingEventNames}`)
+      // Scroll to first missing field
+      const firstMissing = missingAttendeeCounts[0]
+      const element = document.querySelector(`[name="attendees-${firstMissing}"]`)
+      if (element) {
+        element.closest('.border-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+      return
+    }
+
     // Validate menu preference - MANDATORY
     if (!formData.menuPreference) {
       setError('Please select a menu preference')
@@ -140,6 +166,7 @@ export default function RSVPPage() {
           token,
           rsvpStatus: formData.rsvpStatus,
           menuPreference: formData.menuPreference,
+          numberOfAttendeesPerEvent: formData.numberOfAttendeesPerEvent,
         }),
       })
 
@@ -281,6 +308,11 @@ export default function RSVPPage() {
                                       setFormData({
                                         ...formData,
                                         rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'yes' },
+                                        // Set default attendee count to 1 if not already set
+                                        numberOfAttendeesPerEvent: {
+                                          ...formData.numberOfAttendeesPerEvent,
+                                          [eventSlug]: formData.numberOfAttendeesPerEvent[eventSlug] || 1,
+                                        },
                                       })
                                     }}
                                     className={`flex items-center p-4 sm:p-5 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
@@ -299,6 +331,11 @@ export default function RSVPPage() {
                                         setFormData({
                                           ...formData,
                                           rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'yes' },
+                                          // Set default attendee count to 1 if not already set
+                                          numberOfAttendeesPerEvent: {
+                                            ...formData.numberOfAttendeesPerEvent,
+                                            [eventSlug]: formData.numberOfAttendeesPerEvent[eventSlug] || 1,
+                                          },
                                         })
                                       }
                                       onClick={(e) => e.stopPropagation()}
@@ -315,9 +352,12 @@ export default function RSVPPage() {
                                   </label>
                                   <label 
                                     onClick={() => {
+                                      const newNumberOfAttendees = { ...formData.numberOfAttendeesPerEvent }
+                                      delete newNumberOfAttendees[eventSlug]
                                       setFormData({
                                         ...formData,
                                         rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'no' },
+                                        numberOfAttendeesPerEvent: newNumberOfAttendees,
                                       })
                                     }}
                                     className={`flex items-center p-4 sm:p-5 border-2 rounded-lg cursor-pointer transition-all touch-manipulation min-h-[56px] select-none ${
@@ -332,12 +372,15 @@ export default function RSVPPage() {
                                       name={`rsvp-${eventSlug}`}
                                       value="no"
                                       checked={currentStatus === 'no'}
-                                      onChange={() =>
+                                      onChange={() => {
+                                        const newNumberOfAttendees = { ...formData.numberOfAttendeesPerEvent }
+                                        delete newNumberOfAttendees[eventSlug]
                                         setFormData({
                                           ...formData,
                                           rsvpStatus: { ...formData.rsvpStatus, [eventSlug]: 'no' },
+                                          numberOfAttendeesPerEvent: newNumberOfAttendees,
                                         })
-                                      }
+                                      }}
                                       onClick={(e) => e.stopPropagation()}
                                       className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                                     />
@@ -350,6 +393,37 @@ export default function RSVPPage() {
                                       <span className="text-red-600 text-xl ml-2">✗</span>
                                     )}
                                   </label>
+                                  
+                                  {/* Number of Guests Attending - Only show when "Yes" is selected */}
+                                  {currentStatus === 'yes' && (
+                                    <div className="mt-4 pt-4 border-t border-wedding-gold/20">
+                                      <label className="block text-sm sm:text-base font-display text-wedding-navy mb-2">
+                                        Number of Guests Attending <span className="text-red-500">*</span>
+                                      </label>
+                                      <input
+                                        type="number"
+                                        name={`attendees-${eventSlug}`}
+                                        min="1"
+                                        value={formData.numberOfAttendeesPerEvent[eventSlug] || ''}
+                                        onChange={(e) => {
+                                          const value = e.target.value === '' ? '' : parseInt(e.target.value, 10)
+                                          setFormData({
+                                            ...formData,
+                                            numberOfAttendeesPerEvent: {
+                                              ...formData.numberOfAttendeesPerEvent,
+                                              [eventSlug]: value === '' ? undefined : (isNaN(value as number) ? undefined : value as number),
+                                            },
+                                          })
+                                        }}
+                                        className="w-full px-4 py-3 border-2 border-wedding-gold/30 rounded-lg bg-white/70 text-base sm:text-lg font-serif text-wedding-navy focus:outline-none focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold transition-all"
+                                        placeholder="Enter number"
+                                        required
+                                      />
+                                      <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">
+                                        Including yourself
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             )

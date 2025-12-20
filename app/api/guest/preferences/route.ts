@@ -7,6 +7,7 @@ const preferencesSchema = z.object({
   token: z.string().min(1),
   rsvpStatus: z.record(z.enum(['yes', 'no'])).optional(),
   menuPreference: z.enum(['veg', 'non-veg', 'both']).optional(),
+  numberOfAttendeesPerEvent: z.record(z.number().int().min(1)).optional(),
   dietaryRestrictions: z.string().optional(),
   additionalInfo: z.string().optional(),
 })
@@ -71,11 +72,66 @@ export async function POST(request: NextRequest) {
       return setNoCacheHeaders(response)
     }
 
+    // Validate and process numberOfAttendeesPerEvent
+    let numberOfAttendeesPerEventJson: string | null = null
+    let calculatedNumberOfAttendees = guest.numberOfAttendees || 1 // Default fallback
+    
+    if (data.numberOfAttendeesPerEvent) {
+      const validAttendeesPerEvent: Record<string, number> = {}
+      
+      // Only include attendee counts for events the guest has access to and where they RSVP'd "yes"
+      for (const [eventSlug, count] of Object.entries(data.numberOfAttendeesPerEvent)) {
+        if (eventAccess.includes(eventSlug) && 
+            validRsvpStatus[eventSlug] === 'yes' && 
+            typeof count === 'number' && 
+            count >= 1) {
+          validAttendeesPerEvent[eventSlug] = count
+        }
+      }
+      
+      // Ensure attendee counts are provided for all events where guest is attending
+      const attendingEvents = Object.entries(validRsvpStatus)
+        .filter(([_, status]) => status === 'yes')
+        .map(([eventSlug]) => eventSlug)
+      
+      for (const eventSlug of attendingEvents) {
+        if (!validAttendeesPerEvent[eventSlug]) {
+          const response = NextResponse.json(
+            { error: `Number of guests attending is required for ${eventSlug}` },
+            { status: 400 }
+          )
+          return setNoCacheHeaders(response)
+        }
+      }
+      
+      numberOfAttendeesPerEventJson = JSON.stringify(validAttendeesPerEvent)
+      
+      // Auto-calculate numberOfAttendees as the maximum count across all events
+      // This provides backward compatibility
+      calculatedNumberOfAttendees = Math.max(...Object.values(validAttendeesPerEvent), 1)
+    } else {
+      // If no per-event counts provided but guest is attending events, use default of 1
+      const attendingEvents = Object.entries(JSON.parse(rsvpStatusJson))
+        .filter(([_, status]) => status === 'yes')
+        .map(([eventSlug]) => eventSlug)
+      
+      if (attendingEvents.length > 0) {
+        const defaultAttendeesPerEvent: Record<string, number> = {}
+        for (const eventSlug of attendingEvents) {
+          defaultAttendeesPerEvent[eventSlug] = 1
+        }
+        numberOfAttendeesPerEventJson = JSON.stringify(defaultAttendeesPerEvent)
+        calculatedNumberOfAttendees = 1
+      }
+    }
+
     // Update guest preferences and RSVP
     const updatedGuest = await prisma.guest.update({
       where: { id: guest.id },
       data: {
         rsvpStatus: rsvpStatusJson,
+        numberOfAttendeesPerEvent: numberOfAttendeesPerEventJson,
+        numberOfAttendees: calculatedNumberOfAttendees, // Auto-calculated for backward compatibility
         rsvpSubmitted: true,
         rsvpSubmittedAt: new Date(),
         menuPreference: data.menuPreference || null,
@@ -128,6 +184,7 @@ export async function GET(request: NextRequest) {
         preferencesSubmitted: true,
         rsvpSubmitted: true,
         rsvpStatus: true,
+        numberOfAttendeesPerEvent: true,
         rsvpSubmittedAt: true,
         menuPreference: true,
         dietaryRestrictions: true,
@@ -155,10 +212,22 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    let numberOfAttendeesPerEvent = null
+    if (guest.numberOfAttendeesPerEvent) {
+      try {
+        numberOfAttendeesPerEvent = typeof guest.numberOfAttendeesPerEvent === 'string'
+          ? JSON.parse(guest.numberOfAttendeesPerEvent)
+          : guest.numberOfAttendeesPerEvent
+      } catch {
+        numberOfAttendeesPerEvent = null
+      }
+    }
+
     const response = NextResponse.json({
       preferencesSubmitted: guest.preferencesSubmitted,
       rsvpSubmitted: guest.rsvpSubmitted,
       rsvpStatus: rsvpStatus,
+      numberOfAttendeesPerEvent: numberOfAttendeesPerEvent,
       rsvpSubmittedAt: guest.rsvpSubmittedAt,
       preferences: guest.preferencesSubmitted
         ? {

@@ -10,7 +10,6 @@ const createGuestSchema = z.object({
   email: z.string().email().optional().or(z.literal('')),
   eventAccess: z.enum(['all-events', 'reception-only']), // Only two types now
   maxDevicesAllowed: z.number().int().min(1).max(10).optional().default(1),
-  numberOfAttendees: z.number().int().min(1).optional().default(1),
 })
 
 export async function POST(request: NextRequest) {
@@ -35,7 +34,6 @@ export async function POST(request: NextRequest) {
         token,
         eventAccess: JSON.stringify(actualEventAccess),
         maxDevicesAllowed: data.maxDevicesAllowed,
-        numberOfAttendees: data.numberOfAttendees,
         allowedDevices: JSON.stringify([]),
       },
     })
@@ -93,6 +91,7 @@ export async function GET(request: NextRequest) {
         tokenUsedFirstTime: true,
         maxDevicesAllowed: true,
         numberOfAttendees: true,
+        numberOfAttendeesPerEvent: true,
         rsvpSubmitted: true,
         rsvpStatus: true,
         rsvpSubmittedAt: true,
@@ -117,11 +116,23 @@ export async function GET(request: NextRequest) {
           }
         }
 
+        let numberOfAttendeesPerEvent = null
+        if (guest.numberOfAttendeesPerEvent) {
+          try {
+            numberOfAttendeesPerEvent = typeof guest.numberOfAttendeesPerEvent === 'string'
+              ? JSON.parse(guest.numberOfAttendeesPerEvent)
+              : guest.numberOfAttendeesPerEvent
+          } catch {
+            numberOfAttendeesPerEvent = null
+          }
+        }
+
         return {
           ...guest,
           eventAccess: ensureJsonArray(guest.eventAccess),
           allowedDevices: ensureJsonArray(guest.allowedDevices),
           rsvpStatus,
+          numberOfAttendeesPerEvent,
         }
       }),
     })

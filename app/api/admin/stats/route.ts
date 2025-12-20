@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
         id: true,
         eventAccess: true,
         numberOfAttendees: true,
+        numberOfAttendeesPerEvent: true,
         rsvpSubmitted: true,
         rsvpStatus: true,
         menuPreference: true,
@@ -52,15 +53,36 @@ export async function GET(request: NextRequest) {
     // Process each guest
     for (const guest of guests) {
       const eventAccess = ensureJsonArray(guest.eventAccess) as string[]
-      const numberOfAttendees = guest.numberOfAttendees || 0
-
+      
+      // Parse numberOfAttendeesPerEvent
+      let numberOfAttendeesPerEvent: Record<string, number> | null = null
+      if (guest.numberOfAttendeesPerEvent) {
+        try {
+          numberOfAttendeesPerEvent = typeof guest.numberOfAttendeesPerEvent === 'string'
+            ? JSON.parse(guest.numberOfAttendeesPerEvent)
+            : guest.numberOfAttendeesPerEvent
+        } catch {
+          numberOfAttendeesPerEvent = null
+        }
+      }
+      
+      // For invite-based stats, use numberOfAttendeesPerEvent if available, otherwise fallback to numberOfAttendees
+      const defaultAttendeeCount = guest.numberOfAttendees || 1
+      
       // Calculate total unique attendees (each guest counted once)
-      stats.totalAttendeesInviteBased += numberOfAttendees
+      // Use max from per-event counts if available, otherwise use default
+      let totalAttendeeCount = defaultAttendeeCount
+      if (numberOfAttendeesPerEvent && Object.keys(numberOfAttendeesPerEvent).length > 0) {
+        totalAttendeeCount = Math.max(...Object.values(numberOfAttendeesPerEvent), defaultAttendeeCount)
+      }
+      stats.totalAttendeesInviteBased += totalAttendeeCount
 
       // Calculate invite-based stats per event (count for events they're invited to)
       for (const eventSlug of EVENT_SLUGS) {
         if (eventAccess.includes(eventSlug)) {
-          stats.inviteBased[eventSlug] += numberOfAttendees
+          // Use per-event count if available, otherwise use default
+          const eventAttendeeCount = numberOfAttendeesPerEvent?.[eventSlug] || defaultAttendeeCount
+          stats.inviteBased[eventSlug] += eventAttendeeCount
         }
       }
 
@@ -82,7 +104,10 @@ export async function GET(request: NextRequest) {
           // Only process if guest is invited to this event and RSVP'd yes
           if (eventAccess.includes(eventSlug) && rsvpStatus[eventSlug] === 'yes') {
             const eventStats = stats.rsvpBased[eventSlug]
-            eventStats.totalAttendees += numberOfAttendees
+            
+            // Use per-event attendee count from RSVP data
+            const eventAttendeeCount = numberOfAttendeesPerEvent?.[eventSlug] || defaultAttendeeCount
+            eventStats.totalAttendees += eventAttendeeCount
 
             // Only count menu preferences for Reception event
             // Menu preference is only collected for Reception in the RSVP form
@@ -90,10 +115,10 @@ export async function GET(request: NextRequest) {
               // Calculate menu preferences
               // Guests with "both" are counted in both categories
               if (guest.menuPreference === 'veg' || guest.menuPreference === 'both') {
-                eventStats.veg += numberOfAttendees
+                eventStats.veg += eventAttendeeCount
               }
               if (guest.menuPreference === 'non-veg' || guest.menuPreference === 'both') {
-                eventStats.nonVeg += numberOfAttendees
+                eventStats.nonVeg += eventAttendeeCount
               }
             }
           }
