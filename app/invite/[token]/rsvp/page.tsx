@@ -122,10 +122,10 @@ export default function RSVPPage() {
       return
     }
 
-    // Validate attendee counts for events where guest is attending
+    // Validate attendee counts for events where guest is attending (excluding Mehndi)
     const missingAttendeeCounts: string[] = []
     for (const eventSlug of eventAccess) {
-      if (formData.rsvpStatus[eventSlug] === 'yes') {
+      if (formData.rsvpStatus[eventSlug] === 'yes' && eventSlug !== 'mehndi') {
         const attendeeCount = formData.numberOfAttendeesPerEvent[eventSlug]
         if (!attendeeCount || attendeeCount < 1) {
           missingAttendeeCounts.push(eventSlug)
@@ -402,8 +402,8 @@ export default function RSVPPage() {
                                     )}
                                   </label>
                                   
-                                  {/* Number of Guests Attending - Only show when "Yes" is selected */}
-                                  {currentStatus === 'yes' && (
+                                  {/* Number of Guests Attending - Only show when "Yes" is selected, but NOT for Mehndi */}
+                                  {currentStatus === 'yes' && eventSlug !== 'mehndi' && (
                                     <div className="mt-4 pt-4 border-t border-wedding-gold/20">
                                       <label className="block text-sm sm:text-base font-display text-wedding-navy mb-2">
                                         Number of Guests Attending <span className="text-red-500">*</span>

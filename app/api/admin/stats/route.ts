@@ -105,22 +105,28 @@ export async function GET(request: NextRequest) {
           if (eventAccess.includes(eventSlug) && rsvpStatus[eventSlug] === 'yes') {
             const eventStats = stats.rsvpBased[eventSlug]
             
-            // Use per-event attendee count from RSVP data
-            // If numberOfAttendeesPerEvent exists and has the event, use it; otherwise default to 1
-            // This ensures we're using actual RSVP data, not the old numberOfAttendees field
-            const eventAttendeeCount = numberOfAttendeesPerEvent?.[eventSlug] || 1
-            eventStats.totalAttendees += eventAttendeeCount
+            // For Mehndi, count only the number of guests (invite count), not total attendees
+            // For other events, use per-event attendee count from RSVP data
+            if (eventSlug === 'mehndi') {
+              // Mehndi: Count 1 per guest (invite count only)
+              eventStats.totalAttendees += 1
+            } else {
+              // Other events: Use per-event attendee count from RSVP data
+              // If numberOfAttendeesPerEvent exists and has the event, use it; otherwise default to 1
+              const eventAttendeeCount = numberOfAttendeesPerEvent?.[eventSlug] || 1
+              eventStats.totalAttendees += eventAttendeeCount
 
-            // Only count menu preferences for Reception event
-            // Menu preference is only collected for Reception in the RSVP form
-            if (eventSlug === 'reception') {
-              // Calculate menu preferences
-              // Guests with "both" are counted in both categories
-              if (guest.menuPreference === 'veg' || guest.menuPreference === 'both') {
-                eventStats.veg += eventAttendeeCount
-              }
-              if (guest.menuPreference === 'non-veg' || guest.menuPreference === 'both') {
-                eventStats.nonVeg += eventAttendeeCount
+              // Only count menu preferences for Reception event
+              // Menu preference is only collected for Reception in the RSVP form
+              if (eventSlug === 'reception') {
+                // Calculate menu preferences
+                // Guests with "both" are counted in both categories
+                if (guest.menuPreference === 'veg' || guest.menuPreference === 'both') {
+                  eventStats.veg += eventAttendeeCount
+                }
+                if (guest.menuPreference === 'non-veg' || guest.menuPreference === 'both') {
+                  eventStats.nonVeg += eventAttendeeCount
+                }
               }
             }
           }

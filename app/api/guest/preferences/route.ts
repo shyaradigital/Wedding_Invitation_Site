@@ -89,13 +89,14 @@ export async function POST(request: NextRequest) {
         }
       }
       
-      // Ensure attendee counts are provided for all events where guest is attending
+      // Ensure attendee counts are provided for all events where guest is attending (excluding Mehndi)
       const attendingEvents = Object.entries(validRsvpStatus)
         .filter(([_, status]) => status === 'yes')
         .map(([eventSlug]) => eventSlug)
       
       for (const eventSlug of attendingEvents) {
-        if (!validAttendeesPerEvent[eventSlug]) {
+        // Mehndi doesn't require attendee count
+        if (eventSlug !== 'mehndi' && !validAttendeesPerEvent[eventSlug]) {
           const response = NextResponse.json(
             { error: `Number of guests attending is required for ${eventSlug}` },
             { status: 400 }
