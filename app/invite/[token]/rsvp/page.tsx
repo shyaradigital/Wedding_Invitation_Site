@@ -502,7 +502,7 @@ export default function RSVPPage() {
                     {overallAttendanceChoice === 'none' && (
                       <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 sm:p-8 text-center">
                         <p className="text-base sm:text-lg md:text-xl text-gray-700 font-serif mb-4">
-                          We're sorry you won't be able to make it. Your response will be recorded.
+                          We&apos;re sorry you won&apos;t be able to make it. Your response will be recorded.
                         </p>
                       </div>
                     )}
