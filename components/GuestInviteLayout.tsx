@@ -341,7 +341,7 @@ export default function GuestInviteLayout({
             <div className="relative z-10 w-full">
               <VimeoVideoPlayer 
                 videoId={isAllEvents ? weddingVideoId : receptionVideoId}
-                title={isAllEvents ? 'final Jay Bhavan & Ankita Brijesh Wedding (1)' : 'Jay Bhavan & Ankita Brijesh Reception (1)'}
+                title={isAllEvents ? 'Jay Bhavan & Ankita Brijesh Wedding' : 'Jay Bhavan & Ankita Brijesh Reception'}
               />
             </div>
 
