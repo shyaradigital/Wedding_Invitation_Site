@@ -9,8 +9,7 @@ import FloatingPetals from './FloatingPetals'
 import FloatingHearts from './FloatingHearts'
 import OrnamentalDivider from './OrnamentalDivider'
 import AdminPreviewBanner from './AdminPreviewBannerNew'
-import WistiaVideoPlayer from './WistiaVideoPlayer'
-import YouTubeVideoPlayer from './YouTubeVideoPlayer'
+import VimeoVideoPlayer from './VimeoVideoPlayer'
 
 interface Guest {
   id: string
@@ -46,8 +45,9 @@ export default function GuestInviteLayout({
     guest.eventAccess.includes('wedding') &&
     guest.eventAccess.includes('reception')
 
-  // Get YouTube video ID for reception-only guests
-  const receptionOnlyVideoId = process.env.NEXT_PUBLIC_YOUTUBE_RECEPTION_ONLY_VIDEO_ID || 'dQw4w9WgXcQ' // Demo: Replace with actual video ID
+  // Vimeo video IDs
+  const weddingVideoId = '1148245554' // All events guests
+  const receptionVideoId = '1148245611' // Reception-only guests
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-wedding-rose-pastel via-wedding-cream to-wedding-gold-light relative overflow-hidden">
@@ -339,11 +339,10 @@ export default function GuestInviteLayout({
 
             {/* Video Player */}
             <div className="relative z-10 w-full">
-              {isAllEvents ? (
-                <WistiaVideoPlayer />
-              ) : (
-                <YouTubeVideoPlayer videoId={receptionOnlyVideoId} />
-              )}
+              <VimeoVideoPlayer 
+                videoId={isAllEvents ? weddingVideoId : receptionVideoId}
+                title={isAllEvents ? 'Jay Bhavan & Ankita Brijesh Wedding' : 'Jay Bhavan & Ankita Brijesh Reception'}
+              />
             </div>
 
             {/* Instructions */}
