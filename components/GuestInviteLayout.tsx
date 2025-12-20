@@ -46,8 +46,8 @@ export default function GuestInviteLayout({
     guest.eventAccess.includes('reception')
 
   // Vimeo video IDs
-  const weddingVideoId = '1148245554' // All events guests
-  const receptionVideoId = '1148245611' // Reception-only guests
+  const weddingVideoId = '1148319858' // All events guests
+  const receptionVideoId = '1148320401' // Reception-only guests
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-wedding-rose-pastel via-wedding-cream to-wedding-gold-light relative overflow-hidden">
@@ -341,7 +341,7 @@ export default function GuestInviteLayout({
             <div className="relative z-10 w-full">
               <VimeoVideoPlayer 
                 videoId={isAllEvents ? weddingVideoId : receptionVideoId}
-                title={isAllEvents ? 'Jay Bhavan & Ankita Brijesh Wedding' : 'Jay Bhavan & Ankita Brijesh Reception'}
+                title={isAllEvents ? 'final Jay Bhavan & Ankita Brijesh Wedding (1)' : 'Jay Bhavan & Ankita Brijesh Reception (1)'}
               />
             </div>
 
