@@ -24,7 +24,7 @@ export default function RSVPPage() {
   const [formData, setFormData] = useState({
     rsvpStatus: {} as Record<string, 'yes' | 'no'>,
     menuPreference: '' as 'veg' | 'non-veg' | 'both' | '',
-    numberOfAttendeesPerEvent: {} as Record<string, number>,
+    numberOfAttendeesPerEvent: {} as Record<string, number | undefined>,
   })
 
   // Use the shared access check hook
@@ -162,11 +162,19 @@ export default function RSVPPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         cache: 'no-store',
+        // Filter out undefined values from numberOfAttendeesPerEvent
+        const attendeesPerEvent: Record<string, number> = {}
+        for (const [eventSlug, count] of Object.entries(formData.numberOfAttendeesPerEvent)) {
+          if (count !== undefined && count >= 1) {
+            attendeesPerEvent[eventSlug] = count
+          }
+        }
+
         body: JSON.stringify({
           token,
           rsvpStatus: formData.rsvpStatus,
           menuPreference: formData.menuPreference,
-          numberOfAttendeesPerEvent: formData.numberOfAttendeesPerEvent,
+          numberOfAttendeesPerEvent: attendeesPerEvent,
         }),
       })
 
@@ -407,12 +415,15 @@ export default function RSVPPage() {
                                         value={formData.numberOfAttendeesPerEvent[eventSlug] || ''}
                                         onChange={(e) => {
                                           const value = e.target.value === '' ? '' : parseInt(e.target.value, 10)
+                                          const newAttendees = { ...formData.numberOfAttendeesPerEvent }
+                                          if (value === '' || isNaN(value as number)) {
+                                            delete newAttendees[eventSlug]
+                                          } else {
+                                            newAttendees[eventSlug] = value as number
+                                          }
                                           setFormData({
                                             ...formData,
-                                            numberOfAttendeesPerEvent: {
-                                              ...formData.numberOfAttendeesPerEvent,
-                                              [eventSlug]: value === '' ? undefined : (isNaN(value as number) ? undefined : value as number),
-                                            },
+                                            numberOfAttendeesPerEvent: newAttendees,
                                           })
                                         }}
                                         className="w-full px-4 py-3 border-2 border-wedding-gold/30 rounded-lg bg-white/70 text-base sm:text-lg font-serif text-wedding-navy focus:outline-none focus:ring-2 focus:ring-wedding-gold focus:border-wedding-gold transition-all"
