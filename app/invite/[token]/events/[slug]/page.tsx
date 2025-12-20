@@ -478,7 +478,7 @@ export default function EventDetailsPage() {
                       className="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 bg-white/80 border-2 border-wedding-gold/30 relative overflow-hidden event-card-pattern"
                     >
                       <div className="relative z-10">
-                        <h2 className="flex items-center justify-start gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
+                        <h2 className="flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
                           <span className="text-xl sm:text-2xl">📍</span>
                           <span>Venue</span>
                         </h2>
@@ -547,7 +547,7 @@ export default function EventDetailsPage() {
                   >
                     <div className="rounded-xl p-4 sm:p-6 bg-white/60 border border-wedding-gold/20 text-center relative overflow-hidden event-card-pattern">
                       <div className="relative z-10">
-                        <h2 className="flex items-center justify-start gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
+                        <h2 className="flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
                           <span className="text-xl sm:text-2xl">🍽️</span>
                           <span>Lunch</span>
                         </h2>
@@ -704,7 +704,7 @@ export default function EventDetailsPage() {
               >
                 <div className="relative z-10">
                 <h2
-                  className={`flex items-center justify-start gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
+                  className={`flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
                     isReception ? 'text-wedding-gold' : isWedding ? 'text-wedding-navy' : 'text-wedding-navy'
                   }`}
                   style={
@@ -746,7 +746,7 @@ export default function EventDetailsPage() {
                 >
                   <div className="relative z-10">
                     <h2 
-                      className="flex items-center justify-start gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold"
+                      className="flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-gold"
                       style={{
                         filter: 'brightness(1.3)',
                       }}
@@ -776,7 +776,7 @@ export default function EventDetailsPage() {
                   className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-md ${isMehendi ? 'bg-white' : 'bg-white/60'} border border-wedding-gold/20 relative overflow-hidden event-card-pattern`}
                 >
                   <div className="relative z-10">
-                    <h2 className="flex items-center justify-start gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
+                    <h2 className="flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 text-wedding-navy">
                       <span className="text-xl sm:text-2xl">🍽️</span>
                       <span>Dinner</span>
                     </h2>
@@ -803,7 +803,7 @@ export default function EventDetailsPage() {
               >
                 <div className="relative z-10">
                   <h2
-                    className={`flex items-center justify-start gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
+                    className={`flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl font-display mb-3 sm:mb-4 ${
                       isReception ? 'text-wedding-gold' : 'text-wedding-navy'
                     }`}
                     style={
