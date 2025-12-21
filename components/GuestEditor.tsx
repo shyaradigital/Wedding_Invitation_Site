@@ -91,6 +91,11 @@ export default function GuestEditor({
     isPlainText: false,
     previewMode: 'editor',
   })
+  
+  // RSVP Reset state
+  const [resetConfirmGuest, setResetConfirmGuest] = useState<Guest | null>(null)
+  const [showResetAllConfirm, setShowResetAllConfirm] = useState(false)
+  const [isResetting, setIsResetting] = useState(false)
 
   // Helper function to safely parse JSON string or return the value as-is
   const safeParseJson = <T,>(value: string | T | null | undefined, fallback: T): T => {
@@ -819,6 +824,65 @@ export default function GuestEditor({
     setTimeout(() => setSuccess(null), 3000)
   }
 
+  // RSVP Reset handlers
+  const handleResetRsvp = async (guestIds: string[]) => {
+    if (!guestIds || guestIds.length === 0) {
+      setError('No guests selected for reset')
+      return
+    }
+    
+    setIsResetting(true)
+    setError(null)
+    
+    try {
+      const response = await fetch('/api/admin/guest/reset-rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({ guestIds }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess(data.message || `RSVP reset successfully for ${data.resetCount} guest(s)`)
+        setTimeout(() => setSuccess(null), 5000)
+        onGuestsChange() // Refresh guest list
+        // Trigger stats refresh by dispatching a custom event
+        window.dispatchEvent(new CustomEvent('rsvp-reset'))
+      } else {
+        setError(data.error || 'Failed to reset RSVP')
+      }
+    } catch (err) {
+      console.error('Error resetting RSVP:', err)
+      setError('An error occurred while resetting RSVP')
+    } finally {
+      setIsResetting(false)
+      setResetConfirmGuest(null)
+      setShowResetAllConfirm(false)
+    }
+  }
+
+  const handleResetRsvpForGuest = (guest: Guest) => {
+    setResetConfirmGuest(guest)
+  }
+
+  const handleConfirmResetRsvp = () => {
+    if (resetConfirmGuest) {
+      handleResetRsvp([resetConfirmGuest.id])
+    } else {
+      setError('No guest selected for reset')
+    }
+  }
+
+  const handleResetAllRsvps = () => {
+    const allGuestIds = normalizedGuests.map(g => g.id)
+    if (allGuestIds.length === 0) {
+      setError('No guests to reset')
+      return
+    }
+    handleResetRsvp(allGuestIds)
+  }
 
   const handleDownloadTemplate = async () => {
     try {
@@ -1132,6 +1196,13 @@ export default function GuestEditor({
               className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
             >
               📥 Export CSV
+            </button>
+            <button
+              onClick={() => setShowResetAllConfirm(true)}
+              disabled={isResetting || normalizedGuests.length === 0}
+              className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              🔄 Reset All RSVPs
             </button>
             <div className="flex flex-wrap gap-2">
               <button
@@ -1768,6 +1839,20 @@ export default function GuestEditor({
                             Delete Guest
                           </span>
                         </button>
+                        {(guest.rsvpSubmitted || guest.preferencesSubmitted) && (
+                          <button
+                            onClick={() => handleResetRsvpForGuest(guest)}
+                            disabled={isResetting}
+                            className="group relative text-orange-600 hover:text-orange-800 text-xs px-2 py-1.5 border border-orange-200 rounded hover:bg-orange-50 transition-colors flex items-center gap-1.5 min-w-[70px] justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Reset RSVP"
+                          >
+                            <span>🔄</span>
+                            <span className="hidden lg:inline">Reset</span>
+                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
+                              Reset RSVP
+                            </span>
+                          </button>
+                        )}
                       </div>
                       <div className="mt-0.5 flex flex-wrap gap-1.5">
                         <WhatsAppShare
@@ -2577,6 +2662,118 @@ export default function GuestEditor({
                     </button>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Reset RSVP Confirmation Dialog - Individual */}
+      <AnimatePresence>
+        {resetConfirmGuest && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={() => !isResetting && setResetConfirmGuest(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-serif text-wedding-navy mb-4">
+                Reset RSVP
+              </h3>
+              <p className="text-gray-700 mb-6">
+                Are you sure you want to reset RSVP for <strong>{resetConfirmGuest.name}</strong>? 
+                This will clear all RSVP data and allow them to resubmit.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setResetConfirmGuest(null)}
+                  disabled={isResetting}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmResetRsvp}
+                  disabled={isResetting}
+                  className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isResetting ? (
+                    <>
+                      <span>⏳</span>
+                      <span>Resetting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🔄</span>
+                      <span>Reset RSVP</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Reset All RSVPs Confirmation Dialog */}
+      <AnimatePresence>
+        {showResetAllConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={() => !isResetting && setShowResetAllConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-serif text-wedding-navy mb-4">
+                Reset All RSVPs
+              </h3>
+              <p className="text-gray-700 mb-2">
+                Are you sure you want to reset RSVPs for <strong>ALL {normalizedGuests.length} guests</strong>?
+              </p>
+              <p className="text-red-600 font-semibold mb-6">
+                This action cannot be undone. All RSVP data will be cleared and guests will be able to resubmit.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowResetAllConfirm(false)}
+                  disabled={isResetting}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleResetAllRsvps}
+                  disabled={isResetting}
+                  className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isResetting ? (
+                    <>
+                      <span>⏳</span>
+                      <span>Resetting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🔄</span>
+                      <span>Reset All RSVPs</span>
+                    </>
+                  )}
+                </button>
               </div>
             </motion.div>
           </motion.div>

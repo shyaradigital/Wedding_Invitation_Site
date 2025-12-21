@@ -43,6 +43,17 @@ export default function AdminStats() {
 
   useEffect(() => {
     fetchStats()
+    
+    // Listen for RSVP reset events to refresh stats
+    const handleRsvpReset = () => {
+      fetchStats()
+    }
+    
+    window.addEventListener('rsvp-reset', handleRsvpReset)
+    
+    return () => {
+      window.removeEventListener('rsvp-reset', handleRsvpReset)
+    }
   }, [])
 
   const fetchStats = async () => {
