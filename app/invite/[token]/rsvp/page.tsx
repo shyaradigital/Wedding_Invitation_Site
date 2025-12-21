@@ -346,6 +346,8 @@ export default function RSVPPage() {
       const data = await response.json()
 
       if (response.ok) {
+        // Update existingRsvp with the submitted data so success message can check it
+        setExistingRsvp(finalRsvpStatus)
         setSubmitted(true)
       } else {
         setError(data.error || 'Failed to save preferences. Please try again.')
@@ -437,9 +439,36 @@ export default function RSVPPage() {
                   <p className="text-base sm:text-lg md:text-xl text-gray-700 font-serif mb-4">
                     Your preferences have been saved successfully.
                   </p>
-                  <p className="text-sm sm:text-base text-gray-600 font-serif">
-                    We look forward to celebrating with you!
-                  </p>
+                  {/* Only show celebratory message if guest is attending at least one event */}
+                  {(() => {
+                    // Check if guest selected "none" option
+                    if (overallAttendanceChoice === 'none') {
+                      return null
+                    }
+                    
+                    // Check if all RSVP responses are "no"
+                    if (existingRsvp && guest?.eventAccess) {
+                      const eventAccess = guest.eventAccess || []
+                      const allNo = eventAccess.every((event: string) => existingRsvp[event] === 'no')
+                      if (allNo) {
+                        return null
+                      }
+                    }
+                    
+                    // For Reception-only guests, check if they selected "no"
+                    if (guest?.eventAccess && guest.eventAccess.length === 1 && guest.eventAccess[0] === 'reception') {
+                      if (existingRsvp?.['reception'] === 'no') {
+                        return null
+                      }
+                    }
+                    
+                    // Show message if attending at least one event
+                    return (
+                      <p className="text-sm sm:text-base text-gray-600 font-serif">
+                        We look forward to celebrating with you!
+                      </p>
+                    )
+                  })()}
                 </div>
               ) : (
                 <div className="wedding-card rounded-3xl p-6 sm:p-8 md:p-12">
