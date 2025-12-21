@@ -136,8 +136,13 @@ export default function GuestInviteLayout({
                   </div>
                 </div>
                 <h2 
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-script text-wedding-navy tracking-wide"
-                  style={{ fontFamily: "'Dancing Script', cursive" }}
+                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-wedding-navy tracking-wide"
+                  style={{ 
+                    fontFamily: "'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive",
+                    fontWeight: 700,
+                    fontStyle: 'normal',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Engagement Ceremony Photos
                 </h2>
