@@ -315,8 +315,8 @@ input, textarea, select {
 }
 
 .scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
@@ -338,6 +338,18 @@ input, textarea, select {
 
 .scrollbar-track-gray-100::-webkit-scrollbar-track {
   background: rgba(243, 244, 246, 0.5);
+}
+
+.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.9);
+}
+
+.scrollbar-track-gray-200::-webkit-scrollbar-track {
+  background: rgba(229, 231, 235, 0.7);
 }
 
 /* Subtle background patterns for event pages */

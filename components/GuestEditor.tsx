@@ -1251,7 +1251,7 @@ export default function GuestEditor({
   }
 
   return (
-    <div>
+    <div className="w-full -mx-4 sm:-mx-6 px-4 sm:px-6">
       {/* Guest Management Section */}
       <div className="mb-8">
         <div className="mb-6">
@@ -1672,11 +1672,12 @@ export default function GuestEditor({
       {/* Guests List */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div 
-          className="overflow-x-auto -mx-4 sm:mx-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+          className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
           style={{ 
             WebkitOverflowScrolling: 'touch',
             touchAction: 'pan-x',
             scrollbarWidth: 'thin',
+            maxHeight: 'calc(100vh - 300px)',
           }}
         >
           <div className="inline-block min-w-full align-middle">
