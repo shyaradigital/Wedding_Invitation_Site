@@ -118,13 +118,6 @@ function isAllEventsGuest(eventAccess: string[]): boolean {
  * @param eventAccess - Array of event slugs the guest has access to
  */
 export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wedding', 'reception']): string {
-  const isAllEvents = isAllEventsGuest(eventAccess)
-  
-  // Different opening text based on guest type
-  const openingText = isAllEvents
-    ? "You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:"
-    : "You are invited to Jay and Ankita's wedding reception! Below is your personalized invitation link to RSVP:"
-  
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -232,22 +225,6 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
       color: #8B4513;
       margin-top: 5px;
     }
-    .contact-info {
-      text-align: center;
-      color: #666;
-      font-size: 13px;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid #e0e0e0;
-    }
-    .contact-info a {
-      color: #D4AF37;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .contact-info a:hover {
-      text-decoration: underline;
-    }
     @media only screen and (max-width: 600px) {
       .content {
         padding: 25px 20px;
@@ -277,8 +254,8 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
       <h1>Wedding Invitation</h1>
     </div>
     <div class="content">
-      <div class="greeting">Hi {{params.guestName}}👋</div>
-      <div class="message">${openingText}</div>
+      <div class="greeting">Dear {{params.guestName}},</div>
+      <div class="message">You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:</div>
       <div class="invite-button-wrapper">
         <a href="{{params.inviteLink}}" class="invite-link">View Your Invitation</a>
       </div>
@@ -292,9 +269,6 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
           <span class="signature-name">Bhavan & Nina Mehta</span><br>
           <span class="signature-name">Brijesh Kumar & Ruchira Sharma</span>
         </div>
-        <div class="contact-info">
-          Please contact <a href="mailto:mehtabv@gmail.com">Bhavan Mehta at mehtabv@gmail.com</a> if you have any questions.
-        </div>
       </div>
     </div>
   </div>
@@ -307,25 +281,17 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
  * @param eventAccess - Array of event slugs the guest has access to
  */
 export function getDefaultInvitationText(eventAccess: string[] = ['mehndi', 'wedding', 'reception']): string {
-  const isAllEvents = isAllEventsGuest(eventAccess)
-  
-  // Different opening text based on guest type
-  const openingText = isAllEvents
-    ? "You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:"
-    : "You are invited to Jay and Ankita's wedding reception! Below is your personalized invitation link to RSVP:"
-  
-  return `Hi {{params.guestName}}👋
+  return `Dear {{params.guestName}},
+You are invited to Jay and Ankita's wedding celebration! 
+Below is your personalized invitation link to RSVP: 
 
-${openingText}
 {{params.inviteLink}}
 
 Please RSVP latest by January 10, 2026.
 
 With love and warm regards,
 Bhavan & Nina Mehta
-Brijesh Kumar & Ruchira Sharma
-
-Please contact Bhavan Mehta at mehtabv@gmail.com if you have any questions.`
+Brijesh Kumar & Ruchira Sharma`
 }
 
 /**

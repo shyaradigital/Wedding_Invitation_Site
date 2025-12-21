@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import WhatsAppShare from './WhatsAppShare'
 import EventTypeBadge from './EventTypeBadge'
 import { getDefaultInvitationHTML, getDefaultInvitationText, replaceTemplateVariables } from '@/lib/brevo'
+const XLSX = require('xlsx')
 
 interface Guest {
   id: string
@@ -425,6 +426,27 @@ export default function GuestEditor({
     }
   }
 
+  // Helper function to format dates as text for Excel
+  const formatDateForExcel = (dateValue: string | null | undefined): string => {
+    if (!dateValue) return ''
+    try {
+      const date = new Date(dateValue)
+      if (isNaN(date.getTime())) return ''
+      // Format as readable date-time string that Excel will treat as text
+      return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      })
+    } catch {
+      return ''
+    }
+  }
+
   const handleBulkExport = () => {
     if (selectedGuests.size === 0) {
       setError('Please select at least one guest')
@@ -432,50 +454,68 @@ export default function GuestEditor({
     }
 
     const selectedGuestList = normalizedGuests.filter(g => selectedGuests.has(g.id))
-    const eventNames: Record<string, string> = {
-      mehndi: 'Mehndi',
-      wedding: 'Wedding',
-      reception: 'Reception',
+    const rsvpStatusLabels: Record<string, string> = {
+      'attending': 'Attending',
+      'not-attending': 'Not Attending',
+      'pending': 'Pending',
+      'not-submitted': 'Not Submitted',
+    }
+
+    // Convert guest data to Excel format
+    const excelData = selectedGuestList.map(guest => {
+      const rsvpStatus = guest.rsvpStatus || {}
+      const overallStatus = getOverallRsvpStatus(guest)
+      
+      return {
+        'Name': guest.name,
+        'Phone': guest.phone || '',
+        'Events': guest.eventAccess.join('; '),
+        'RSVP Status': rsvpStatusLabels[overallStatus] || 'Not Submitted',
+        'Mehndi RSVP': rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : rsvpStatus.mehndi === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
+        'Wedding RSVP': rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : rsvpStatus.wedding === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
+        'Reception RSVP': rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : rsvpStatus.reception === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
+        'Menu Preference': guest.menuPreference ? (guest.menuPreference === 'veg' ? 'Vegetarian' : guest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both') : '',
+        'Dietary Restrictions': guest.dietaryRestrictions || '',
+        'Additional Info': guest.additionalInfo || '',
+        'RSVP Submitted At': formatDateForExcel(guest.rsvpSubmittedAt),
+        'Devices': guest.allowedDevices.length,
+        'Max Devices': guest.maxDevicesAllowed,
+        'First Access': guest.tokenUsedFirstTime ? formatDateForExcel(guest.tokenUsedFirstTime) : 'Never',
+        'Created At': formatDateForExcel(guest.createdAt),
+        'Invitation Link': `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
+      }
+    })
+
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new()
+    const worksheet = XLSX.utils.json_to_sheet(excelData)
+    
+    // Set date columns as text to prevent Excel from auto-formatting them
+    const dateColumns = ['RSVP Submitted At', 'First Access', 'Created At']
+    const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1')
+    for (let col = range.s.c; col <= range.e.c; col++) {
+      const headerCell = XLSX.utils.encode_cell({ r: 0, c: col })
+      const headerValue = worksheet[headerCell]?.v
+      if (dateColumns.includes(headerValue)) {
+        // Mark all cells in this column as text
+        for (let row = range.s.r + 1; row <= range.e.r; row++) {
+          const cell = XLSX.utils.encode_cell({ r: row, c: col })
+          if (worksheet[cell]) {
+            worksheet[cell].t = 's' // 's' = string type
+          }
+        }
+      }
     }
     
-    const csv = [
-      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'First Access', 'Created At', 'Invitation Link'].join(','),
-      ...selectedGuestList.map(guest => {
-        const rsvpStatus = guest.rsvpStatus || {}
-        const overallStatus = getOverallRsvpStatus(guest)
-        const rsvpStatusLabels: Record<string, string> = {
-          'attending': 'Attending',
-          'not-attending': 'Not Attending',
-          'pending': 'Pending',
-          'not-submitted': 'Not Submitted',
-        }
-        
-        return [
-          `"${guest.name}"`,
-          guest.phone || '',
-          guest.eventAccess.join('; '),
-          rsvpStatusLabels[overallStatus] || 'Not Submitted',
-          rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : rsvpStatus.mehndi === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
-          rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : rsvpStatus.wedding === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
-          rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : rsvpStatus.reception === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
-          guest.menuPreference ? (guest.menuPreference === 'veg' ? 'Vegetarian' : guest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both') : '',
-          guest.dietaryRestrictions ? `"${guest.dietaryRestrictions.replace(/"/g, '""')}"` : '',
-          guest.additionalInfo ? `"${guest.additionalInfo.replace(/"/g, '""')}"` : '',
-          guest.rsvpSubmittedAt ? new Date(guest.rsvpSubmittedAt).toLocaleString() : '',
-          guest.allowedDevices.length,
-          guest.maxDevicesAllowed,
-          guest.tokenUsedFirstTime ? new Date(guest.tokenUsedFirstTime).toLocaleString() : 'Never',
-          new Date(guest.createdAt).toLocaleString(),
-          `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
-        ].join(',')
-      })
-    ].join('\n')
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Guests')
 
-    const blob = new Blob([csv], { type: 'text/csv' })
+    // Generate Excel file
+    const excelBuffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' })
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `wedding-guests-selected-${new Date().toISOString().split('T')[0]}.csv`
+    a.download = `wedding-guests-selected-${new Date().toISOString().split('T')[0]}.xlsx`
     a.click()
     URL.revokeObjectURL(url)
     setSuccess(`Exported ${selectedGuests.size} guest(s) successfully!`)
@@ -629,50 +669,68 @@ export default function GuestEditor({
     const guestsToExport = selectedGuests.size > 0 
       ? normalizedGuests.filter(g => selectedGuests.has(g.id))
       : filteredGuests
-    const eventNames: Record<string, string> = {
-      mehndi: 'Mehndi',
-      wedding: 'Wedding',
-      reception: 'Reception',
+    const rsvpStatusLabels: Record<string, string> = {
+      'attending': 'Attending',
+      'not-attending': 'Not Attending',
+      'pending': 'Pending',
+      'not-submitted': 'Not Submitted',
+    }
+
+    // Convert guest data to Excel format
+    const excelData = guestsToExport.map(guest => {
+      const rsvpStatus = guest.rsvpStatus || {}
+      const overallStatus = getOverallRsvpStatus(guest)
+      
+      return {
+        'Name': guest.name,
+        'Phone': guest.phone || '',
+        'Events': guest.eventAccess.join('; '),
+        'RSVP Status': rsvpStatusLabels[overallStatus] || 'Not Submitted',
+        'Mehndi RSVP': rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : rsvpStatus.mehndi === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
+        'Wedding RSVP': rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : rsvpStatus.wedding === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
+        'Reception RSVP': rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : rsvpStatus.reception === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
+        'Menu Preference': guest.menuPreference ? (guest.menuPreference === 'veg' ? 'Vegetarian' : guest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both') : '',
+        'Dietary Restrictions': guest.dietaryRestrictions || '',
+        'Additional Info': guest.additionalInfo || '',
+        'RSVP Submitted At': formatDateForExcel(guest.rsvpSubmittedAt),
+        'Devices': guest.allowedDevices.length,
+        'Max Devices': guest.maxDevicesAllowed,
+        'First Access': guest.tokenUsedFirstTime ? formatDateForExcel(guest.tokenUsedFirstTime) : 'Never',
+        'Created At': formatDateForExcel(guest.createdAt),
+        'Invitation Link': `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
+      }
+    })
+
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new()
+    const worksheet = XLSX.utils.json_to_sheet(excelData)
+    
+    // Set date columns as text to prevent Excel from auto-formatting them
+    const dateColumns = ['RSVP Submitted At', 'First Access', 'Created At']
+    const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1')
+    for (let col = range.s.c; col <= range.e.c; col++) {
+      const headerCell = XLSX.utils.encode_cell({ r: 0, c: col })
+      const headerValue = worksheet[headerCell]?.v
+      if (dateColumns.includes(headerValue)) {
+        // Mark all cells in this column as text
+        for (let row = range.s.r + 1; row <= range.e.r; row++) {
+          const cell = XLSX.utils.encode_cell({ r: row, c: col })
+          if (worksheet[cell]) {
+            worksheet[cell].t = 's' // 's' = string type
+          }
+        }
+      }
     }
     
-    const csv = [
-      ['Name', 'Phone', 'Events', 'RSVP Status', 'Mehndi RSVP', 'Wedding RSVP', 'Reception RSVP', 'Menu Preference', 'Dietary Restrictions', 'Additional Info', 'RSVP Submitted At', 'Devices', 'Max Devices', 'First Access', 'Created At', 'Invitation Link'].join(','),
-      ...guestsToExport.map(guest => {
-        const rsvpStatus = guest.rsvpStatus || {}
-        const overallStatus = getOverallRsvpStatus(guest)
-        const rsvpStatusLabels: Record<string, string> = {
-          'attending': 'Attending',
-          'not-attending': 'Not Attending',
-          'pending': 'Pending',
-          'not-submitted': 'Not Submitted',
-        }
-        
-        return [
-          `"${guest.name}"`,
-          guest.phone || '',
-          guest.eventAccess.join('; '),
-          rsvpStatusLabels[overallStatus] || 'Not Submitted',
-          rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : rsvpStatus.mehndi === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
-          rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : rsvpStatus.wedding === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
-          rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : rsvpStatus.reception === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
-          guest.menuPreference ? (guest.menuPreference === 'veg' ? 'Vegetarian' : guest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both') : '',
-          guest.dietaryRestrictions ? `"${guest.dietaryRestrictions.replace(/"/g, '""')}"` : '',
-          guest.additionalInfo ? `"${guest.additionalInfo.replace(/"/g, '""')}"` : '',
-          guest.rsvpSubmittedAt ? new Date(guest.rsvpSubmittedAt).toLocaleString() : '',
-          guest.allowedDevices.length,
-          guest.maxDevicesAllowed,
-          guest.tokenUsedFirstTime ? new Date(guest.tokenUsedFirstTime).toLocaleString() : 'Never',
-          new Date(guest.createdAt).toLocaleString(),
-          `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${guest.token}`
-        ].join(',')
-      })
-    ].join('\n')
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Guests')
 
-    const blob = new Blob([csv], { type: 'text/csv' })
+    // Generate Excel file
+    const excelBuffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' })
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `wedding-guests-${new Date().toISOString().split('T')[0]}.csv`
+    a.download = `wedding-guests-${new Date().toISOString().split('T')[0]}.xlsx`
     a.click()
     URL.revokeObjectURL(url)
     setSuccess('Guest list exported successfully!')
@@ -1328,7 +1386,7 @@ export default function GuestEditor({
               onClick={handleExportGuests}
               className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
             >
-              📥 Export CSV
+              📥 Export Excel
             </button>
             <button
               onClick={() => setShowResetAllConfirm(true)}
@@ -2805,7 +2863,7 @@ export default function GuestEditor({
 REQUIREMENTS:
 
 1. TEMPLATE VARIABLES (MUST USE THESE):
-   - {{params.guestName}} - Will be replaced with the guest's actual name
+   - {{params.guestName}} - Will be replaced with the guest's FULL NAME (first and last name), not just the first name
    - {{params.inviteLink}} - Will be replaced with the personalized invitation link (e.g., https://example.com/invite/abc123xyz)
    - {{params.baseUrl}} - Will be replaced with the website base URL
 
@@ -2824,19 +2882,29 @@ REQUIREMENTS:
    - Mobile-responsive (use media queries in <style> tag)
    - Include a prominent call-to-action button for the invitation link
 
-4. CONTENT:
-   - Personalized greeting using {{params.guestName}}
-   - Wedding couple names: "Jay Mehta and Ankita Sharma"
-   - Clear invitation message
-   - Prominent button/link to {{params.inviteLink}}
-   - RSVP deadline: "Please RSVP latest by January 10, 2026"
-   - Warm closing message
+4. DEFAULT CONTENT STRUCTURE:
+   Use this as the default content format (you can modify it if needed):
+   
+   Dear {{params.guestName}},
+   You are invited to Jay and Ankita's wedding celebration! 
+   Below is your personalized invitation link to RSVP: 
+   
+   {{params.inviteLink}}
+   
+   Please RSVP latest by January 10, 2026.
+   
+   With love and warm regards,
+   Bhavan & Nina Mehta
+   Brijesh Kumar & Ruchira Sharma
+   
+   NOTE: {{params.guestName}} will be replaced with the guest's FULL NAME (first and last name), not just the first name.
 
 5. TECHNICAL:
    - Must be valid HTML5
    - All styles must be inline or in a <style> tag in the <head>
    - Use <table> for layout structure
    - Test for email client compatibility (Gmail, Outlook, Apple Mail)
+   - Do not use emojis in the email body
 
 Please generate a complete, production-ready HTML email template that I can use directly. Make it beautiful, professional, and wedding-appropriate.`}
                               rows={20}
@@ -3269,7 +3337,7 @@ Please generate a complete, production-ready HTML email template that I can use 
 REQUIREMENTS:
 
 1. TEMPLATE VARIABLES (MUST USE THESE):
-   - {{params.guestName}} - Will be replaced with the guest's actual name
+   - {{params.guestName}} - Will be replaced with the guest's FULL NAME (first and last name), not just the first name
    - {{params.inviteLink}} - Will be replaced with the personalized invitation link (e.g., https://example.com/invite/abc123xyz)
    - {{params.baseUrl}} - Will be replaced with the website base URL
 
@@ -3288,19 +3356,29 @@ REQUIREMENTS:
    - Mobile-responsive (use media queries in <style> tag)
    - Include a prominent call-to-action button for the invitation link
 
-4. CONTENT:
-   - Personalized greeting using {{params.guestName}}
-   - Wedding couple names: "Jay Mehta and Ankita Sharma"
-   - Clear invitation message
-   - Prominent button/link to {{params.inviteLink}}
-   - RSVP deadline: "Please RSVP latest by January 10, 2026"
-   - Warm closing message
+4. DEFAULT CONTENT STRUCTURE:
+   Use this as the default content format (you can modify it if needed):
+   
+   Dear {{params.guestName}},
+   You are invited to Jay and Ankita's wedding celebration! 
+   Below is your personalized invitation link to RSVP: 
+   
+   {{params.inviteLink}}
+   
+   Please RSVP latest by January 10, 2026.
+   
+   With love and warm regards,
+   Bhavan & Nina Mehta
+   Brijesh Kumar & Ruchira Sharma
+   
+   NOTE: {{params.guestName}} will be replaced with the guest's FULL NAME (first and last name), not just the first name.
 
 5. TECHNICAL:
    - Must be valid HTML5
    - All styles must be inline or in a <style> tag in the <head>
    - Use <table> for layout structure
    - Test for email client compatibility (Gmail, Outlook, Apple Mail)
+   - Do not use emojis in the email body
 
 Please generate a complete, production-ready HTML email template that I can use directly. Make it beautiful, professional, and wedding-appropriate.`}
                               rows={20}
