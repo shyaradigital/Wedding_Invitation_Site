@@ -1,76 +1,12 @@
 # Email Template Guide for Wedding Invitations
 
-## ChatGPT Prompt for Generating HTML Email Templates
+## Overview
 
-Copy and paste this prompt to ChatGPT to generate a fully functional HTML email template:
+This guide provides specifications and requirements for creating HTML email templates for wedding invitation emails. Templates are sent via the Brevo (Sendinblue) transactional email API and must adhere to email client compatibility standards.
 
----
+## Template Variables
 
-**PROMPT FOR CHATGPT:**
-
-I need you to create a beautiful, responsive HTML email template for wedding invitations. The email will be sent via Brevo (Sendinblue) transactional email API.
-
-**Requirements:**
-
-1. **Template Variables (MUST USE THESE):**
-   - `{{params.guestName}}` - Will be replaced with the guest's actual name
-   - `{{params.inviteLink}}` - Will be replaced with the personalized invitation link (e.g., https://example.com/invite/abc123xyz)
-   - `{{params.baseUrl}}` - Will be replaced with the website base URL (e.g., https://example.com)
-
-2. **Email-Safe HTML:**
-   - Use inline CSS styles (email clients don't support external stylesheets)
-   - Use table-based layouts for better email client compatibility
-   - Avoid CSS Grid and Flexbox (use tables instead)
-   - Use web-safe fonts (Arial, Helvetica, Georgia, Times New Roman, etc.)
-   - Maximum width: 600px for email body
-   - Use hex colors (e.g., #D4AF37 for gold, #8B4513 for brown)
-
-3. **Design Requirements:**
-   - Wedding theme with elegant, warm colors
-   - Gold (#D4AF37) and rose (#D4A5A5) accents
-   - Professional and celebratory tone
-   - Mobile-responsive (use media queries in `<style>` tag)
-   - Include a prominent call-to-action button for the invitation link
-
-4. **Content Structure:**
-   - Personalized greeting using {{params.guestName}}
-   - Wedding couple names: "Jay Mehta and Ankita Sharma"
-   - Clear invitation message
-   - Prominent button/link to {{params.inviteLink}}
-   - RSVP deadline reminder: "Please RSVP latest by January 10, 2026"
-   - Warm closing message
-
-5. **Technical Constraints:**
-   - Must be valid HTML5
-   - All styles must be inline or in a `<style>` tag in the `<head>`
-   - Use `<table>` for layout structure
-   - Images should use absolute URLs (if needed)
-   - Test for email client compatibility (Gmail, Outlook, Apple Mail)
-
-6. **Example Structure:**
-   ```html
-   <!DOCTYPE html>
-   <html>
-   <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <style>
-       /* Email-safe CSS here */
-     </style>
-   </head>
-   <body>
-     <!-- Email content with template variables -->
-   </body>
-   </html>
-   ```
-
-**Please generate a complete, production-ready HTML email template that I can use directly. Make it beautiful, professional, and wedding-appropriate.**
-
----
-
-## Available Template Variables
-
-When creating your custom email template, you can use these variables:
+The following template variables are available for dynamic content replacement:
 
 | Variable | Description | Example Output |
 |----------|-------------|----------------|
@@ -78,32 +14,136 @@ When creating your custom email template, you can use these variables:
 | `{{params.inviteLink}}` | Personalized invitation URL | "https://example.com/invite/abc123xyz" |
 | `{{params.baseUrl}}` | Website base URL | "https://example.com" |
 
-**Important:** These variables will be automatically replaced by Brevo when the email is sent. Each guest will receive their personalized version.
+**Note:** These variables are automatically replaced by Brevo during email delivery. Each guest receives a personalized version of the email.
 
-## HTML Email Best Practices
+## Technical Requirements
 
-### ✅ DO:
-- Use inline CSS styles
-- Use table-based layouts
-- Keep width under 600px
-- Use web-safe fonts
-- Test in multiple email clients
-- Use hex color codes
-- Include alt text for images
-- Use semantic HTML
+### HTML Structure
 
-### ❌ DON'T:
-- Use external stylesheets
-- Use CSS Grid or Flexbox
-- Use JavaScript
-- Use complex CSS animations
-- Rely on background images
-- Use absolute positioning
-- Use CSS variables
+- **Document Type:** Valid HTML5
+- **Character Encoding:** UTF-8
+- **Viewport:** Responsive meta tag required
+- **Maximum Width:** 600px for email body container
+- **Layout Method:** Table-based layouts (required for email client compatibility)
 
-## Example HTML Email Template
+### CSS Styling
 
-Here's a simple example you can customize:
+- **Inline Styles:** All styles must be inline or within a `<style>` tag in the `<head>`
+- **External Stylesheets:** Not supported by email clients
+- **CSS Grid/Flexbox:** Not supported; use tables instead
+- **Web-Safe Fonts:** Arial, Helvetica, Georgia, Times New Roman, or similar
+- **Color Format:** Hex color codes (e.g., #D4AF37 for gold, #8B4513 for brown)
+- **Media Queries:** Supported in `<style>` tag for responsive design
+
+### Design Specifications
+
+- **Theme:** Wedding celebration with elegant, warm aesthetic
+- **Primary Colors:** 
+  - Gold: #D4AF37
+  - Rose: #D4A5A5
+  - Brown: #8B4513
+- **Tone:** Professional and celebratory
+- **Mobile Responsive:** Required with appropriate media queries
+- **Call-to-Action:** Prominent button or link for invitation access
+
+## Content Requirements
+
+### Required Elements
+
+1. **Personalized Greeting**
+   - Use `{{params.guestName}}` variable
+   - Format: "Hi {{params.guestName}}👋"
+
+2. **Invitation Message**
+   - Wedding couple names: "Jay Mehta and Ankita Sharma"
+   - Clear invitation statement
+   - Event-specific messaging based on guest type
+
+3. **Invitation Link**
+   - Use `{{params.inviteLink}}` variable
+   - Prominent call-to-action button
+   - Fallback text link for accessibility
+
+4. **RSVP Information**
+   - Deadline: "Please RSVP latest by January 10, 2026"
+   - Clearly visible and emphasized
+
+5. **Closing Signature**
+   - "With love and warm regards"
+   - "Bhavan & Nina Mehta"
+   - "Brijesh Kumar & Ruchira Sharma"
+
+6. **Contact Information**
+   - "Please contact Bhavan Mehta at mehtabv@gmail.com if you have any questions."
+
+## Email Client Compatibility
+
+Templates must be tested and compatible with:
+- Gmail (web and mobile)
+- Outlook (desktop and web)
+- Apple Mail
+- Yahoo Mail
+- Common mobile email clients
+
+## Template Structure Example
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Email-safe CSS styles */
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 1.8;
+      color: #2c2c2c;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f0e8 0%, #fff8f0 100%);
+    }
+    /* Additional styles... */
+  </style>
+</head>
+<body>
+  <!-- Email content with template variables -->
+  <div class="email-wrapper">
+    <!-- Header, content, and footer sections -->
+  </div>
+</body>
+</html>
+```
+
+## Best Practices
+
+### ✅ Recommended Approaches
+
+- Use inline CSS styles for critical styling
+- Implement table-based layouts for structure
+- Keep container width under 600px
+- Use web-safe font families
+- Test across multiple email clients
+- Use hex color codes consistently
+- Include alt text for all images
+- Use semantic HTML elements
+- Implement responsive design with media queries
+
+### ❌ Avoid
+
+- External stylesheets
+- CSS Grid or Flexbox layouts
+- JavaScript functionality
+- Complex CSS animations
+- Background images (unreliable support)
+- Absolute positioning
+- CSS custom properties (variables)
+- Modern CSS features with limited email support
+
+## Example Template
+
+The following example demonstrates a complete, production-ready template structure:
 
 ```html
 <!DOCTYPE html>
@@ -113,84 +153,125 @@ Here's a simple example you can customize:
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-    .email-container {
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 1.8;
+      color: #2c2c2c;
       max-width: 600px;
       margin: 0 auto;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f0e8 0%, #fff8f0 100%);
+    }
+    .email-wrapper {
       background-color: #ffffff;
+      margin: 20px auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     .header {
-      background-color: #D4AF37;
-      color: #ffffff;
-      padding: 30px;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+      padding: 30px 30px 25px;
       text-align: center;
+    }
+    .header h1 {
+      color: #ffffff;
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 1px;
     }
     .content {
-      padding: 30px;
+      padding: 35px 30px;
     }
-    .button {
+    .greeting {
+      font-size: 20px;
+      color: #8B4513;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .message {
+      font-size: 16px;
+      color: #2c2c2c;
+      margin-bottom: 25px;
+      line-height: 1.8;
+    }
+    .invite-link {
       display: inline-block;
-      padding: 15px 30px;
-      background-color: #D4AF37;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
       color: #ffffff;
       text-decoration: none;
-      border-radius: 5px;
-      margin: 20px 0;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    }
+    .rsvp-note {
+      background: linear-gradient(135deg, #FFFEF7 0%, #FFF9E6 100%);
+      border-left: 5px solid #D4AF37;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 8px;
     }
     .footer {
-      background-color: #f5f5f5;
-      padding: 20px;
-      text-align: center;
-      font-size: 12px;
-      color: #666;
+      background: linear-gradient(135deg, #f8f6f2 0%, #f5f0e8 100%);
+      padding: 30px;
+      border-top: 2px solid #e8e0d0;
+    }
+    @media only screen and (max-width: 600px) {
+      .content {
+        padding: 25px 20px;
+      }
+      .header {
+        padding: 25px 20px 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
-    <tr>
-      <td align="center">
-        <table class="email-container" cellpadding="0" cellspacing="0">
-          <tr>
-            <td class="header">
-              <h1 style="margin: 0; color: #ffffff;">Wedding Invitation</h1>
-            </td>
-          </tr>
-          <tr>
-            <td class="content">
-              <h2>Hi {{params.guestName}}👋</h2>
-              <p>You are cordially invited to Jay Mehta and Ankita Sharma's wedding celebrations!</p>
-              <p style="text-align: center;">
-                <a href="{{params.inviteLink}}" class="button">View Your Invitation</a>
-              </p>
-              <p><strong>Please RSVP latest by January 10, 2026.</strong></p>
-              <p>Looking forward to celebrating with you! 💛</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="footer">
-              <p>With love,<br>Jay Mehta & Ankita Sharma</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+  <div class="email-wrapper">
+    <div class="header">
+      <h1>Wedding Invitation</h1>
+    </div>
+    <div class="content">
+      <div class="greeting">Hi {{params.guestName}}👋</div>
+      <div class="message">You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:</div>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{{params.inviteLink}}" class="invite-link">View Your Invitation</a>
+      </div>
+      <div class="rsvp-note">
+        <strong>Please RSVP latest by January 10, 2026.</strong>
+      </div>
+      <div class="footer">
+        <div style="text-align: center; color: #2c2c2c; font-size: 15px; line-height: 2; margin-bottom: 20px;">
+          With love and warm regards,<br>
+          <span style="font-weight: 600; color: #8B4513;">Bhavan & Nina Mehta</span><br>
+          <span style="font-weight: 600; color: #8B4513;">Brijesh Kumar & Ruchira Sharma</span>
+        </div>
+        <div style="text-align: center; color: #666; font-size: 13px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+          Please contact <a href="mailto:mehtabv@gmail.com" style="color: #D4AF37; text-decoration: none; font-weight: 500;">Bhavan Mehta at mehtabv@gmail.com</a> if you have any questions.
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
 ```
 
-## Testing Your Template
+## Testing and Validation
 
-Before sending to all guests:
-1. Use the preview feature in the admin panel
-2. Test with a single guest first
-3. Check how it looks in different email clients
-4. Verify all template variables are replaced correctly
+Before deploying templates to production:
 
+1. **Preview Testing:** Use the preview feature in the admin panel to verify template rendering
+2. **Single Guest Test:** Send a test email to a single guest to verify functionality
+3. **Multi-Client Testing:** Test rendering across different email clients
+4. **Variable Verification:** Confirm all template variables are replaced correctly
+5. **Responsive Testing:** Verify mobile and desktop rendering
+6. **Link Validation:** Ensure all links function correctly
+
+## Additional Resources
+
+For questions or assistance with template development, please refer to:
+- Brevo API Documentation
+- Email client compatibility guides
+- HTML email best practices documentation
