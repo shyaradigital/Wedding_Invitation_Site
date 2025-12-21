@@ -70,7 +70,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
         <div className="flex-shrink-0 px-4 py-4 border-b-2 border-wedding-gold/20">
           <Link href={`/invite/${token}`} className="block">
             <h1 className="text-base font-display font-bold text-wedding-gold">
-              From Jay and Ankita
+              From the Parents of Jay and Ankita
             </h1>
             {guestName && (
               <p className="text-xs text-gray-600 mt-1">Hi, {guestName}!</p>
@@ -136,7 +136,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
           <div className="flex-shrink-0 min-w-[140px]">
             <Link href={`/invite/${token}`} className="block">
               <h1 className="text-base font-display font-bold text-wedding-gold">
-                From Jay and Ankita
+                From the Parents of Jay and Ankita
               </h1>
               {guestName && (
                 <p className="text-xs text-gray-600">Hi, {guestName}!</p>
