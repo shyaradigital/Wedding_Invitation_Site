@@ -2577,6 +2577,101 @@ export default function GuestEditor({
                     </div>
                   </div>
 
+                  {/* Help Section for HTML Templates */}
+                  {!customEmailData.isPlainText && (
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-blue-900 mb-2">📝 Available Template Variables:</h4>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="bg-white rounded p-2 border border-blue-100">
+                          <code className="text-blue-700 font-mono">{'{{'}params.guestName{'}}'}</code>
+                          <span className="text-gray-600 ml-2">→ Guest&apos;s name (e.g., &quot;John Doe&quot;)</span>
+                        </div>
+                        <div className="bg-white rounded p-2 border border-blue-100">
+                          <code className="text-blue-700 font-mono">{'{{'}params.inviteLink{'}}'}</code>
+                          <span className="text-gray-600 ml-2">→ Personalized invitation URL</span>
+                        </div>
+                        <div className="bg-white rounded p-2 border border-blue-100">
+                          <code className="text-blue-700 font-mono">{'{{'}params.baseUrl{'}}'}</code>
+                          <span className="text-gray-600 ml-2">→ Website base URL</span>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-blue-200">
+                        <p className="text-xs text-blue-800 mb-2">
+                          <strong>💡 Tip:</strong> Don&apos;t know HTML? Use ChatGPT to generate your email template!
+                        </p>
+                        <details className="text-xs">
+                          <summary className="cursor-pointer text-blue-700 hover:text-blue-900 font-semibold mb-2">
+                            📋 Click to copy ChatGPT prompt
+                          </summary>
+                          <div className="bg-white rounded p-3 border border-blue-200 mt-2">
+                            <p className="text-gray-700 mb-2 font-semibold">Copy this prompt to ChatGPT:</p>
+                            <textarea
+                              readOnly
+                              value={`I need you to create a beautiful, responsive HTML email template for wedding invitations. The email will be sent via Brevo (Sendinblue) transactional email API.
+
+REQUIREMENTS:
+
+1. TEMPLATE VARIABLES (MUST USE THESE):
+   - {{params.guestName}} - Will be replaced with the guest's actual name
+   - {{params.inviteLink}} - Will be replaced with the personalized invitation link (e.g., https://example.com/invite/abc123xyz)
+   - {{params.baseUrl}} - Will be replaced with the website base URL
+
+2. EMAIL-SAFE HTML:
+   - Use inline CSS styles (email clients don't support external stylesheets)
+   - Use table-based layouts for better email client compatibility
+   - Avoid CSS Grid and Flexbox (use tables instead)
+   - Use web-safe fonts (Arial, Helvetica, Georgia, Times New Roman)
+   - Maximum width: 600px for email body
+   - Use hex colors (e.g., #D4AF37 for gold, #8B4513 for brown)
+
+3. DESIGN REQUIREMENTS:
+   - Wedding theme with elegant, warm colors
+   - Gold (#D4AF37) and rose (#D4A5A5) accents
+   - Professional and celebratory tone
+   - Mobile-responsive (use media queries in <style> tag)
+   - Include a prominent call-to-action button for the invitation link
+
+4. CONTENT:
+   - Personalized greeting using {{params.guestName}}
+   - Wedding couple names: "Jay Mehta and Ankita Sharma"
+   - Clear invitation message
+   - Prominent button/link to {{params.inviteLink}}
+   - RSVP deadline: "Please RSVP latest by January 10, 2026"
+   - Warm closing message
+
+5. TECHNICAL:
+   - Must be valid HTML5
+   - All styles must be inline or in a <style> tag in the <head>
+   - Use <table> for layout structure
+   - Test for email client compatibility (Gmail, Outlook, Apple Mail)
+
+Please generate a complete, production-ready HTML email template that I can use directly. Make it beautiful, professional, and wedding-appropriate.`}
+                              rows={20}
+                              className="w-full p-2 text-xs font-mono bg-gray-50 border border-gray-300 rounded resize-none"
+                              onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+                            />
+                            <button
+                              onClick={() => {
+                                const textarea = document.querySelector('textarea[readonly]') as HTMLTextAreaElement
+                                if (textarea) {
+                                  textarea.select()
+                                  navigator.clipboard.writeText(textarea.value)
+                                  setSuccess('ChatGPT prompt copied to clipboard!')
+                                  setTimeout(() => setSuccess(null), 3000)
+                                }
+                              }}
+                              className="mt-2 text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 transition-colors"
+                            >
+                              📋 Copy Prompt
+                            </button>
+                          </div>
+                        </details>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Editor Tab */}
                     <div>
@@ -2584,9 +2679,6 @@ export default function GuestEditor({
                         <label className="block text-sm font-medium text-gray-700">
                           {customEmailData.isPlainText ? 'Plain Text Content' : 'HTML Content'}
                         </label>
-                        <div className="text-xs text-gray-500">
-                          Use variables: {'{{'}params.guestName{'}}'}, {'{{'}params.inviteLink{'}}'}
-                        </div>
                       </div>
                       <textarea
                         value={customEmailData.content}
