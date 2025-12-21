@@ -1713,7 +1713,7 @@ export default function GuestEditor({
                 <th className="px-2 sm:px-3 py-3 sm:py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 min-w-[120px] sm:min-w-[160px]">
                   RSVP Status
                 </th>
-                <th className="px-2 sm:px-3 py-3 sm:py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 min-w-[200px] sm:min-w-[280px] sticky right-0 bg-gradient-to-r from-gray-50 to-gray-100 z-10 shadow-[0_0_8px_rgba(0,0,0,0.1)]">
+                <th className="px-2 sm:px-3 py-3 sm:py-4 text-left text-xs font-semibold text-wedding-navy uppercase tracking-wider border-b-2 border-gray-200 min-w-[200px] sm:min-w-[280px] sticky right-0 bg-gradient-to-r from-gray-50 to-gray-100 z-10 shadow-[0_0_8px_rgba(0,0,0,0.1)] backdrop-blur-sm">
                   Actions
                 </th>
               </tr>
@@ -1882,7 +1882,7 @@ export default function GuestEditor({
                       )
                     })()}
                   </td>
-                  <td className={`px-2 sm:px-3 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium sticky right-0 z-10 border-l-2 border-gray-300 ${isSelected ? 'bg-wedding-gold-light/10' : 'bg-white'} hover:bg-gray-50 shadow-[0_0_8px_rgba(0,0,0,0.1)]`}>
+                  <td className={`px-2 sm:px-3 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium sticky right-0 z-10 border-l-2 border-gray-300 ${isSelected ? 'bg-wedding-gold-light/10' : 'bg-white'} hover:bg-gray-50 shadow-[0_0_8px_rgba(0,0,0,0.1)] backdrop-blur-sm`}>
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-start">
                         <button
@@ -1970,8 +1970,7 @@ export default function GuestEditor({
                             title="Send Invitation Email"
                           >
                             <span className="text-base sm:text-base">📧</span>
-                            <span className="hidden lg:inline">Email</span>
-                            <span className="lg:hidden">Send</span>
+                            <span>Email</span>
                             <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
                               Send Invitation Email
                             </span>

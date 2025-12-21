@@ -75,8 +75,7 @@ export default function WhatsAppShare({
         title="Generate WhatsApp Message"
       >
         <span>💬</span>
-        <span className="hidden lg:inline">WhatsApp</span>
-        <span className="lg:hidden">Send</span>
+        <span>WhatsApp</span>
         <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
           Generate WhatsApp Message
         </span>
