@@ -94,6 +94,9 @@ export default function GuestEditor({
     isPlainText: false,
     guest: null,
   })
+  const [emailPreviewZoom, setEmailPreviewZoom] = useState(100)
+  const [showFullScreenPreview, setShowFullScreenPreview] = useState(false)
+  const [fullScreenPreviewContent, setFullScreenPreviewContent] = useState<string>('')
   const [customEmailData, setCustomEmailData] = useState<{
     subject: string
     content: string
@@ -2558,10 +2561,51 @@ export default function GuestEditor({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Preview (with actual guest data)
-                    </label>
-                    <div className="border border-gray-300 rounded-lg p-4 bg-white max-h-96 overflow-y-auto">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Email Preview (with actual guest data)
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setEmailPreviewZoom(Math.max(50, emailPreviewZoom - 25))}
+                          className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                          title="Zoom Out"
+                        >
+                          −
+                        </button>
+                        <span className="text-xs text-gray-600 min-w-[50px] text-center">{emailPreviewZoom}%</span>
+                        <button
+                          onClick={() => setEmailPreviewZoom(Math.min(200, emailPreviewZoom + 25))}
+                          className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                          title="Zoom In"
+                        >
+                          +
+                        </button>
+                        <button
+                          onClick={() => {
+                            const content = getEmailPreviewContent(
+                              getDefaultInvitationHTML(emailPreviewGuest.eventAccess || ['mehndi', 'wedding', 'reception']),
+                              emailPreviewGuest,
+                              false
+                            )
+                            setFullScreenPreviewContent(content)
+                            setShowFullScreenPreview(true)
+                          }}
+                          className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 rounded border border-blue-300 text-blue-700"
+                          title="Full Screen"
+                        >
+                          ⛶
+                        </button>
+                        <button
+                          onClick={() => setEmailPreviewZoom(100)}
+                          className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                          title="Reset Zoom"
+                        >
+                          ↺
+                        </button>
+                      </div>
+                    </div>
+                    <div className="border border-gray-300 rounded-lg p-4 bg-white overflow-auto" style={{ maxHeight: '500px' }}>
                       <div
                         dangerouslySetInnerHTML={{
                           __html: getEmailPreviewContent(
@@ -2572,6 +2616,9 @@ export default function GuestEditor({
                         }}
                         style={{ 
                           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                          transform: `scale(${emailPreviewZoom / 100})`,
+                          transformOrigin: 'top left',
+                          width: `${100 / (emailPreviewZoom / 100)}%`,
                         }}
                       />
                     </div>
@@ -2799,10 +2846,49 @@ Please generate a complete, production-ready HTML email template that I can use 
 
                     {/* Preview Tab */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Preview (with sample data)
-                      </label>
-                      <div className="border border-gray-300 rounded-lg p-4 bg-white max-h-96 overflow-y-auto min-h-[200px]">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Preview (with sample data)
+                        </label>
+                        {!customEmailData.isPlainText && customEmailData.content.trim() && (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setEmailPreviewZoom(Math.max(50, emailPreviewZoom - 25))}
+                              className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                              title="Zoom Out"
+                            >
+                              −
+                            </button>
+                            <span className="text-xs text-gray-600 min-w-[50px] text-center">{emailPreviewZoom}%</span>
+                            <button
+                              onClick={() => setEmailPreviewZoom(Math.min(200, emailPreviewZoom + 25))}
+                              className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                              title="Zoom In"
+                            >
+                              +
+                            </button>
+                            <button
+                              onClick={() => {
+                                const content = getEmailPreviewContent(customEmailData.content, undefined, false)
+                                setFullScreenPreviewContent(content)
+                                setShowFullScreenPreview(true)
+                              }}
+                              className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 rounded border border-blue-300 text-blue-700"
+                              title="Full Screen"
+                            >
+                              ⛶
+                            </button>
+                            <button
+                              onClick={() => setEmailPreviewZoom(100)}
+                              className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                              title="Reset Zoom"
+                            >
+                              ↺
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="border border-gray-300 rounded-lg p-4 bg-white overflow-auto min-h-[200px]" style={{ maxHeight: '500px' }}>
                         {customEmailData.isPlainText ? (
                           <pre className="whitespace-pre-wrap font-sans text-sm text-gray-800">
                             {getEmailPreviewContent(customEmailData.content, undefined, true)}
@@ -2815,6 +2901,9 @@ Please generate a complete, production-ready HTML email template that I can use 
                             style={{ 
                               fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                               lineHeight: '1.6',
+                              transform: `scale(${emailPreviewZoom / 100})`,
+                              transformOrigin: 'top left',
+                              width: `${100 / (emailPreviewZoom / 100)}%`,
                             }}
                           />
                         ) : (
@@ -3221,10 +3310,49 @@ Please generate a complete, production-ready HTML email template that I can use 
 
                     {/* Preview Tab */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Preview (with {individualCustomEmailData.guest.name}&apos;s actual data)
-                      </label>
-                      <div className="border border-gray-300 rounded-lg p-4 bg-white max-h-96 overflow-y-auto min-h-[200px]">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Preview (with {individualCustomEmailData.guest.name}&apos;s actual data)
+                        </label>
+                        {!individualCustomEmailData.isPlainText && individualCustomEmailData.content.trim() && (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setEmailPreviewZoom(Math.max(50, emailPreviewZoom - 25))}
+                              className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                              title="Zoom Out"
+                            >
+                              −
+                            </button>
+                            <span className="text-xs text-gray-600 min-w-[50px] text-center">{emailPreviewZoom}%</span>
+                            <button
+                              onClick={() => setEmailPreviewZoom(Math.min(200, emailPreviewZoom + 25))}
+                              className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                              title="Zoom In"
+                            >
+                              +
+                            </button>
+                            <button
+                              onClick={() => {
+                                const content = getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest, false)
+                                setFullScreenPreviewContent(content)
+                                setShowFullScreenPreview(true)
+                              }}
+                              className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 rounded border border-blue-300 text-blue-700"
+                              title="Full Screen"
+                            >
+                              ⛶
+                            </button>
+                            <button
+                              onClick={() => setEmailPreviewZoom(100)}
+                              className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                              title="Reset Zoom"
+                            >
+                              ↺
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="border border-gray-300 rounded-lg p-4 bg-white overflow-auto min-h-[200px]" style={{ maxHeight: '500px' }}>
                         {individualCustomEmailData.isPlainText ? (
                           <pre className="whitespace-pre-wrap font-sans text-sm text-gray-800">
                             {getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest, true)}
@@ -3237,6 +3365,9 @@ Please generate a complete, production-ready HTML email template that I can use 
                             style={{ 
                               fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                               lineHeight: '1.6',
+                              transform: `scale(${emailPreviewZoom / 100})`,
+                              transformOrigin: 'top left',
+                              width: `${100 / (emailPreviewZoom / 100)}%`,
                             }}
                           />
                         ) : (
