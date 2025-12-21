@@ -113,6 +113,8 @@ export default function GuestEditor({
   const [resetConfirmGuest, setResetConfirmGuest] = useState<Guest | null>(null)
   const [showResetAllConfirm, setShowResetAllConfirm] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false)
+  const [isDeletingAll, setIsDeletingAll] = useState(false)
 
   // Helper function to safely parse JSON string or return the value as-is
   const safeParseJson = <T,>(value: string | T | null | undefined, fallback: T): T => {
@@ -901,6 +903,38 @@ export default function GuestEditor({
     handleResetRsvp(allGuestIds)
   }
 
+  const handleDeleteAllGuests = async () => {
+    setIsDeletingAll(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/admin/guest/delete-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess(data.message || `Successfully deleted all ${data.deletedCount} guest(s)!`)
+        setSelectedGuests(new Set()) // Clear selection
+        setShowDeleteAllConfirm(false)
+        onGuestsChange() // Refresh guest list
+        // Trigger stats refresh by dispatching a custom event
+        window.dispatchEvent(new CustomEvent('guests-deleted'))
+        setTimeout(() => setSuccess(null), 5000)
+      } else {
+        setError(data.error || 'Failed to delete all guests')
+      }
+    } catch (err) {
+      console.error('Error deleting all guests:', err)
+      setError('An error occurred while deleting all guests')
+    } finally {
+      setIsDeletingAll(false)
+    }
+  }
+
   const handleDownloadTemplate = async () => {
     try {
       const response = await fetch('/api/admin/guest/import', { cache: 'no-store' })
@@ -1302,6 +1336,13 @@ export default function GuestEditor({
               className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               🔄 Reset All RSVPs
+            </button>
+            <button
+              onClick={() => setShowDeleteAllConfirm(true)}
+              disabled={isDeletingAll || normalizedGuests.length === 0}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              🗑️ Delete All Guests
             </button>
             <div className="flex flex-wrap gap-2">
               <button
@@ -3424,6 +3465,73 @@ Please generate a complete, production-ready HTML email template that I can use 
                     </button>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete All Guests Confirmation Dialog */}
+      <AnimatePresence>
+        {showDeleteAllConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={() => !isDeletingAll && setShowDeleteAllConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-serif text-wedding-navy mb-4">
+                Delete All Guests
+              </h3>
+              <p className="text-gray-700 mb-2">
+                Are you sure you want to delete <strong>ALL {normalizedGuests.length} guests</strong>?
+              </p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <p className="text-red-800 font-semibold mb-2">⚠️ This action cannot be undone!</p>
+                <p className="text-sm text-red-700">
+                  This will permanently delete:
+                </p>
+                <ul className="text-sm text-red-700 list-disc list-inside mt-2 space-y-1">
+                  <li>All guest information (names, emails, phones)</li>
+                  <li>All RSVP data and responses</li>
+                  <li>All preferences and dietary restrictions</li>
+                  <li>All device access records</li>
+                  <li>All invitation tokens</li>
+                </ul>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteAllConfirm(false)}
+                  disabled={isDeletingAll}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAllGuests}
+                  disabled={isDeletingAll}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isDeletingAll ? (
+                    <>
+                      <span>⏳</span>
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🗑️</span>
+                      <span>Delete All</span>
+                    </>
+                  )}
+                </button>
               </div>
             </motion.div>
           </motion.div>
