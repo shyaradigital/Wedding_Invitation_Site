@@ -80,6 +80,20 @@ export default function GuestEditor({
   const [showCustomMessageModal, setShowCustomMessageModal] = useState(false)
   const [showEmailPreviewModal, setShowEmailPreviewModal] = useState(false)
   const [emailPreviewGuest, setEmailPreviewGuest] = useState<Guest | null>(null)
+  const [showEmailChoiceModal, setShowEmailChoiceModal] = useState(false)
+  const [emailChoiceGuest, setEmailChoiceGuest] = useState<Guest | null>(null)
+  const [showIndividualCustomEmailModal, setShowIndividualCustomEmailModal] = useState(false)
+  const [individualCustomEmailData, setIndividualCustomEmailData] = useState<{
+    subject: string
+    content: string
+    isPlainText: boolean
+    guest: Guest | null
+  }>({
+    subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+    content: '',
+    isPlainText: false,
+    guest: null,
+  })
   const [customEmailData, setCustomEmailData] = useState<{
     subject: string
     content: string
@@ -907,15 +921,97 @@ export default function GuestEditor({
     return typeof window !== 'undefined' ? window.location.origin : 'https://example.com'
   }
 
-  const handleSendEmailToGuest = async (guest: Guest) => {
+  const handleSendEmailToGuest = (guest: Guest) => {
     if (!guest.email) {
       setError(`Guest "${guest.name}" does not have an email address`)
       return
     }
 
-    // Show preview modal first
+    // Show choice modal
+    setEmailChoiceGuest(guest)
+    setShowEmailChoiceModal(true)
+  }
+
+  const handleSendDefaultInvitation = (guest: Guest) => {
+    // Close choice modal and open preview modal with default template
+    setShowEmailChoiceModal(false)
+    setEmailChoiceGuest(null)
     setEmailPreviewGuest(guest)
     setShowEmailPreviewModal(true)
+  }
+
+  const handleOpenCustomMessageEditor = (guest: Guest) => {
+    // Close choice modal and open custom message editor
+    setShowEmailChoiceModal(false)
+    setEmailChoiceGuest(null)
+    setError(null) // Clear any previous errors
+    setIndividualCustomEmailData({
+      subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+      content: '',
+      isPlainText: false,
+      guest: guest,
+    })
+    setShowIndividualCustomEmailModal(true)
+  }
+
+  const handleConfirmSendIndividualCustomEmail = async () => {
+    if (!individualCustomEmailData.guest) {
+      setError('No guest selected')
+      return
+    }
+
+    if (!individualCustomEmailData.subject.trim()) {
+      setError('Please enter email subject')
+      return
+    }
+
+    if (!individualCustomEmailData.content.trim()) {
+      setError('Please enter email content')
+      return
+    }
+
+    setIsSendingEmail(true)
+    setEmailSendingStatus(null)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/admin/guest/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({
+          guestId: individualCustomEmailData.guest.id,
+          customMessage: individualCustomEmailData.content,
+          customSubject: individualCustomEmailData.subject,
+          isPlainText: individualCustomEmailData.isPlainText,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setEmailSendingStatus(`Email sent successfully to ${individualCustomEmailData.guest.email}`)
+        setSuccess(`Custom email sent to ${individualCustomEmailData.guest.name}!`)
+        setShowIndividualCustomEmailModal(false)
+        setIndividualCustomEmailData({
+          subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+          content: '',
+          isPlainText: false,
+          guest: null,
+        })
+        setTimeout(() => {
+          setSuccess(null)
+          setEmailSendingStatus(null)
+        }, 3000)
+      } else {
+        setError(data.error || 'Failed to send custom email')
+      }
+    } catch (err) {
+      console.error('Error sending individual custom email:', err)
+      setError('An error occurred while sending custom email')
+    } finally {
+      setIsSendingEmail(false)
+    }
   }
 
   const handleConfirmSendEmail = async (guest: Guest, customMessage?: string, customSubject?: string, isPlainText?: boolean) => {
@@ -2873,6 +2969,330 @@ Please generate a complete, production-ready HTML email template that I can use 
                     </>
                   )}
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Email Choice Modal */}
+      <AnimatePresence>
+        {showEmailChoiceModal && emailChoiceGuest && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={() => {
+              if (!isSendingEmail) {
+                setShowEmailChoiceModal(false)
+                setEmailChoiceGuest(null)
+              }
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-serif text-wedding-navy mb-2">
+                Send Email to {emailChoiceGuest.name}
+              </h3>
+              <p className="text-gray-600 mb-6 text-sm">
+                How would you like to send the email?
+              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleSendDefaultInvitation(emailChoiceGuest)}
+                  disabled={isSendingEmail}
+                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span>📧</span>
+                  <span>Send Default Invitation</span>
+                </button>
+                <button
+                  onClick={() => handleOpenCustomMessageEditor(emailChoiceGuest)}
+                  disabled={isSendingEmail}
+                  className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span>✉️</span>
+                  <span>Create Custom Message</span>
+                </button>
+                <button
+                  onClick={() => { setShowEmailChoiceModal(false); setEmailChoiceGuest(null) }}
+                  disabled={isSendingEmail}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Individual Custom Email Modal */}
+      <AnimatePresence>
+        {showIndividualCustomEmailModal && individualCustomEmailData.guest && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => !isSendingEmail && setShowIndividualCustomEmailModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-2xl font-serif text-wedding-navy">
+                      Send Custom Email to {individualCustomEmailData.guest.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {individualCustomEmailData.guest.email}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => !isSendingEmail && setShowIndividualCustomEmailModal(false)}
+                    disabled={isSendingEmail}
+                    className="text-gray-500 hover:text-gray-700 text-2xl disabled:opacity-50"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      value={individualCustomEmailData.subject}
+                      onChange={(e) => setIndividualCustomEmailData({ ...individualCustomEmailData, subject: e.target.value })}
+                      disabled={isSendingEmail}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent disabled:opacity-50"
+                      placeholder="Email subject"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Content Type
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={individualCustomEmailData.isPlainText}
+                          onChange={(e) => setIndividualCustomEmailData({ ...individualCustomEmailData, isPlainText: e.target.checked })}
+                          disabled={isSendingEmail}
+                          className="rounded"
+                        />
+                        <span className="text-sm text-gray-600">Plain Text Mode</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Help Section for HTML Templates */}
+                  {!individualCustomEmailData.isPlainText && (
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-blue-900 mb-2">📝 Available Template Variables:</h4>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="bg-white rounded p-2 border border-blue-100">
+                          <code className="text-blue-700 font-mono">{'{{'}params.guestName{'}}'}</code>
+                          <span className="text-gray-600 ml-2">→ Guest&apos;s name (e.g., &quot;{individualCustomEmailData.guest.name}&quot;)</span>
+                        </div>
+                        <div className="bg-white rounded p-2 border border-blue-100">
+                          <code className="text-blue-700 font-mono">{'{{'}params.inviteLink{'}}'}</code>
+                          <span className="text-gray-600 ml-2">→ Personalized invitation URL</span>
+                        </div>
+                        <div className="bg-white rounded p-2 border border-blue-100">
+                          <code className="text-blue-700 font-mono">{'{{'}params.baseUrl{'}}'}</code>
+                          <span className="text-gray-600 ml-2">→ Website base URL</span>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-blue-200">
+                        <p className="text-xs text-blue-800 mb-2">
+                          <strong>💡 Tip:</strong> Don&apos;t know HTML? Use ChatGPT to generate your email template!
+                        </p>
+                        <details className="text-xs">
+                          <summary className="cursor-pointer text-blue-700 hover:text-blue-900 font-semibold mb-2">
+                            📋 Click to copy ChatGPT prompt
+                          </summary>
+                          <div className="bg-white rounded p-3 border border-blue-200 mt-2">
+                            <p className="text-gray-700 mb-2 font-semibold">Copy this prompt to ChatGPT:</p>
+                            <textarea
+                              readOnly
+                              value={`I need you to create a beautiful, responsive HTML email template for wedding invitations. The email will be sent via Brevo (Sendinblue) transactional email API.
+
+REQUIREMENTS:
+
+1. TEMPLATE VARIABLES (MUST USE THESE):
+   - {{params.guestName}} - Will be replaced with the guest's actual name
+   - {{params.inviteLink}} - Will be replaced with the personalized invitation link (e.g., https://example.com/invite/abc123xyz)
+   - {{params.baseUrl}} - Will be replaced with the website base URL
+
+2. EMAIL-SAFE HTML:
+   - Use inline CSS styles (email clients don't support external stylesheets)
+   - Use table-based layouts for better email client compatibility
+   - Avoid CSS Grid and Flexbox (use tables instead)
+   - Use web-safe fonts (Arial, Helvetica, Georgia, Times New Roman)
+   - Maximum width: 600px for email body
+   - Use hex colors (e.g., #D4AF37 for gold, #8B4513 for brown)
+
+3. DESIGN REQUIREMENTS:
+   - Wedding theme with elegant, warm colors
+   - Gold (#D4AF37) and rose (#D4A5A5) accents
+   - Professional and celebratory tone
+   - Mobile-responsive (use media queries in <style> tag)
+   - Include a prominent call-to-action button for the invitation link
+
+4. CONTENT:
+   - Personalized greeting using {{params.guestName}}
+   - Wedding couple names: "Jay Mehta and Ankita Sharma"
+   - Clear invitation message
+   - Prominent button/link to {{params.inviteLink}}
+   - RSVP deadline: "Please RSVP latest by January 10, 2026"
+   - Warm closing message
+
+5. TECHNICAL:
+   - Must be valid HTML5
+   - All styles must be inline or in a <style> tag in the <head>
+   - Use <table> for layout structure
+   - Test for email client compatibility (Gmail, Outlook, Apple Mail)
+
+Please generate a complete, production-ready HTML email template that I can use directly. Make it beautiful, professional, and wedding-appropriate.`}
+                              rows={20}
+                              className="w-full p-2 text-xs font-mono bg-gray-50 border border-gray-300 rounded resize-none"
+                              onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+                            />
+                            <button
+                              onClick={() => {
+                                const textarea = document.querySelector('textarea[readonly]') as HTMLTextAreaElement
+                                if (textarea) {
+                                  textarea.select()
+                                  navigator.clipboard.writeText(textarea.value)
+                                  setSuccess('ChatGPT prompt copied to clipboard!')
+                                  setTimeout(() => setSuccess(null), 3000)
+                                }
+                              }}
+                              className="mt-2 text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 transition-colors"
+                            >
+                              📋 Copy Prompt
+                            </button>
+                          </div>
+                        </details>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Editor Tab */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          {individualCustomEmailData.isPlainText ? 'Plain Text Content' : 'HTML Content'}
+                        </label>
+                      </div>
+                      <textarea
+                        value={individualCustomEmailData.content}
+                        onChange={(e) => setIndividualCustomEmailData({ ...individualCustomEmailData, content: e.target.value })}
+                        disabled={isSendingEmail}
+                        rows={15}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent font-mono text-sm disabled:opacity-50"
+                        placeholder={
+                          individualCustomEmailData.isPlainText
+                            ? `Hi {{params.guestName}}👋\n\nYou are invited...\n\n{{params.inviteLink}}`
+                            : `<html><body><p>Hi {{params.guestName}}👋</p><p>You are invited...</p><p><a href="{{params.inviteLink}}">View Invitation</a></p></body></html>`
+                        }
+                      />
+                    </div>
+
+                    {/* Preview Tab */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Preview (with {individualCustomEmailData.guest.name}&apos;s actual data)
+                      </label>
+                      <div className="border border-gray-300 rounded-lg p-4 bg-white max-h-96 overflow-y-auto min-h-[200px]">
+                        {individualCustomEmailData.isPlainText ? (
+                          <pre className="whitespace-pre-wrap font-sans text-sm text-gray-800">
+                            {getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest, true)}
+                          </pre>
+                        ) : individualCustomEmailData.content.trim() ? (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest, false),
+                            }}
+                            style={{ 
+                              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                              lineHeight: '1.6',
+                            }}
+                          />
+                        ) : (
+                          <p className="text-gray-400 italic text-sm">(Empty content - preview will appear here when you enter HTML)</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      <strong>To:</strong> {individualCustomEmailData.guest.email}
+                    </p>
+                    <p className="text-xs text-blue-700 mt-1">
+                      The variables {'{{'}params.guestName{'}}'} and {'{{'}params.inviteLink{'}}'} will be automatically replaced with {individualCustomEmailData.guest.name}&apos;s information.
+                    </p>
+                  </div>
+
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <p className="text-sm text-red-800">{error}</p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 pt-4 border-t">
+                    <button
+                      onClick={() => {
+                        if (!isSendingEmail) {
+                          setShowIndividualCustomEmailModal(false)
+                          setError(null)
+                        }
+                      }}
+                      disabled={isSendingEmail}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleConfirmSendIndividualCustomEmail}
+                      disabled={isSendingEmail || !individualCustomEmailData.content.trim() || !individualCustomEmailData.subject.trim()}
+                      className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isSendingEmail ? (
+                        <>
+                          <span>⏳</span>
+                          <span>Sending...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>✉️</span>
+                          <span>Send Email</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </motion.div>
