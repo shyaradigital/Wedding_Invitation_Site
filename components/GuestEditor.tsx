@@ -786,11 +786,6 @@ export default function GuestEditor({
         return rsvpStatus[eventSlug] === 'no'
       })
       
-      const pending = guestsWithEvent.filter(g => {
-        const rsvpStatus = typeof g.rsvpStatus === 'object' && !Array.isArray(g.rsvpStatus) ? g.rsvpStatus : {}
-        return rsvpStatus[eventSlug] === 'pending'
-      })
-      
       const notSubmitted = guestsWithEvent.filter(g => {
         const rsvpStatus = typeof g.rsvpStatus === 'object' && !Array.isArray(g.rsvpStatus) ? g.rsvpStatus : {}
         return !g.rsvpSubmitted || !rsvpStatus[eventSlug]
@@ -800,7 +795,6 @@ export default function GuestEditor({
 
       // Calculate total attendees for each status
       const notAttendingAttendees = notAttending.reduce((sum, guest) => sum + getAttendeeCountForEvent(guest, eventSlug), 0)
-      const pendingAttendees = pending.reduce((sum, guest) => sum + getAttendeeCountForEvent(guest, eventSlug), 0)
       const notSubmittedAttendees = notSubmitted.reduce((sum, guest) => sum + getAttendeeCountForEvent(guest, eventSlug), 0)
 
       return {
@@ -808,8 +802,8 @@ export default function GuestEditor({
         attendingCount: attending.length, // Number of guest records attending
         notAttending: notAttendingAttendees, // Total attendees not attending
         notAttendingCount: notAttending.length, // Number of guest records not attending
-        pending: pendingAttendees, // Total attendees pending
-        pendingCount: pending.length, // Number of guest records pending
+        pending: 0, // Total attendees pending (no longer a valid status)
+        pendingCount: 0, // Number of guest records pending (no longer a valid status)
         notSubmitted: notSubmittedAttendees, // Total attendees not submitted
         notSubmittedCount: notSubmitted.length, // Number of guest records not submitted
         totalAttendees,
