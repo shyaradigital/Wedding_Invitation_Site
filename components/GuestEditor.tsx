@@ -3355,12 +3355,12 @@ Please generate a complete, production-ready HTML email template that I can use 
                       <div className="border border-gray-300 rounded-lg p-4 bg-white overflow-auto min-h-[200px]" style={{ maxHeight: '500px' }}>
                         {individualCustomEmailData.isPlainText ? (
                           <pre className="whitespace-pre-wrap font-sans text-sm text-gray-800">
-                            {getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest, true)}
+                            {getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest || undefined, true)}
                           </pre>
                         ) : individualCustomEmailData.content.trim() ? (
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest, false),
+                              __html: getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest || undefined, false),
                             }}
                             style={{ 
                               fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
