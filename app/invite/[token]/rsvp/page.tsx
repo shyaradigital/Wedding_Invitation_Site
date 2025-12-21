@@ -446,7 +446,15 @@ export default function RSVPPage() {
                   {/* Header */}
                   <div className="text-center mb-6 sm:mb-8">
                     <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">💌</div>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-script text-wedding-navy mb-3 sm:mb-4">
+                    <h1 
+                      className="text-3xl sm:text-4xl md:text-5xl text-wedding-navy mb-3 sm:mb-4"
+                      style={{ 
+                        fontFamily: "'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive",
+                        fontWeight: 500,
+                        fontStyle: 'normal',
+                        letterSpacing: '0.03em',
+                      }}
+                    >
                       RSVP
                     </h1>
                     <OrnamentalDivider variant="ornate" className="mb-4 sm:mb-6" />

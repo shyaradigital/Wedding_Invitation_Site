@@ -111,7 +111,15 @@ export default function VenueTravelPage() {
                 <div className="flex justify-center mb-4">
                   <span className="text-4xl sm:text-5xl">📍</span>
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script text-wedding-navy mb-4 sm:mb-6">
+                <h1 
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-wedding-navy mb-4 sm:mb-6"
+                  style={{ 
+                    fontFamily: "'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive",
+                    fontWeight: 500,
+                    fontStyle: 'normal',
+                    letterSpacing: '0.03em',
+                  }}
+                >
                   Travel & Venue Information
                 </h1>
                 <OrnamentalDivider variant="ornate" />

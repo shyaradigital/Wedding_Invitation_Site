@@ -370,13 +370,19 @@ export default function EventDetailsPage() {
               {!isWedding && (
                 <div className="text-center mb-6 sm:mb-8">
                   <h1
-                    className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 ${
+                    className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 ${
                       isReception
                         ? 'text-wedding-gold drop-shadow-lg'
                         : isMehendi
                         ? 'text-wedding-forest-green'
                         : 'text-wedding-navy'
                     }`}
+                    style={{ 
+                      fontFamily: "'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive",
+                      fontWeight: 500,
+                      fontStyle: 'normal',
+                      letterSpacing: '0.03em',
+                    }}
                     style={
                       isReception
                         ? {
@@ -420,7 +426,15 @@ export default function EventDetailsPage() {
               {isWedding && content.baraatDescription && (
                 <>
                   <div className="text-center mb-6 sm:mb-8">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 text-wedding-navy">
+                    <h1 
+                      className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 text-wedding-navy"
+                      style={{ 
+                        fontFamily: "'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive",
+                        fontWeight: 500,
+                        fontStyle: 'normal',
+                        letterSpacing: '0.03em',
+                      }}
+                    >
                       Baraat
                     </h1>
                     <OrnamentalDivider variant="ornate" />
@@ -507,7 +521,15 @@ export default function EventDetailsPage() {
               {isWedding && content.pherasDescription && (
                 <>
                   <div className="text-center mb-6 sm:mb-8">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script mb-4 sm:mb-6 text-wedding-navy">
+                    <h1 
+                      className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 text-wedding-navy"
+                      style={{ 
+                        fontFamily: "'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive",
+                        fontWeight: 500,
+                        fontStyle: 'normal',
+                        letterSpacing: '0.03em',
+                      }}
+                    >
                       Hindu Wedding
                     </h1>
                     <OrnamentalDivider variant="ornate" />

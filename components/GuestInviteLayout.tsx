@@ -339,7 +339,15 @@ export default function GuestInviteLayout({
               >
                 <span className="text-5xl sm:text-6xl md:text-7xl">🎬</span>
               </motion.div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-script text-wedding-navy mb-4 sm:mb-6">
+              <h2 
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-wedding-navy mb-4 sm:mb-6"
+                style={{ 
+                  fontFamily: "'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive",
+                  fontWeight: 500,
+                  fontStyle: 'normal',
+                  letterSpacing: '0.03em',
+                }}
+              >
                 Our Invitation
               </h2>
               <OrnamentalDivider variant="ornate" className="mb-4 sm:mb-6" />
