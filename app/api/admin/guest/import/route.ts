@@ -9,7 +9,7 @@ const XLSX = require('xlsx')
 // Column B: Phone (optional)
 // Column C: Email (optional)
 // Column D: Event Access (required: "all-events" or "reception-only")
-// Column E: Max Devices Allowed (optional, default: 1)
+// Column E: Max Devices Allowed (optional, default: 10)
 
 export async function POST(request: NextRequest) {
   try {
@@ -90,21 +90,33 @@ export async function POST(request: NextRequest) {
 
         // Parse event access - now only two types: "all-events" or "reception-only"
         let eventAccessType: 'all-events' | 'reception-only' = 'all-events'
-        if (row.eventAccess) {
-          const accessValue = String(row.eventAccess).trim().toLowerCase()
-          if (accessValue === 'all-events' || accessValue === 'all events' || accessValue === 'all') {
+        
+        // Handle event access with better type coercion and validation
+        if (row.eventAccess !== null && row.eventAccess !== undefined && row.eventAccess !== '') {
+          // Convert to string and normalize (handle numbers, booleans, etc.)
+          const rawValue = row.eventAccess
+          const accessValue = String(rawValue)
+            .replace(/\s+/g, ' ') // Replace all whitespace (tabs, newlines, etc.) with single space
+            .trim()
+            .toLowerCase()
+          
+          // Check for valid values (with various accepted formats)
+          if (accessValue === 'all-events' || accessValue === 'all events' || accessValue === 'all' || accessValue === 'allevents') {
             eventAccessType = 'all-events'
-          } else if (accessValue === 'reception-only' || accessValue === 'reception only' || accessValue === 'reception') {
+          } else if (accessValue === 'reception-only' || accessValue === 'reception only' || accessValue === 'reception' || accessValue === 'receptiononly') {
             eventAccessType = 'reception-only'
           } else {
+            // Invalid value - include the actual received value in error message for debugging
+            const displayValue = String(rawValue).trim() || '(empty)'
             results.errors.push({
               row: rowNumber,
               name,
-              error: 'Event access must be "all-events" or "reception-only"',
+              error: `Event access must be "all-events" or "reception-only". Received: "${displayValue}"`,
             })
             continue
           }
         }
+        // If eventAccess is null, undefined, or empty string, default to 'all-events' (already set)
         
         // Convert to actual event array
         const actualEventAccess = eventAccessType === 'all-events' 
@@ -125,8 +137,8 @@ export async function POST(request: NextRequest) {
           continue
         }
 
-        // Parse max devices (optional, default 1)
-        let maxDevicesAllowed = 1
+        // Parse max devices (optional, default 10)
+        let maxDevicesAllowed = 10
         if (row.maxDevicesAllowed) {
           const parsed = parseInt(String(row.maxDevicesAllowed), 10)
           if (!isNaN(parsed) && parsed >= 1 && parsed <= 10) {
