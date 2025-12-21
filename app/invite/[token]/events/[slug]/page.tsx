@@ -75,7 +75,7 @@ const eventContent: Record<string, {
     address: '90 Pacifica, Irvine, CA 92618',
     pherasDescription: 'The Wedding Ceremony unites two souls spiritually, mentally and physically. The bond of matrimony is sacred and the ceremony of marriage is conducted according to Vedic traditions.',
     baraatDescription: 'Baraat is an Indian wedding ceremony where the groom accompanied by his family and friends dance all the way to the bride\'s doorstep or wedding venue.',
-    baraatTime: 'Thirty Minutes past 9 O\'Clock in the Morning',
+    baraatTime: 'Thirty Minutes past Nine O\'Clock in the Morning',
     additionalInfo: 'No Boxed Gifts/Registry',
   },
   reception: {
