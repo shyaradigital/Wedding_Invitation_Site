@@ -646,9 +646,11 @@ export default function RSVPPage() {
                     {/* Preliminary Question - Show if no choice made yet and NOT Reception-only */}
                     {!isReceptionOnly && overallAttendanceChoice === null && guest.eventAccess && guest.eventAccess.length > 0 && (
                       <div>
-                        <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
-                          <span className="inline">Will you be attending all events, some events, or none? <span className="text-red-500">*</span></span>
-                        </label>
+                        <div className="text-lg sm:text-xl font-display text-wedding-navy mb-4">
+                          <label className="inline">
+                            Will you be attending all events, some events, or none? <span className="text-red-500">*</span>
+                          </label>
+                        </div>
                         <OrnamentalDivider variant="simple" className="mb-4" />
                         <div className="space-y-3">
                           <label 
