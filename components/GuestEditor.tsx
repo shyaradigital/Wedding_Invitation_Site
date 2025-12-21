@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import WhatsAppShare from './WhatsAppShare'
 import EventTypeBadge from './EventTypeBadge'
+import { getDefaultInvitationHTML, getDefaultInvitationText, replaceTemplateVariables } from '@/lib/brevo'
 
 interface Guest {
   id: string
@@ -72,6 +73,24 @@ export default function GuestEditor({
   const [importResults, setImportResults] = useState<any>(null)
   const [deviceManagementGuest, setDeviceManagementGuest] = useState<Guest | null>(null)
   const [newMaxDevices, setNewMaxDevices] = useState<number | ''>('')
+  
+  // Email sending state
+  const [isSendingEmail, setIsSendingEmail] = useState(false)
+  const [emailSendingStatus, setEmailSendingStatus] = useState<string | null>(null)
+  const [showCustomMessageModal, setShowCustomMessageModal] = useState(false)
+  const [showEmailPreviewModal, setShowEmailPreviewModal] = useState(false)
+  const [emailPreviewGuest, setEmailPreviewGuest] = useState<Guest | null>(null)
+  const [customEmailData, setCustomEmailData] = useState<{
+    subject: string
+    content: string
+    isPlainText: boolean
+    previewMode: 'editor' | 'preview'
+  }>({
+    subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+    content: '',
+    isPlainText: false,
+    previewMode: 'editor',
+  })
 
   // Helper function to safely parse JSON string or return the value as-is
   const safeParseJson = <T,>(value: string | T | null | undefined, fallback: T): T => {
@@ -819,6 +838,190 @@ export default function GuestEditor({
     }
   }
 
+  // Email sending handlers
+  const getBaseUrl = () => {
+    return typeof window !== 'undefined' ? window.location.origin : 'https://example.com'
+  }
+
+  const handleSendEmailToGuest = async (guest: Guest) => {
+    if (!guest.email) {
+      setError(`Guest "${guest.name}" does not have an email address`)
+      return
+    }
+
+    // Show preview modal first
+    setEmailPreviewGuest(guest)
+    setShowEmailPreviewModal(true)
+  }
+
+  const handleConfirmSendEmail = async (guest: Guest, customMessage?: string, customSubject?: string, isPlainText?: boolean) => {
+    setIsSendingEmail(true)
+    setEmailSendingStatus(null)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/admin/guest/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({
+          guestId: guest.id,
+          customMessage,
+          customSubject,
+          isPlainText: isPlainText || false,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setEmailSendingStatus(`Email sent successfully to ${guest.email}`)
+        setSuccess(`Email sent to ${guest.name}!`)
+        setShowEmailPreviewModal(false)
+        setTimeout(() => {
+          setSuccess(null)
+          setEmailSendingStatus(null)
+        }, 3000)
+      } else {
+        setError(data.error || 'Failed to send email')
+      }
+    } catch (err) {
+      console.error('Error sending email:', err)
+      setError('An error occurred while sending email')
+    } finally {
+      setIsSendingEmail(false)
+    }
+  }
+
+  const handleSendBulkInvitations = async () => {
+    const guestsWithEmail = normalizedGuests.filter(g => g.email && g.email.trim() !== '')
+    
+    if (guestsWithEmail.length === 0) {
+      setError('No guests with email addresses found')
+      return
+    }
+
+    if (!confirm(`Send default invitation emails to ${guestsWithEmail.length} guest(s)?`)) {
+      return
+    }
+
+    setIsSendingEmail(true)
+    setEmailSendingStatus(null)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/admin/guest/email/send-bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({}),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setEmailSendingStatus(`Sent: ${data.sent}, Failed: ${data.failed}, Skipped: ${data.skipped}`)
+        setSuccess(`Bulk emails sent! ${data.sent} successful, ${data.failed} failed`)
+        setTimeout(() => {
+          setSuccess(null)
+          setEmailSendingStatus(null)
+        }, 5000)
+      } else {
+        setError(data.error || 'Failed to send bulk emails')
+      }
+    } catch (err) {
+      console.error('Error sending bulk emails:', err)
+      setError('An error occurred while sending bulk emails')
+    } finally {
+      setIsSendingEmail(false)
+    }
+  }
+
+  const handleSendCustomMessage = async () => {
+    if (!customEmailData.content.trim()) {
+      setError('Please enter email content')
+      return
+    }
+
+    const guestsWithEmail = normalizedGuests.filter(g => g.email && g.email.trim() !== '')
+    
+    if (guestsWithEmail.length === 0) {
+      setError('No guests with email addresses found')
+      return
+    }
+
+    if (!confirm(`Send custom message to ${guestsWithEmail.length} guest(s)?`)) {
+      return
+    }
+
+    setIsSendingEmail(true)
+    setEmailSendingStatus(null)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/admin/guest/email/send-custom', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({
+          subject: customEmailData.subject,
+          htmlContent: customEmailData.isPlainText ? undefined : customEmailData.content,
+          textContent: customEmailData.isPlainText ? customEmailData.content : undefined,
+          isPlainText: customEmailData.isPlainText,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setEmailSendingStatus(`Sent: ${data.sent}, Failed: ${data.failed}, Skipped: ${data.skipped}`)
+        setSuccess(`Custom emails sent! ${data.sent} successful, ${data.failed} failed`)
+        setShowCustomMessageModal(false)
+        setCustomEmailData({
+          subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+          content: '',
+          isPlainText: false,
+          previewMode: 'editor',
+        })
+        setTimeout(() => {
+          setSuccess(null)
+          setEmailSendingStatus(null)
+        }, 5000)
+      } else {
+        setError(data.error || 'Failed to send custom emails')
+      }
+    } catch (err) {
+      console.error('Error sending custom emails:', err)
+      setError('An error occurred while sending custom emails')
+    } finally {
+      setIsSendingEmail(false)
+    }
+  }
+
+  const getEmailPreviewContent = (content: string, guest?: Guest, isPlainText: boolean = false): string => {
+    // Handle empty content
+    if (!content || !content.trim()) {
+      return isPlainText 
+        ? '(Empty content - preview will appear here when you enter text)'
+        : '<p style="color: #999; font-style: italic;">(Empty content - preview will appear here when you enter HTML)</p>'
+    }
+    
+    const baseUrl = getBaseUrl()
+    const sampleGuest = guest || { name: 'John Doe', token: 'sample-token-123' }
+    const inviteLink = `${baseUrl}/invite/${sampleGuest.token}`
+    
+    try {
+      return replaceTemplateVariables(content, {
+        guestName: sampleGuest.name,
+        inviteLink,
+        baseUrl,
+      })
+    } catch (error) {
+      console.error('Error replacing template variables:', error)
+      return content // Return original content if replacement fails
+    }
+  }
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -1001,6 +1204,31 @@ export default function GuestEditor({
             </div>
           </div>
         )}
+
+        {/* Email Bulk Actions */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="font-semibold text-wedding-navy">
+              Email Actions
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={handleSendBulkInvitations}
+                disabled={isSendingEmail}
+                className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isSendingEmail ? '⏳ Sending...' : '📧 Send Invitations to All'}
+              </button>
+              <button
+                onClick={() => setShowCustomMessageModal(true)}
+                disabled={isSendingEmail}
+                className="bg-purple-600 text-white px-4 py-2 rounded text-sm hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                ✉️ Send Custom Message to All
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Search and Filters */}
         <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
@@ -1541,12 +1769,26 @@ export default function GuestEditor({
                           </span>
                         </button>
                       </div>
-                      <div className="mt-0.5">
+                      <div className="mt-0.5 flex flex-wrap gap-1.5">
                         <WhatsAppShare
                           guestName={guest.name}
                           guestToken={guest.token}
                           guestPhone={guest.phone}
                         />
+                        {guest.email && (
+                          <button
+                            onClick={() => handleSendEmailToGuest(guest)}
+                            className="group relative bg-blue-500 hover:bg-blue-600 text-white px-2.5 py-1.5 rounded text-xs font-semibold transition-colors flex items-center gap-1.5 justify-center whitespace-nowrap w-full"
+                            title="Send Invitation Email"
+                          >
+                            <span>📧</span>
+                            <span className="hidden lg:inline">Email</span>
+                            <span className="lg:hidden">Send</span>
+                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
+                              Send Invitation Email
+                            </span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -2080,6 +2322,264 @@ export default function GuestEditor({
               </motion.div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Email Preview Modal (Single Guest) */}
+      <AnimatePresence>
+        {showEmailPreviewModal && emailPreviewGuest && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => !isSendingEmail && setShowEmailPreviewModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-serif text-wedding-navy">
+                    Email Preview - {emailPreviewGuest.name}
+                  </h3>
+                  <button
+                    onClick={() => !isSendingEmail && setShowEmailPreviewModal(false)}
+                    disabled={isSendingEmail}
+                    className="text-gray-500 hover:text-gray-700 text-2xl disabled:opacity-50"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      value="Jay Mehta and Ankita Sharma's Wedding Invitation"
+                      readOnly
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Preview (with actual guest data)
+                    </label>
+                    <div className="border border-gray-300 rounded-lg p-4 bg-white max-h-96 overflow-y-auto">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: getEmailPreviewContent(
+                            getDefaultInvitationHTML(),
+                            emailPreviewGuest,
+                            false
+                          ),
+                        }}
+                        style={{ 
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      <strong>To:</strong> {emailPreviewGuest.email}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3 pt-4 border-t">
+                    <button
+                      onClick={() => !isSendingEmail && setShowEmailPreviewModal(false)}
+                      disabled={isSendingEmail}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handleConfirmSendEmail(emailPreviewGuest)}
+                      disabled={isSendingEmail}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isSendingEmail ? (
+                        <>
+                          <span>⏳</span>
+                          <span>Sending...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>📧</span>
+                          <span>Send Email</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Message Modal */}
+      <AnimatePresence>
+        {showCustomMessageModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => !isSendingEmail && setShowCustomMessageModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-serif text-wedding-navy">
+                    Send Custom Message to All Guests
+                  </h3>
+                  <button
+                    onClick={() => !isSendingEmail && setShowCustomMessageModal(false)}
+                    disabled={isSendingEmail}
+                    className="text-gray-500 hover:text-gray-700 text-2xl disabled:opacity-50"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      value={customEmailData.subject}
+                      onChange={(e) => setCustomEmailData({ ...customEmailData, subject: e.target.value })}
+                      disabled={isSendingEmail}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent disabled:opacity-50"
+                      placeholder="Email subject"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Content Type
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={customEmailData.isPlainText}
+                          onChange={(e) => setCustomEmailData({ ...customEmailData, isPlainText: e.target.checked })}
+                          disabled={isSendingEmail}
+                          className="rounded"
+                        />
+                        <span className="text-sm text-gray-600">Plain Text Mode</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Editor Tab */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          {customEmailData.isPlainText ? 'Plain Text Content' : 'HTML Content'}
+                        </label>
+                        <div className="text-xs text-gray-500">
+                          Use variables: {'{{'}params.guestName{'}}'}, {'{{'}params.inviteLink{'}}'}
+                        </div>
+                      </div>
+                      <textarea
+                        value={customEmailData.content}
+                        onChange={(e) => setCustomEmailData({ ...customEmailData, content: e.target.value })}
+                        disabled={isSendingEmail}
+                        rows={15}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent font-mono text-sm disabled:opacity-50"
+                        placeholder={
+                          customEmailData.isPlainText
+                            ? `Hi {{params.guestName}}👋\n\nYou are invited...\n\n{{params.inviteLink}}`
+                            : `<html><body><p>Hi {{params.guestName}}👋</p><p>You are invited...</p><p><a href="{{params.inviteLink}}">View Invitation</a></p></body></html>`
+                        }
+                      />
+                    </div>
+
+                    {/* Preview Tab */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Preview (with sample data)
+                      </label>
+                      <div className="border border-gray-300 rounded-lg p-4 bg-white max-h-96 overflow-y-auto min-h-[200px]">
+                        {customEmailData.isPlainText ? (
+                          <pre className="whitespace-pre-wrap font-sans text-sm text-gray-800">
+                            {getEmailPreviewContent(customEmailData.content, undefined, true)}
+                          </pre>
+                        ) : customEmailData.content.trim() ? (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: getEmailPreviewContent(customEmailData.content, undefined, false),
+                            }}
+                            style={{ 
+                              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                              lineHeight: '1.6',
+                            }}
+                          />
+                        ) : (
+                          <p className="text-gray-400 italic text-sm">(Empty content - preview will appear here when you enter HTML)</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Note:</strong> This will send the email to all guests who have an email address. The variables {'{{'}params.guestName{'}}'} and {'{{'}params.inviteLink{'}}'} will be automatically replaced with each guest's information.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3 pt-4 border-t">
+                    <button
+                      onClick={() => !isSendingEmail && setShowCustomMessageModal(false)}
+                      disabled={isSendingEmail}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSendCustomMessage}
+                      disabled={isSendingEmail || !customEmailData.content.trim()}
+                      className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isSendingEmail ? (
+                        <>
+                          <span>⏳</span>
+                          <span>Sending...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>✉️</span>
+                          <span>Send to All Guests</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
