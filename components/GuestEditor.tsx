@@ -2848,7 +2848,7 @@ Please generate a complete, production-ready HTML email template that I can use 
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <label className="block text-sm font-medium text-gray-700">
-                          Preview (with sample data - {{params.guestName}} will be replaced with each guest's name when sent)
+                          Preview (with sample data - {'{{'}params.guestName{'}}'} will be replaced with each guest&apos;s name when sent)
                         </label>
                         {!customEmailData.isPlainText && customEmailData.content.trim() && (
                           <div className="flex items-center gap-2">
