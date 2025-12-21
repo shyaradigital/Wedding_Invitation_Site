@@ -121,7 +121,7 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
   const isAllEvents = isAllEventsGuest(eventAccess)
   const headerTitle = isAllEvents ? "Wedding Invitation" : "Wedding Reception Invitation"
   const messageText = isAllEvents 
-    ? "The parents of Jay and Ankita request the honor of your presence at their son and daughter's wedding. You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:"
+    ? "The parents of Jay and Ankita request the honor of your presence at their son and daughter's wedding. Below is your personalized invitation link to RSVP:"
     : "You are invited to Jay and Ankita's Wedding Reception. Below is your personalized invitation link to RSVP:"
   
   return `<!DOCTYPE html>
@@ -130,7 +130,60 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="color-scheme" content="light" />
   <style>
+    html, body {
+      color-scheme: light;
+      -webkit-font-smoothing: antialiased;
+    }
+    @media (prefers-color-scheme: dark) {
+      body, table, td, div, p, span {
+        background-color: inherit !important;
+        color: inherit !important;
+      }
+      table[role="presentation"] {
+        background-color: #120a1a !important;
+      }
+      table[role="presentation"] table[role="presentation"] {
+        background-color: #fbf7ef !important;
+      }
+      td[style*="background-color:#fbf7ef"] {
+        background-color: #fbf7ef !important;
+      }
+      td[style*="background-color:#f3eee3"] {
+        background-color: #f3eee3 !important;
+      }
+      td[style*="background-color:#ffffff"] {
+        background-color: #ffffff !important;
+      }
+      td[style*="background-color:#2a133d"] {
+        background-color: #2a133d !important;
+      }
+      td[style*="background-color:#120a1a"] {
+        background-color: #120a1a !important;
+      }
+      p[style*="color:#2a133d"] {
+        color: #2a133d !important;
+      }
+      p[style*="color:#2b2430"] {
+        color: #2b2430 !important;
+      }
+      p[style*="color:#514a57"] {
+        color: #514a57 !important;
+      }
+      p[style*="color:#6c6473"] {
+        color: #6c6473 !important;
+      }
+      div[style*="color:#f7e7b6"] {
+        color: #f7e7b6 !important;
+      }
+      a[style*="color:#f7e7b6"] {
+        color: #f7e7b6 !important;
+      }
+      td[style*="color:#1f1a22"] {
+        color: #1f1a22 !important;
+      }
+    }
     @media only screen and (max-width:600px){
       .container{width:100% !important;}
       .px{padding-left:18px !important; padding-right:18px !important;}
@@ -141,10 +194,10 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
   </style>
 </head>
 
-<body style="margin:0;padding:0;background-color:#120a1a;">
+<body style="margin:0;padding:0;background-color:#120a1a !important;color-scheme:light;">
   <!-- Background -->
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
-         style="background-color:#120a1a;padding:38px 12px;">
+         style="background-color:#120a1a !important;padding:38px 12px;color-scheme:light;">
     <tr>
       <td align="center">
 
@@ -154,21 +207,21 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
 
           <!-- Outer glow block (safe look via padding + bg) -->
           <tr>
-            <td style="background-color:#120a1a;padding:0;">
+            <td style="background-color:#120a1a !important;padding:0;">
               <!-- Card shell -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
-                     style="background-color:#fbf7ef;border-radius:18px;overflow:hidden;
-                            border:1px solid #d8c08b; box-shadow:0 14px 36px rgba(0,0,0,0.35);">
+                     style="background-color:#fbf7ef !important;border-radius:18px;overflow:hidden;
+                            border:1px solid #d8c08b; box-shadow:0 14px 36px rgba(0,0,0,0.35);color-scheme:light;">
 
                 <!-- Top band -->
                 <tr>
-                  <td style="background-color:#2a133d;height:10px;line-height:10px;font-size:0;"></td>
+                  <td style="background-color:#2a133d !important;height:10px;line-height:10px;font-size:0;"></td>
                 </tr>
 
                 <!-- Header -->
                 <tr>
                   <td align="center" class="px"
-                      style="background-color:#2a133d;padding:44px 40px 30px;">
+                      style="background-color:#2a133d !important;padding:44px 40px 30px;">
                     <div class="h1"
                          style="font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:700;
                                 letter-spacing:2px;text-transform:uppercase;color:#f7e7b6;margin:0;">
@@ -194,27 +247,27 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
                 <!-- Body -->
                 <tr>
                   <td class="cardpad px"
-                      style="padding:46px 44px 26px;color:#1f1a22;
+                      style="padding:46px 44px 26px;color:#1f1a22 !important;background-color:#fbf7ef !important;
                              font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.9;">
 
-                    <p style="margin:0 0 20px;font-size:20px;font-weight:700;color:#2a133d;">
+                    <p style="margin:0 0 20px;font-size:20px;font-weight:700;color:#2a133d !important;">
                       Dear {{params.guestName}},
                     </p>
 
-                    <p style="margin:0 0 28px;color:#2b2430;">
+                    <p style="margin:0 0 28px;color:#2b2430 !important;">
                       ${messageText}
                     </p>
 
                     <!-- CTA -->
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:18px auto 16px;">
                       <tr>
-                        <td style="border-radius:999px;background-color:#2a133d;border:1px solid #d8c08b;"
+                        <td style="border-radius:999px;background-color:#2a133d !important;border:1px solid #d8c08b;"
                             class="btn">
                           <a href="{{params.inviteLink}}"
                              style="display:inline-block;padding:16px 42px;
                                     font-family:Arial,Helvetica,sans-serif;font-size:15px;
                                     letter-spacing:0.6px;text-decoration:none;
-                                    color:#f7e7b6;font-weight:700;">
+                                    color:#f7e7b6 !important;font-weight:700;">
                             View Your Invitation
                           </a>
                         </td>
@@ -222,19 +275,19 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
                     </table>
 
                     <p style="margin:0 0 28px;text-align:center;font-family:Arial,Helvetica,sans-serif;
-                              font-size:12px;line-height:1.6;color:#6c6473;word-break:break-all;">
+                              font-size:12px;line-height:1.6;color:#6c6473 !important;word-break:break-all;">
                       {{params.inviteLink}}
                     </p>
 
                     <!-- RSVP strip -->
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
-                           style="background-color:#ffffff;border:1px solid #e5d7b4;border-radius:12px;">
+                           style="background-color:#ffffff !important;border:1px solid #e5d7b4;border-radius:12px;">
                       <tr>
                         <td style="padding:16px 18px;">
                           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                             <tr>
-                              <td style="width:8px;background-color:#2a133d;border-radius:8px;font-size:0;line-height:0;">&nbsp;</td>
-                              <td style="padding-left:12px;font-weight:700;color:#2a133d;">
+                              <td style="width:8px;background-color:#2a133d !important;border-radius:8px;font-size:0;line-height:0;">&nbsp;</td>
+                              <td style="padding-left:12px;font-weight:700;color:#2a133d !important;">
                                 Please RSVP latest by January 10, 2026.
                               </td>
                             </tr>
@@ -249,17 +302,17 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
                 <!-- Footer -->
                 <tr>
                   <td align="center" class="px"
-                      style="padding:28px 44px 42px;background-color:#f3eee3;border-top:1px solid #eadfc7;">
-                    <p style="margin:0 0 14px;font-style:italic;color:#514a57;
+                      style="padding:28px 44px 42px;background-color:#f3eee3 !important;border-top:1px solid #eadfc7;">
+                    <p style="margin:0 0 14px;font-style:italic;color:#514a57 !important;
                               font-family:Georgia,'Times New Roman',serif;font-size:15px;">
                       With love and warm regards,
                     </p>
 
-                    <p style="margin:0 0 6px;font-weight:700;color:#2a133d;font-size:16px;">
+                    <p style="margin:0 0 6px;font-weight:700;color:#2a133d !important;font-size:16px;">
                       Bhavan & Nina Mehta
                     </p>
 
-                    <p style="margin:0;font-weight:700;color:#2a133d;font-size:16px;">
+                    <p style="margin:0;font-weight:700;color:#2a133d !important;font-size:16px;">
                       Brijesh Kumar & Ruchira Sharma
                     </p>
                   </td>
@@ -267,7 +320,7 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
 
                 <!-- Bottom band -->
                 <tr>
-                  <td style="background-color:#2a133d;height:10px;line-height:10px;font-size:0;"></td>
+                  <td style="background-color:#2a133d !important;height:10px;line-height:10px;font-size:0;"></td>
                 </tr>
 
               </table>
