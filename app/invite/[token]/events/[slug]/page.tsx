@@ -382,14 +382,10 @@ export default function EventDetailsPage() {
                       fontWeight: 500,
                       fontStyle: 'normal',
                       letterSpacing: '0.03em',
+                      ...(isReception ? {
+                        textShadow: '0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)',
+                      } : {}),
                     }}
-                    style={
-                      isReception
-                        ? {
-                            textShadow: '0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)',
-                          }
-                        : {}
-                    }
                   >
                     {event.title}
                   </h1>
