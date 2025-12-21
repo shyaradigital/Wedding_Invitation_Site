@@ -20,7 +20,7 @@ interface Guest {
   numberOfAttendees: number // Kept for backward compatibility, but should use getAttendeeCount helper
   numberOfAttendeesPerEvent?: Record<string, number> | null
   rsvpSubmitted?: boolean
-  rsvpStatus?: Record<string, 'yes' | 'no' | 'pending'> | null
+  rsvpStatus?: Record<string, 'yes' | 'no'> | null
   rsvpSubmittedAt?: string | null
   preferencesSubmitted?: boolean
   menuPreference?: string | null
@@ -175,7 +175,7 @@ export default function GuestEditor({
         : safeParseJson<string[]>(guest.eventAccess as any, []),
       rsvpStatus: guest.rsvpStatus && typeof guest.rsvpStatus === 'object' && !Array.isArray(guest.rsvpStatus)
         ? guest.rsvpStatus
-        : safeParseJson<Record<string, 'yes' | 'no' | 'pending'>>(guest.rsvpStatus as any, {}),
+        : safeParseJson<Record<string, 'yes' | 'no'>>(guest.rsvpStatus as any, {}),
       numberOfAttendeesPerEvent: guest.numberOfAttendeesPerEvent && typeof guest.numberOfAttendeesPerEvent === 'object'
         ? guest.numberOfAttendeesPerEvent
         : safeParseJson<Record<string, number>>(guest.numberOfAttendeesPerEvent as any, {})
@@ -458,7 +458,6 @@ export default function GuestEditor({
     const rsvpStatusLabels: Record<string, string> = {
       'attending': 'Attending',
       'not-attending': 'Not Attending',
-      'pending': 'Pending',
       'not-submitted': 'Not Submitted',
     }
 
@@ -466,18 +465,20 @@ export default function GuestEditor({
     const excelData = selectedGuestList.map(guest => {
       const rsvpStatus = guest.rsvpStatus || {}
       const overallStatus = getOverallRsvpStatus(guest)
+      const attendeesPerEvent = guest.numberOfAttendeesPerEvent || {}
       
       return {
         'Name': guest.name,
+        'Email': guest.email || '',
         'Phone': guest.phone || '',
         'Events': guest.eventAccess.join('; '),
         'RSVP Status': rsvpStatusLabels[overallStatus] || 'Not Submitted',
-        'Mehndi RSVP': rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : rsvpStatus.mehndi === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
-        'Wedding RSVP': rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : rsvpStatus.wedding === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
-        'Reception RSVP': rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : rsvpStatus.reception === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
+        'Mehndi RSVP': rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : 'Not Attending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
+        'Wedding RSVP': rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : 'Not Attending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
+        'Wedding Attendees': rsvpStatus.wedding === 'yes' && attendeesPerEvent.wedding && typeof attendeesPerEvent.wedding === 'number' ? attendeesPerEvent.wedding : '',
+        'Reception RSVP': rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : 'Not Attending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
+        'Reception Attendees': rsvpStatus.reception === 'yes' && attendeesPerEvent.reception && typeof attendeesPerEvent.reception === 'number' ? attendeesPerEvent.reception : '',
         'Menu Preference': guest.menuPreference ? (guest.menuPreference === 'veg' ? 'Vegetarian' : guest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both') : '',
-        'Dietary Restrictions': guest.dietaryRestrictions || '',
-        'Additional Info': guest.additionalInfo || '',
         'RSVP Submitted At': formatDateForExcel(guest.rsvpSubmittedAt),
         'Devices': guest.allowedDevices.length,
         'Max Devices': guest.maxDevicesAllowed,
@@ -642,13 +643,13 @@ export default function GuestEditor({
   }
 
   // Helper function to get overall RSVP status
-  const getOverallRsvpStatus = useCallback((guest: Guest): 'attending' | 'not-attending' | 'pending' | 'not-submitted' => {
+  const getOverallRsvpStatus = useCallback((guest: Guest): 'attending' | 'not-attending' | 'not-submitted' => {
     if (!guest.rsvpSubmitted || !guest.rsvpStatus) return 'not-submitted'
     
     // Ensure rsvpStatus is an object
     const rsvpStatus = typeof guest.rsvpStatus === 'object' && !Array.isArray(guest.rsvpStatus)
       ? guest.rsvpStatus
-      : safeParseJson<Record<string, 'yes' | 'no' | 'pending'>>(guest.rsvpStatus as any, {})
+      : safeParseJson<Record<string, 'yes' | 'no'>>(guest.rsvpStatus as any, {})
     
     // Ensure eventAccess is an array
     const eventAccess = Array.isArray(guest.eventAccess) 
@@ -658,11 +659,9 @@ export default function GuestEditor({
     // Check if attending any event
     const hasAttending = eventAccess.some(event => rsvpStatus[event] === 'yes')
     const hasNotAttending = eventAccess.some(event => rsvpStatus[event] === 'no')
-    const hasPending = eventAccess.some(event => rsvpStatus[event] === 'pending')
     
     if (hasAttending) return 'attending'
-    if (hasNotAttending && !hasAttending && !hasPending) return 'not-attending'
-    if (hasPending) return 'pending'
+    if (hasNotAttending && !hasAttending) return 'not-attending'
     return 'not-submitted'
   }, [])
 
@@ -673,7 +672,6 @@ export default function GuestEditor({
     const rsvpStatusLabels: Record<string, string> = {
       'attending': 'Attending',
       'not-attending': 'Not Attending',
-      'pending': 'Pending',
       'not-submitted': 'Not Submitted',
     }
 
@@ -681,18 +679,20 @@ export default function GuestEditor({
     const excelData = guestsToExport.map(guest => {
       const rsvpStatus = guest.rsvpStatus || {}
       const overallStatus = getOverallRsvpStatus(guest)
+      const attendeesPerEvent = guest.numberOfAttendeesPerEvent || {}
       
       return {
         'Name': guest.name,
+        'Email': guest.email || '',
         'Phone': guest.phone || '',
         'Events': guest.eventAccess.join('; '),
         'RSVP Status': rsvpStatusLabels[overallStatus] || 'Not Submitted',
-        'Mehndi RSVP': rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : rsvpStatus.mehndi === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
-        'Wedding RSVP': rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : rsvpStatus.wedding === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
-        'Reception RSVP': rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : rsvpStatus.reception === 'no' ? 'Not Attending' : 'Pending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
+        'Mehndi RSVP': rsvpStatus.mehndi ? (rsvpStatus.mehndi === 'yes' ? 'Attending' : 'Not Attending') : (guest.eventAccess.includes('mehndi') ? 'Not Submitted' : 'N/A'),
+        'Wedding RSVP': rsvpStatus.wedding ? (rsvpStatus.wedding === 'yes' ? 'Attending' : 'Not Attending') : (guest.eventAccess.includes('wedding') ? 'Not Submitted' : 'N/A'),
+        'Wedding Attendees': rsvpStatus.wedding === 'yes' && attendeesPerEvent.wedding && typeof attendeesPerEvent.wedding === 'number' ? attendeesPerEvent.wedding : '',
+        'Reception RSVP': rsvpStatus.reception ? (rsvpStatus.reception === 'yes' ? 'Attending' : 'Not Attending') : (guest.eventAccess.includes('reception') ? 'Not Submitted' : 'N/A'),
+        'Reception Attendees': rsvpStatus.reception === 'yes' && attendeesPerEvent.reception && typeof attendeesPerEvent.reception === 'number' ? attendeesPerEvent.reception : '',
         'Menu Preference': guest.menuPreference ? (guest.menuPreference === 'veg' ? 'Vegetarian' : guest.menuPreference === 'non-veg' ? 'Non-Vegetarian' : 'Both') : '',
-        'Dietary Restrictions': guest.dietaryRestrictions || '',
-        'Additional Info': guest.additionalInfo || '',
         'RSVP Submitted At': formatDateForExcel(guest.rsvpSubmittedAt),
         'Devices': guest.allowedDevices.length,
         'Max Devices': guest.maxDevicesAllowed,
@@ -1541,7 +1541,6 @@ export default function GuestEditor({
                   <option value="all">All RSVP</option>
                   <option value="attending">✓ Attending</option>
                   <option value="not-attending">✗ Not Attending</option>
-                  <option value="pending">⏳ Pending</option>
                   <option value="not-submitted">❓ Not Submitted</option>
                 </select>
               </div>
@@ -1558,7 +1557,7 @@ export default function GuestEditor({
                 )}
                 {filterRsvp !== 'all' && (
                   <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                    RSVP: {filterRsvp === 'attending' ? '✓ Attending' : filterRsvp === 'not-attending' ? '✗ Not Attending' : filterRsvp === 'pending' ? '⏳ Pending' : '❓ Not Submitted'}
+                    RSVP: {filterRsvp === 'attending' ? '✓ Attending' : filterRsvp === 'not-attending' ? '✗ Not Attending' : '❓ Not Submitted'}
                     <button onClick={() => setFilterRsvp('all')} className="ml-2 hover:text-red-600 transition-colors">×</button>
                   </span>
                 )}

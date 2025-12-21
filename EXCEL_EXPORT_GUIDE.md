@@ -19,15 +19,16 @@ The following table describes each column in the exported Excel file:
 | Column Name | Data Type | Description | Example Values | Notes |
 |-------------|-----------|-------------|----------------|-------|
 | **Name** | Text | The full name of the guest | "John Doe", "Jane Smith" | This is the primary identifier for each guest |
+| **Email** | Text | Contact email address | "john@example.com", "jane@example.com" | May be empty if not provided during guest creation |
 | **Phone** | Text | Contact phone number | "+1234567890", "+9876543210" | May be empty if not provided during guest creation |
 | **Events** | Text | List of events the guest is invited to | "mehndi; wedding; reception", "reception" | Events are separated by semicolons. Possible events: mehndi, wedding, reception |
-| **RSVP Status** | Text | Overall RSVP status across all events | "Attending", "Not Attending", "Pending", "Not Submitted" | Calculated based on individual event RSVPs |
-| **Mehndi RSVP** | Text | RSVP status specifically for the Mehndi event | "Attending", "Not Attending", "Pending", "Not Submitted", "N/A" | Shows "N/A" if guest is not invited to this event |
-| **Wedding RSVP** | Text | RSVP status specifically for the Wedding event | "Attending", "Not Attending", "Pending", "Not Submitted", "N/A" | Shows "N/A" if guest is not invited to this event |
-| **Reception RSVP** | Text | RSVP status specifically for the Reception event | "Attending", "Not Attending", "Pending", "Not Submitted", "N/A" | Shows "N/A" if guest is not invited to this event |
+| **RSVP Status** | Text | Overall RSVP status across all events | "Attending", "Not Attending", "Not Submitted" | Calculated based on individual event RSVPs |
+| **Mehndi RSVP** | Text | RSVP status specifically for the Mehndi event | "Attending", "Not Attending", "Not Submitted", "N/A" | Shows "N/A" if guest is not invited to this event |
+| **Wedding RSVP** | Text | RSVP status specifically for the Wedding event | "Attending", "Not Attending", "Not Submitted", "N/A" | Shows "N/A" if guest is not invited to this event |
+| **Wedding Attendees** | Number | Number of attendees for the Wedding event | 1, 2, 3, "" (empty) | Only shown if guest is attending Wedding. Empty if not attending or not submitted |
+| **Reception RSVP** | Text | RSVP status specifically for the Reception event | "Attending", "Not Attending", "Not Submitted", "N/A" | Shows "N/A" if guest is not invited to this event |
+| **Reception Attendees** | Number | Number of attendees for the Reception event | 1, 2, 3, "" (empty) | Only shown if guest is attending Reception. Empty if not attending or not submitted |
 | **Menu Preference** | Text | Dietary preference selected by the guest | "Vegetarian", "Non-Vegetarian", "Both", "" (empty) | Empty if guest has not submitted preferences |
-| **Dietary Restrictions** | Text | Any special dietary requirements or restrictions | "No nuts", "Gluten-free", "Lactose intolerant", "" (empty) | Free-form text field; empty if not provided |
-| **Additional Info** | Text | Any additional notes or information provided by the guest | "Will arrive late", "Bringing +2 guests", "" (empty) | Free-form text field; empty if not provided |
 | **RSVP Submitted At** | Date/Time | Timestamp when the guest submitted their RSVP | "12/25/2024, 3:45:30 PM", "" (empty) | Formatted as local date and time; empty if RSVP not yet submitted |
 | **Devices** | Number | Number of devices currently registered/active for this guest | 0, 1, 2, 3 | Represents how many devices have accessed the invitation |
 | **Max Devices** | Number | Maximum number of devices allowed for this guest | 1, 5, 10 | Default is 10 if not specified during import |
@@ -41,16 +42,21 @@ The following table describes each column in the exported Excel file:
 The **RSVP Status** column provides a summary of the guest's response across all events:
 - **Attending**: Guest has confirmed attendance for at least one event
 - **Not Attending**: Guest has declined all events they're invited to
-- **Pending**: Guest has partially responded (some events confirmed, some declined, or mixed responses)
 - **Not Submitted**: Guest has not submitted any RSVP responses yet
 
 ### Individual Event RSVP Values
 Each event-specific RSVP column (Mehndi RSVP, Wedding RSVP, Reception RSVP) can have these values:
 - **Attending**: Guest confirmed they will attend this event
 - **Not Attending**: Guest confirmed they will not attend this event
-- **Pending**: Guest's response is pending or unclear for this event
 - **Not Submitted**: Guest has not responded for this event (but is invited)
 - **N/A**: Guest is not invited to this event, so RSVP is not applicable
+
+### Attendee Count Columns
+The **Wedding Attendees** and **Reception Attendees** columns show the number of people attending each event:
+- These columns only contain values when the guest has RSVP'd "Attending" for the respective event
+- The count comes directly from the guest's RSVP submission
+- Empty cells indicate the guest is not attending that event or has not submitted their RSVP
+- Note: Mehndi event does not collect attendee counts, so there is no "Mehndi Attendees" column
 
 ## Understanding Device Information
 
@@ -71,8 +77,8 @@ All date/time columns are formatted according to your local system settings. The
 ## Using the Exported Data
 
 The exported Excel file can be used for:
-- **Event Planning**: Track RSVP responses and attendance
-- **Catering**: Use Menu Preference and Dietary Restrictions for meal planning
+- **Event Planning**: Track RSVP responses and attendance counts
+- **Catering**: Use Menu Preference and attendee counts for meal planning
 - **Communication**: Use Phone and Email columns for sending updates
 - **Analytics**: Analyze response rates, device usage, and engagement
 - **Backup**: Keep a record of all guest information
