@@ -1670,7 +1670,7 @@ export default function GuestEditor({
       </AnimatePresence>
 
       {/* Guests List */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg border-2 border-gray-300 overflow-hidden">
         <div 
           className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
           style={{ 
