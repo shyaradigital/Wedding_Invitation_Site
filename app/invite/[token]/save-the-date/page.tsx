@@ -26,7 +26,7 @@ const eventData = {
   baraat: {
     name: 'Baraat',
     date: '21st Day of March',
-    time: '30 minutes past 9 O\'Clock in the Morning',
+    time: 'Thirty Minutes past 9 O\'Clock in the Morning',
     icon: '/Baraat_Logo-removebg-preview.png',
     slug: 'baraat',
   },
