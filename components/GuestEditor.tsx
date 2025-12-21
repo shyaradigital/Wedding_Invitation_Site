@@ -3333,7 +3333,7 @@ Please generate a complete, production-ready HTML email template that I can use 
                             </button>
                             <button
                               onClick={() => {
-                                const content = getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest, false)
+                                const content = getEmailPreviewContent(individualCustomEmailData.content, individualCustomEmailData.guest || undefined, false)
                                 setFullScreenPreviewContent(content)
                                 setShowFullScreenPreview(true)
                               }}
