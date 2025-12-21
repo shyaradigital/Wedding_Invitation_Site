@@ -73,7 +73,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
               From Jay and Ankita
             </h1>
             {guestName && (
-              <p className="text-xs text-gray-600 mt-1">Hi, {guestName.split(' ')[0]}!</p>
+              <p className="text-xs text-gray-600 mt-1">Hi, {guestName}!</p>
             )}
           </Link>
         </div>
@@ -139,7 +139,7 @@ export default function InvitationNavigation({ token, eventAccess, guestName }: 
                 From Jay and Ankita
               </h1>
               {guestName && (
-                <p className="text-xs text-gray-600">Hi, {guestName.split(' ')[0]}!</p>
+                <p className="text-xs text-gray-600">Hi, {guestName}!</p>
               )}
             </Link>
           </div>
