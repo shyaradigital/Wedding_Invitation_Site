@@ -136,7 +136,7 @@ export default function GuestInviteLayout({
                   </div>
                 </div>
                 <h2 
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-wedding-navy tracking-wide"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-wedding-navy tracking-wide"
                   style={{ 
                     fontFamily: "'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive",
                     fontWeight: 500,
