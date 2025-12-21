@@ -647,7 +647,7 @@ export default function RSVPPage() {
                     {!isReceptionOnly && overallAttendanceChoice === null && guest.eventAccess && guest.eventAccess.length > 0 && (
                       <div>
                         <label className="block text-lg sm:text-xl font-display text-wedding-navy mb-4">
-                          Will you be attending all events, some events, or none? <span className="text-red-500">*</span>
+                          <span className="inline">Will you be attending all events, some events, or none? <span className="text-red-500">*</span></span>
                         </label>
                         <OrnamentalDivider variant="simple" className="mb-4" />
                         <div className="space-y-3">
