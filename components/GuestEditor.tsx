@@ -762,7 +762,6 @@ export default function GuestEditor({
     // RSVP stats
     const rsvpAttending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'attending').length
     const rsvpNotAttending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'not-attending').length
-    const rsvpPending = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'pending').length
     const rsvpNotSubmitted = normalizedGuests.filter(g => getOverallRsvpStatus(g) === 'not-submitted').length
 
     // Menu preference stats
@@ -834,7 +833,6 @@ export default function GuestEditor({
       totalAttendees,
       rsvpAttending,
       rsvpNotAttending,
-      rsvpPending,
       rsvpNotSubmitted,
       menuVeg,
       menuNonVeg,
