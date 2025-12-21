@@ -238,7 +238,7 @@ export default function SaveTheDatePage() {
                     Venue
                   </h2>
                   <OrnamentalDivider variant="simple" className="mb-4 sm:mb-6" />
-                  <div className="text-center mb-4 sm:mb-6">
+                  <div className="text-left mb-4 sm:mb-6">
                     <p className="text-base sm:text-lg md:text-xl font-serif font-semibold text-gray-800 mb-2">
                       DoubleTree by Hilton Hotel Irvine – Spectrum
                     </p>

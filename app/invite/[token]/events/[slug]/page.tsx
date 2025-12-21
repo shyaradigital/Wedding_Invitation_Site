@@ -63,7 +63,7 @@ const eventContent: Record<string, {
     venue: 'DoubleTree by Hilton Hotel Irvine – Spectrum',
     venueDetails: 'Bridal Lounge, DoubleTree',
     address: '90 Pacifica, Irvine, CA 92618',
-    additionalInfo: 'Boxed Punjabi Chhole and Rice Dinner will be Served',
+    additionalInfo: 'Boxed Punjabi Chhole and Rice Dinner will be served',
   },
   wedding: {
     date: '21st Day of March, 2026',
@@ -265,11 +265,10 @@ export default function EventDetailsPage() {
                 Questions? Contact:
               </p>
               <a
-                href={`tel:${ADMIN_CONTACT}`}
+                href="mailto:invites@jayankitawedding.com"
                 className="text-lg sm:text-xl font-semibold text-wedding-gold hover:text-wedding-gold/80 transition-colors inline-flex items-center"
               >
-                <span className="mr-2">📞</span>
-                {ADMIN_CONTACT}
+                invites@jayankitawedding.com
               </a>
             </div>
           </motion.div>
@@ -553,7 +552,7 @@ export default function EventDetailsPage() {
                         </h2>
                         <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
                         <p className="text-base sm:text-lg md:text-xl font-serif text-gray-700 leading-relaxed">
-                          Gujarati Vegetarian Lunch to be Served After Photo Session
+                          Gujarati Vegetarian Lunch to be served After Photo Session
                         </p>
                       </div>
                     </div>
@@ -756,7 +755,7 @@ export default function EventDetailsPage() {
                     </h2>
                     <OrnamentalDivider variant="simple" className="mb-3 sm:mb-4" />
                     <p 
-                      className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed"
+                      className="text-base sm:text-lg md:text-xl font-serif text-wedding-gold-light leading-relaxed text-center"
                       style={{
                         filter: 'brightness(1.2)',
                       }}

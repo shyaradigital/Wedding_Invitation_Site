@@ -44,12 +44,12 @@ async function main() {
   await prisma.event.upsert({
     where: { slug: 'reception' },
     update: {
-      description: 'Reception ceremony is celebrated just after the main wedding day. It is the first public appearance of the newly wed couple after their marriage.',
+      description: 'Reception ceremony is celebrated just after the main wedding. It is the first public appearance of the newly wed couple after their marriage.',
     },
     create: {
       slug: 'reception',
       title: 'Reception',
-      description: 'Reception ceremony is celebrated just after the main wedding day. It is the first public appearance of the newly wed couple after their marriage.',
+      description: 'Reception ceremony is celebrated just after the main wedding. It is the first public appearance of the newly wed couple after their marriage.',
     },
   })
   console.log('✓ Updated reception description')

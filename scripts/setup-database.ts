@@ -51,7 +51,7 @@ async function main() {
     {
       slug: 'reception',
       title: 'Reception',
-      description: 'Reception ceremony is celebrated just after the main wedding day. It is the first public appearance of the newly wed couple after their marriage.',
+      description: 'Reception ceremony is celebrated just after the main wedding. It is the first public appearance of the newly wed couple after their marriage.',
     },
   ]
 

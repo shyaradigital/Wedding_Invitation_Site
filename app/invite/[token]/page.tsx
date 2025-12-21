@@ -73,11 +73,10 @@ export default function InvitePage() {
               Contact:
             </p>
             <a
-              href={`tel:${ADMIN_CONTACT}`}
+              href="mailto:invites@jayankitawedding.com"
               className="text-lg sm:text-xl font-semibold text-wedding-gold hover:text-wedding-gold/80 transition-colors inline-flex items-center"
             >
-              <span className="mr-2">📞</span>
-              {ADMIN_CONTACT}
+              invites@jayankitawedding.com
             </a>
           </div>
         </motion.div>

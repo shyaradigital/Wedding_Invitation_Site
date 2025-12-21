@@ -460,6 +460,9 @@ export default function RSVPPage() {
 
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+                    <p className="text-xs sm:text-sm text-gray-500 text-center font-serif mb-4">
+                      This form can only be submitted once. Please review your information before submitting.
+                    </p>
                     {/* Reception-Only Flow - Skip preliminary question */}
                     {isReceptionOnly && (
                       <div>
@@ -982,10 +985,6 @@ export default function RSVPPage() {
                         {isSubmitting ? 'Saving...' : 'Submit RSVP'}
                       </button>
                     </div>
-
-                    <p className="text-xs sm:text-sm text-gray-500 text-center font-serif">
-                      This form can only be submitted once. Please review your information before submitting.
-                    </p>
                   </form>
                 </div>
               )}
