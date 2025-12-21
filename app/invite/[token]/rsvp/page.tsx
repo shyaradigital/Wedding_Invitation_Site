@@ -648,13 +648,16 @@ export default function RSVPPage() {
                       <div>
                         <div className="text-lg sm:text-xl font-display text-wedding-navy mb-4">
                           <label className="inline">
-                            Will you be attending all events, some events, or none? <span className="text-red-500">*</span>
+                            Will you be attending all events, some events, or none?
                           </label>
                         </div>
                         <OrnamentalDivider variant="simple" className="mb-4" />
                         <div className="space-y-3">
                           <label 
-                            onClick={() => setOverallAttendanceChoice('all')}
+                            onClick={() => {
+                              setOverallAttendanceChoice('all')
+                              setError(null)
+                            }}
                             className="flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40"
                             style={{ WebkitTapHighlightColor: 'transparent' }}
                           >
@@ -663,14 +666,20 @@ export default function RSVPPage() {
                               name="overall-attendance"
                               value="all"
                               checked={overallAttendanceChoice === 'all'}
-                              onChange={() => setOverallAttendanceChoice('all')}
+                              onChange={() => {
+                                setOverallAttendanceChoice('all')
+                                setError(null)
+                              }}
                               onClick={(e) => e.stopPropagation()}
                               className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                             />
                             <span className="text-base sm:text-lg font-serif flex-1 text-gray-700">All Events</span>
                           </label>
                           <label 
-                            onClick={() => setOverallAttendanceChoice('some')}
+                            onClick={() => {
+                              setOverallAttendanceChoice('some')
+                              setError(null)
+                            }}
                             className="flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40"
                             style={{ WebkitTapHighlightColor: 'transparent' }}
                           >
@@ -679,14 +688,20 @@ export default function RSVPPage() {
                               name="overall-attendance"
                               value="some"
                               checked={overallAttendanceChoice === 'some'}
-                              onChange={() => setOverallAttendanceChoice('some')}
+                              onChange={() => {
+                                setOverallAttendanceChoice('some')
+                                setError(null)
+                              }}
                               onClick={(e) => e.stopPropagation()}
                               className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                             />
                             <span className="text-base sm:text-lg font-serif flex-1 text-gray-700">Some Events</span>
                           </label>
                           <label 
-                            onClick={() => setOverallAttendanceChoice('none')}
+                            onClick={() => {
+                              setOverallAttendanceChoice('none')
+                              setError(null)
+                            }}
                             className="flex items-center p-4 sm:p-5 border-2 rounded-xl cursor-pointer transition-all touch-manipulation min-h-[56px] select-none bg-white/50 border-wedding-gold/30 hover:bg-wedding-cream/30 active:bg-wedding-cream/40"
                             style={{ WebkitTapHighlightColor: 'transparent' }}
                           >
@@ -695,7 +710,10 @@ export default function RSVPPage() {
                               name="overall-attendance"
                               value="none"
                               checked={overallAttendanceChoice === 'none'}
-                              onChange={() => setOverallAttendanceChoice('none')}
+                              onChange={() => {
+                                setOverallAttendanceChoice('none')
+                                setError(null)
+                              }}
                               onClick={(e) => e.stopPropagation()}
                               className="mr-4 w-5 h-5 sm:w-6 sm:h-6 text-wedding-gold focus:ring-wedding-gold touch-manipulation pointer-events-none"
                             />
