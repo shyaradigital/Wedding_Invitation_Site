@@ -121,174 +121,161 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
   const isAllEvents = isAllEventsGuest(eventAccess)
   const headerTitle = isAllEvents ? "Wedding Invitation" : "Wedding Reception Invitation"
   const messageText = isAllEvents 
-    ? "You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:"
-    : "You are invited to Jay and Ankita's Wedding Reception Invitation. Below is your personalized invitation link to RSVP:"
+    ? "The parents of Jay and Ankita request the honor of your presence at their son and daughter's wedding. You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:"
+    : "You are invited to Jay and Ankita's Wedding Reception. Below is your personalized invitation link to RSVP:"
   
   return `<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <style>
-    body {
-      font-family: 'Georgia', 'Times New Roman', serif;
-      line-height: 1.8;
-      color: #2c2c2c;
-      margin: 0;
-      padding: 0;
-      background-color: #faf8f5;
-      -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
-    }
-    table {
-      border-collapse: collapse;
-      mso-table-lspace: 0pt;
-      mso-table-rspace: 0pt;
-    }
-    img {
-      border: 0;
-      height: auto;
-      line-height: 100%;
-      outline: none;
-      text-decoration: none;
-      -ms-interpolation-mode: bicubic;
-    }
-    @media only screen and (max-width: 600px) {
-      .email-container {
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-      .content-cell {
-        padding: 30px 20px !important;
-      }
-      .header-cell {
-        padding: 40px 20px 30px !important;
-      }
-      .header-title {
-        font-size: 26px !important;
-      }
-      .greeting-text {
-        font-size: 19px !important;
-      }
-      .message-text {
-        font-size: 15px !important;
-      }
-      .button-link {
-        padding: 14px 32px !important;
-        font-size: 15px !important;
-      }
-      .footer-cell {
-        padding: 30px 20px !important;
-      }
+    @media only screen and (max-width:600px){
+      .container{width:100% !important;}
+      .px{padding-left:18px !important; padding-right:18px !important;}
+      .h1{font-size:26px !important; letter-spacing:1px !important;}
+      .btn a{padding:14px 26px !important; font-size:14px !important;}
+      .cardpad{padding:30px 18px !important;}
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #faf8f5;">
-  <!-- Main Container -->
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #faf8f5; padding: 40px 10px;">
+
+<body style="margin:0;padding:0;background-color:#120a1a;">
+  <!-- Background -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+         style="background-color:#120a1a;padding:38px 12px;">
     <tr>
       <td align="center">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="email-container" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.08);">
-          
-          <!-- Decorative Top Border -->
+
+        <!-- Container -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="container"
+               style="max-width:600px;width:600px;">
+
+          <!-- Outer glow block (safe look via padding + bg) -->
           <tr>
-            <td style="background: linear-gradient(90deg, #D4AF37 0%, #F5E6D3 50%, #D4AF37 100%); height: 6px;"></td>
-          </tr>
-          
-          <!-- Header Section -->
-          <tr>
-            <td class="header-cell" style="background: linear-gradient(135deg, #D4AF37 0%, #C9A030 100%); padding: 50px 40px 40px; text-align: center; position: relative;">
-              <!-- Decorative Pattern Background -->
-              <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px;"></div>
-              <h1 class="header-title" style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1; font-family: 'Georgia', serif;">${headerTitle}</h1>
-              <div style="width: 80px; height: 2px; background-color: rgba(255,255,255,0.6); margin: 20px auto 0; position: relative; z-index: 1;"></div>
-            </td>
-          </tr>
-          
-          <!-- Main Content -->
-          <tr>
-            <td class="content-cell" style="padding: 50px 40px;">
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                
-                <!-- Greeting -->
+            <td style="background-color:#120a1a;padding:0;">
+              <!-- Card shell -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                     style="background-color:#fbf7ef;border-radius:18px;overflow:hidden;
+                            border:1px solid #d8c08b; box-shadow:0 14px 36px rgba(0,0,0,0.35);">
+
+                <!-- Top band -->
                 <tr>
-                  <td style="padding-bottom: 25px;">
-                    <p class="greeting-text" style="margin: 0; font-size: 22px; color: #8B4513; font-weight: 600; font-family: 'Georgia', serif; letter-spacing: 0.5px;">Dear {{params.guestName}},</p>
-                  </td>
+                  <td style="background-color:#2a133d;height:10px;line-height:10px;font-size:0;"></td>
                 </tr>
-                
-                <!-- Main Message -->
+
+                <!-- Header -->
                 <tr>
-                  <td style="padding-bottom: 35px;">
-                    <p class="message-text" style="margin: 0; font-size: 17px; color: #3d3d3d; line-height: 1.9; font-family: 'Georgia', serif;">${messageText}</p>
-                  </td>
-                </tr>
-                
-                <!-- Button Container with Decorative Elements -->
-                <tr>
-                  <td style="padding-bottom: 30px; text-align: center;">
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+                  <td align="center" class="px"
+                      style="background-color:#2a133d;padding:44px 40px 30px;">
+                    <div class="h1"
+                         style="font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:700;
+                                letter-spacing:2px;text-transform:uppercase;color:#f7e7b6;margin:0;">
+                      ${headerTitle}
+                    </div>
+
+                    <!-- Decorative lines (no extra text characters) -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="160"
+                           style="margin:18px auto 0;">
                       <tr>
-                        <td style="background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%); border-radius: 50px; box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35), 0 2px 8px rgba(212, 175, 55, 0.2);">
-                          <a href="{{params.inviteLink}}" class="button-link" style="display: inline-block; padding: 18px 48px; color: #ffffff !important; text-decoration: none; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; font-family: 'Georgia', serif; text-transform: uppercase;">View Your Invitation</a>
-                        </td>
+                        <td style="height:1px;background-color:#d8c08b;line-height:1px;font-size:0;"></td>
+                      </tr>
+                      <tr>
+                        <td style="height:10px;line-height:10px;font-size:0;"></td>
+                      </tr>
+                      <tr>
+                        <td style="height:1px;background-color:#d8c08b;line-height:1px;font-size:0;"></td>
                       </tr>
                     </table>
                   </td>
                 </tr>
-                
-                <!-- Invitation Link -->
+
+                <!-- Body -->
                 <tr>
-                  <td style="padding-bottom: 40px; text-align: center;">
-                    <p style="margin: 0; font-size: 13px; color: #888888; word-break: break-all; line-height: 1.6; font-family: Arial, sans-serif;">{{params.inviteLink}}</p>
-                  </td>
-                </tr>
-                
-                <!-- RSVP Deadline Box -->
-                <tr>
-                  <td style="padding-bottom: 30px;">
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(135deg, #FFF9E8 0%, #FFF4DC 100%); border-left: 6px solid #D4AF37; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                  <td class="cardpad px"
+                      style="padding:46px 44px 26px;color:#1f1a22;
+                             font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.9;">
+
+                    <p style="margin:0 0 20px;font-size:20px;font-weight:700;color:#2a133d;">
+                      Dear {{params.guestName}},
+                    </p>
+
+                    <p style="margin:0 0 28px;color:#2b2430;">
+                      ${messageText}
+                    </p>
+
+                    <!-- CTA -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:18px auto 16px;">
                       <tr>
-                        <td style="padding: 24px 28px;">
-                          <p style="margin: 0; font-size: 17px; color: #8B4513; font-weight: 700; font-family: 'Georgia', serif; line-height: 1.6;">Please RSVP latest by January 10, 2026.</p>
+                        <td style="border-radius:999px;background-color:#2a133d;border:1px solid #d8c08b;"
+                            class="btn">
+                          <a href="{{params.inviteLink}}"
+                             style="display:inline-block;padding:16px 42px;
+                                    font-family:Arial,Helvetica,sans-serif;font-size:15px;
+                                    letter-spacing:0.6px;text-decoration:none;
+                                    color:#f7e7b6;font-weight:700;">
+                            View Your Invitation
+                          </a>
                         </td>
                       </tr>
                     </table>
+
+                    <p style="margin:0 0 28px;text-align:center;font-family:Arial,Helvetica,sans-serif;
+                              font-size:12px;line-height:1.6;color:#6c6473;word-break:break-all;">
+                      {{params.inviteLink}}
+                    </p>
+
+                    <!-- RSVP strip -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                           style="background-color:#ffffff;border:1px solid #e5d7b4;border-radius:12px;">
+                      <tr>
+                        <td style="padding:16px 18px;">
+                          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                              <td style="width:8px;background-color:#2a133d;border-radius:8px;font-size:0;line-height:0;">&nbsp;</td>
+                              <td style="padding-left:12px;font-weight:700;color:#2a133d;">
+                                Please RSVP latest by January 10, 2026.
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
                   </td>
                 </tr>
-                
-              </table>
-            </td>
-          </tr>
-          
-          <!-- Footer Section -->
-          <tr>
-            <td class="footer-cell" style="background: linear-gradient(180deg, #faf8f5 0%, #f5f0e8 100%); padding: 45px 40px; border-top: 1px solid #e8e0d0;">
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+
+                <!-- Footer -->
                 <tr>
-                  <td style="text-align: center;">
-                    <!-- Decorative Separator -->
-                    <div style="width: 60px; height: 1px; background: linear-gradient(90deg, transparent, #D4AF37, transparent); margin: 0 auto 30px;"></div>
-                    
-                    <!-- Signature -->
-                    <p style="margin: 0 0 20px 0; font-size: 16px; color: #5a5a5a; line-height: 1.8; font-family: 'Georgia', serif; font-style: italic;">With love and warm regards,</p>
-                    
-                    <p style="margin: 0 0 8px 0; font-size: 17px; color: #8B4513; font-weight: 700; font-family: 'Georgia', serif; letter-spacing: 0.3px;">Bhavan & Nina Mehta</p>
-                    
-                    <p style="margin: 0; font-size: 17px; color: #8B4513; font-weight: 700; font-family: 'Georgia', serif; letter-spacing: 0.3px;">Brijesh Kumar & Ruchira Sharma</p>
+                  <td align="center" class="px"
+                      style="padding:28px 44px 42px;background-color:#f3eee3;border-top:1px solid #eadfc7;">
+                    <p style="margin:0 0 14px;font-style:italic;color:#514a57;
+                              font-family:Georgia,'Times New Roman',serif;font-size:15px;">
+                      With love and warm regards,
+                    </p>
+
+                    <p style="margin:0 0 6px;font-weight:700;color:#2a133d;font-size:16px;">
+                      Bhavan & Nina Mehta
+                    </p>
+
+                    <p style="margin:0;font-weight:700;color:#2a133d;font-size:16px;">
+                      Brijesh Kumar & Ruchira Sharma
+                    </p>
                   </td>
                 </tr>
+
+                <!-- Bottom band -->
+                <tr>
+                  <td style="background-color:#2a133d;height:10px;line-height:10px;font-size:0;"></td>
+                </tr>
+
               </table>
             </td>
           </tr>
-          
-          <!-- Bottom Decorative Border -->
-          <tr>
-            <td style="background: linear-gradient(90deg, #D4AF37 0%, #F5E6D3 50%, #D4AF37 100%); height: 6px;"></td>
-          </tr>
-          
+
         </table>
+
       </td>
     </tr>
   </table>
@@ -304,7 +291,7 @@ export function getDefaultInvitationText(eventAccess: string[] = ['mehndi', 'wed
   const isAllEvents = isAllEventsGuest(eventAccess)
   const messageText = isAllEvents 
     ? "You are invited to Jay and Ankita's wedding celebration!"
-    : "You are invited to Jay and Ankita's Wedding Reception Invitation."
+    : "You are invited to Jay and Ankita's Wedding Reception."
   
   return `Dear {{params.guestName}},
 ${messageText} 
