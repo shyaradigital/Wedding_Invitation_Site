@@ -104,9 +104,27 @@ export async function sendTransactionalEmail(
 }
 
 /**
- * Generates default HTML invitation template with placeholders
+ * Determines if guest has all events access
  */
-export function getDefaultInvitationHTML(): string {
+function isAllEventsGuest(eventAccess: string[]): boolean {
+  return eventAccess.length === 3 && 
+    eventAccess.includes('mehndi') && 
+    eventAccess.includes('wedding') && 
+    eventAccess.includes('reception')
+}
+
+/**
+ * Generates default HTML invitation template with placeholders
+ * @param eventAccess - Array of event slugs the guest has access to
+ */
+export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wedding', 'reception']): string {
+  const isAllEvents = isAllEventsGuest(eventAccess)
+  
+  // Different opening text based on guest type
+  const openingText = isAllEvents
+    ? "You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:"
+    : "You are invited to Jay and Ankita's wedding reception! Below is your personalized invitation link to RSVP:"
+  
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -114,70 +132,170 @@ export function getDefaultInvitationHTML(): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 1.8;
+      color: #2c2c2c;
       max-width: 600px;
       margin: 0 auto;
-      padding: 20px;
-      background-color: #f5f5f5;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f0e8 0%, #fff8f0 100%);
     }
-    .container {
+    .email-wrapper {
       background-color: #ffffff;
-      border-radius: 8px;
-      padding: 30px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
-    h2 {
+    .header {
+      background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+      padding: 30px 30px 25px;
+      text-align: center;
+    }
+    .header h1 {
+      color: #ffffff;
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .content {
+      padding: 35px 30px;
+    }
+    .greeting {
+      font-size: 20px;
       color: #8B4513;
-      margin-top: 0;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .message {
+      font-size: 16px;
+      color: #2c2c2c;
+      margin-bottom: 25px;
+      line-height: 1.8;
+    }
+    .invite-button-wrapper {
+      text-align: center;
+      margin: 30px 0;
     }
     .invite-link {
       display: inline-block;
-      padding: 12px 24px;
-      background-color: #D4AF37;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
       color: #ffffff;
       text-decoration: none;
-      border-radius: 4px;
-      margin: 20px 0;
-      font-weight: bold;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+      transition: all 0.3s ease;
     }
     .invite-link:hover {
-      background-color: #B8941F;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    }
+    .link-text {
+      text-align: center;
+      word-break: break-all;
+      color: #666;
+      font-size: 12px;
+      margin-top: 15px;
+      padding: 0 20px;
     }
     .rsvp-note {
-      background-color: #FFFEF7;
-      border-left: 4px solid #D4AF37;
-      padding: 15px;
-      margin: 20px 0;
+      background: linear-gradient(135deg, #FFFEF7 0%, #FFF9E6 100%);
+      border-left: 5px solid #D4AF37;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .rsvp-note strong {
+      color: #8B4513;
+      font-size: 16px;
     }
     .footer {
-      margin-top: 30px;
+      background: linear-gradient(135deg, #f8f6f2 0%, #f5f0e8 100%);
+      padding: 30px;
+      border-top: 2px solid #e8e0d0;
+    }
+    .signature {
+      text-align: center;
+      color: #2c2c2c;
+      font-size: 15px;
+      line-height: 2;
+      margin-bottom: 20px;
+    }
+    .signature-name {
+      font-weight: 600;
+      color: #8B4513;
+      margin-top: 5px;
+    }
+    .contact-info {
+      text-align: center;
+      color: #666;
+      font-size: 13px;
+      margin-top: 20px;
       padding-top: 20px;
       border-top: 1px solid #e0e0e0;
-      color: #666;
-      font-size: 14px;
-      text-align: center;
+    }
+    .contact-info a {
+      color: #D4AF37;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+    @media only screen and (max-width: 600px) {
+      .content {
+        padding: 25px 20px;
+      }
+      .header {
+        padding: 25px 20px 20px;
+      }
+      .header h1 {
+        font-size: 24px;
+      }
+      .greeting {
+        font-size: 18px;
+      }
+      .message {
+        font-size: 15px;
+      }
+      .invite-link {
+        padding: 14px 30px;
+        font-size: 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Hi {{params.guestName}}👋</h2>
-    <p>You are invited to Jay Mehta and Ankita Sharma's wedding celebrations!</p>
-    <p>Below is your personalized event(s) invitation link:</p>
-    <p style="text-align: center;">
-      <a href="{{params.inviteLink}}" class="invite-link">View Your Invitation</a>
-    </p>
-    <p style="text-align: center; word-break: break-all; color: #666; font-size: 14px;">
-      {{params.inviteLink}}
-    </p>
-    <div class="rsvp-note">
-      <strong>Please RSVP latest by January 10, 2026.</strong>
+  <div class="email-wrapper">
+    <div class="header">
+      <h1>Wedding Invitation</h1>
     </div>
-    <p>Looking forward to celebrating with you! 💛</p>
-    <div class="footer">
-      <p>With love,<br>Jay Mehta & Ankita Sharma</p>
+    <div class="content">
+      <div class="greeting">Hi {{params.guestName}}👋</div>
+      <div class="message">${openingText}</div>
+      <div class="invite-button-wrapper">
+        <a href="{{params.inviteLink}}" class="invite-link">View Your Invitation</a>
+      </div>
+      <div class="link-text">{{params.inviteLink}}</div>
+      <div class="rsvp-note">
+        <strong>Please RSVP latest by January 10, 2026.</strong>
+      </div>
+      <div class="footer">
+        <div class="signature">
+          With love and warm regards,<br>
+          <span class="signature-name">Bhavan & Nina Mehta</span><br>
+          <span class="signature-name">Brijesh Kumar & Ruchira Sharma</span>
+        </div>
+        <div class="contact-info">
+          Please contact <a href="mailto:mehtabv@gmail.com">Bhavan Mehta at mehtabv@gmail.com</a> if you have any questions.
+        </div>
+      </div>
     </div>
   </div>
 </body>
@@ -186,21 +304,28 @@ export function getDefaultInvitationHTML(): string {
 
 /**
  * Generates default plain text invitation template with placeholders
+ * @param eventAccess - Array of event slugs the guest has access to
  */
-export function getDefaultInvitationText(): string {
+export function getDefaultInvitationText(eventAccess: string[] = ['mehndi', 'wedding', 'reception']): string {
+  const isAllEvents = isAllEventsGuest(eventAccess)
+  
+  // Different opening text based on guest type
+  const openingText = isAllEvents
+    ? "You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:"
+    : "You are invited to Jay and Ankita's wedding reception! Below is your personalized invitation link to RSVP:"
+  
   return `Hi {{params.guestName}}👋
 
-You are invited to Jay Mehta and Ankita Sharma's wedding celebrations!
-
-Below is your personalized event(s) invitation link:
+${openingText}
 {{params.inviteLink}}
 
 Please RSVP latest by January 10, 2026.
 
-Looking forward to celebrating with you! 💛
+With love and warm regards,
+Bhavan & Nina Mehta
+Brijesh Kumar & Ruchira Sharma
 
-With love,
-Jay Mehta & Ankita Sharma`
+Please contact Bhavan Mehta at mehtabv@gmail.com if you have any questions.`
 }
 
 /**

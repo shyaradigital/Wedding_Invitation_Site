@@ -2564,7 +2564,7 @@ export default function GuestEditor({
                       <div
                         dangerouslySetInnerHTML={{
                           __html: getEmailPreviewContent(
-                            getDefaultInvitationHTML(),
+                            getDefaultInvitationHTML(emailPreviewGuest.eventAccess || ['mehndi', 'wedding', 'reception']),
                             emailPreviewGuest,
                             false
                           ),

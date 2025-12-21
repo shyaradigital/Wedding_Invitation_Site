@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin-auth'
-import { setNoCacheHeaders } from '@/lib/utils'
+import { setNoCacheHeaders, ensureJsonArray } from '@/lib/utils'
 import { sendTransactionalEmail, getDefaultInvitationHTML, getDefaultInvitationText } from '@/lib/brevo'
 import { z } from 'zod'
 
@@ -22,6 +22,13 @@ export async function POST(request: NextRequest) {
     // Get guest from database
     const guest = await prisma.guest.findUnique({
       where: { id: data.guestId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        token: true,
+        eventAccess: true,
+      },
     })
 
     if (!guest) {
@@ -48,6 +55,9 @@ export async function POST(request: NextRequest) {
     // Use custom message or default template
     const subject = data.customSubject || "Jay Mehta and Ankita Sharma's Wedding Invitation"
     
+    // Parse eventAccess from JSON string
+    const eventAccess = ensureJsonArray(guest.eventAccess) as string[]
+    
     let htmlContent: string | undefined
     let textContent: string | undefined
 
@@ -58,11 +68,11 @@ export async function POST(request: NextRequest) {
         htmlContent = data.customMessage
       }
     } else {
-      // Use default template
+      // Use default template with eventAccess
       if (data.isPlainText) {
-        textContent = getDefaultInvitationText()
+        textContent = getDefaultInvitationText(eventAccess)
       } else {
-        htmlContent = getDefaultInvitationHTML()
+        htmlContent = getDefaultInvitationHTML(eventAccess)
       }
     }
 
