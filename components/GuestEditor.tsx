@@ -90,7 +90,7 @@ export default function GuestEditor({
     isPlainText: boolean
     guest: Guest | null
   }>({
-    subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+    subject: "Jay and Ankita's Wedding Invitation",
     content: '',
     isPlainText: false,
     guest: null,
@@ -104,7 +104,7 @@ export default function GuestEditor({
     isPlainText: boolean
     previewMode: 'editor' | 'preview'
   }>({
-    subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+    subject: "Jay and Ankita's Wedding Invitation",
     content: '',
     isPlainText: false,
     previewMode: 'editor',
@@ -116,6 +116,7 @@ export default function GuestEditor({
   const [isResetting, setIsResetting] = useState(false)
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false)
   const [isDeletingAll, setIsDeletingAll] = useState(false)
+  const [showBulkSendConfirm, setShowBulkSendConfirm] = useState(false)
 
   // Helper function to safely parse JSON string or return the value as-is
   const safeParseJson = <T,>(value: string | T | null | undefined, fallback: T): T => {
@@ -1041,7 +1042,7 @@ export default function GuestEditor({
     setEmailChoiceGuest(null)
     setError(null) // Clear any previous errors
     setIndividualCustomEmailData({
-      subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+      subject: "Jay and Ankita's Wedding Invitation",
       content: '',
       isPlainText: false,
       guest: guest,
@@ -1089,7 +1090,7 @@ export default function GuestEditor({
         setSuccess(`Custom email sent to ${individualCustomEmailData.guest.name}!`)
         setShowIndividualCustomEmailModal(false)
         setIndividualCustomEmailData({
-          subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+          subject: "Jay and Ankita's Wedding Invitation",
           content: '',
           isPlainText: false,
           guest: null,
@@ -1148,7 +1149,7 @@ export default function GuestEditor({
     }
   }
 
-  const handleSendBulkInvitations = async () => {
+  const handleSendBulkInvitations = () => {
     const guestsWithEmail = normalizedGuests.filter(g => g.email && g.email.trim() !== '')
     
     if (guestsWithEmail.length === 0) {
@@ -1156,10 +1157,14 @@ export default function GuestEditor({
       return
     }
 
-    if (!confirm(`Send default invitation emails to ${guestsWithEmail.length} guest(s)?`)) {
-      return
-    }
+    // Show confirmation modal
+    setShowBulkSendConfirm(true)
+  }
 
+  const handleConfirmBulkSend = async () => {
+    const guestsWithEmail = normalizedGuests.filter(g => g.email && g.email.trim() !== '')
+    
+    setShowBulkSendConfirm(false)
     setIsSendingEmail(true)
     setEmailSendingStatus(null)
     setError(null)
@@ -1233,7 +1238,7 @@ export default function GuestEditor({
         setSuccess(`Custom emails sent! ${data.sent} successful, ${data.failed} failed`)
         setShowCustomMessageModal(false)
         setCustomEmailData({
-          subject: "Jay Mehta and Ankita Sharma's Wedding Invitation",
+          subject: "Jay and Ankita's Wedding Invitation",
           content: '',
           isPlainText: false,
           previewMode: 'editor',
@@ -2653,7 +2658,7 @@ export default function GuestEditor({
                     </label>
                     <input
                       type="text"
-                      value="Jay Mehta and Ankita Sharma's Wedding Invitation"
+                      value="Jay and Ankita's Wedding Invitation"
                       readOnly
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
                     />
@@ -2886,6 +2891,7 @@ REQUIREMENTS:
    Use this as the default content format (you can modify it if needed):
    
    Dear {{params.guestName}},
+   The parents of Jay and Ankita request the honor of your presence at their son and daughter's wedding.
    You are invited to Jay and Ankita's wedding celebration! 
    Below is your personalized invitation link to RSVP: 
    
@@ -3360,6 +3366,7 @@ REQUIREMENTS:
    Use this as the default content format (you can modify it if needed):
    
    Dear {{params.guestName}},
+   The parents of Jay and Ankita request the honor of your presence at their son and daughter's wedding.
    You are invited to Jay and Ankita's wedding celebration! 
    Below is your personalized invitation link to RSVP: 
    
@@ -3607,6 +3614,68 @@ Please generate a complete, production-ready HTML email template that I can use 
                     <>
                       <span>🗑️</span>
                       <span>Delete All</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bulk Send Invitations Confirmation Dialog */}
+      <AnimatePresence>
+        {showBulkSendConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={() => !isSendingEmail && setShowBulkSendConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-serif text-wedding-navy mb-4">
+                Send Invitations to All Guests
+              </h3>
+              <p className="text-gray-700 mb-4">
+                Are you sure you want to send default invitation emails to <strong>{normalizedGuests.filter(g => g.email && g.email.trim() !== '').length} guest(s)</strong>?
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p className="text-blue-800 font-semibold mb-2">📧 Email Details:</p>
+                <ul className="text-sm text-blue-700 list-disc list-inside mt-2 space-y-1">
+                  <li>Default invitation template will be used</li>
+                  <li>Each guest will receive a personalized invitation link</li>
+                  <li>Only guests with email addresses will receive emails</li>
+                </ul>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowBulkSendConfirm(false)}
+                  disabled={isSendingEmail}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmBulkSend}
+                  disabled={isSendingEmail}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isSendingEmail ? (
+                    <>
+                      <span>⏳</span>
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>📧</span>
+                      <span>Send Invitations</span>
                     </>
                   )}
                 </button>

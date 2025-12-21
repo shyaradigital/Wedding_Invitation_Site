@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
                     (request.headers.get('origin') || 'https://example.com')
 
     // Use custom message or default template
-    const subject = data.customSubject || "Jay Mehta and Ankita Sharma's Wedding Invitation"
+    const subject = data.customSubject || "Jay and Ankita's Wedding Invitation"
 
     const results = {
       sent: 0,

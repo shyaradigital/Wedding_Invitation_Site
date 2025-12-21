@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     const inviteLink = `${baseUrl}/invite/${guest.token}`
 
     // Use custom message or default template
-    const subject = data.customSubject || "Jay Mehta and Ankita Sharma's Wedding Invitation"
+    const subject = data.customSubject || "Jay and Ankita's Wedding Invitation"
     
     // Parse eventAccess from JSON string
     const eventAccess = ensureJsonArray(guest.eventAccess) as string[]

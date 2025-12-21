@@ -118,160 +118,180 @@ function isAllEventsGuest(eventAccess: string[]): boolean {
  * @param eventAccess - Array of event slugs the guest has access to
  */
 export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wedding', 'reception']): string {
+  const isAllEvents = isAllEventsGuest(eventAccess)
+  const headerTitle = isAllEvents ? "Wedding Invitation" : "Wedding Reception Invitation"
+  const messageText = isAllEvents 
+    ? "You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:"
+    : "You are invited to Jay and Ankita's Wedding Reception Invitation. Below is your personalized invitation link to RSVP:"
+  
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <style>
     body {
-      font-family: Georgia, 'Times New Roman', serif;
+      font-family: 'Georgia', 'Times New Roman', serif;
       line-height: 1.8;
       color: #2c2c2c;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 0;
-      background: linear-gradient(135deg, #f5f0e8 0%, #fff8f0 100%);
-    }
-    .email-wrapper {
-      background-color: #ffffff;
-      margin: 20px auto;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    .header {
-      background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
-      padding: 30px 30px 25px;
-      text-align: center;
-    }
-    .header h1 {
-      color: #ffffff;
       margin: 0;
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      padding: 0;
+      background-color: #faf8f5;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
     }
-    .content {
-      padding: 35px 30px;
+    table {
+      border-collapse: collapse;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
     }
-    .greeting {
-      font-size: 20px;
-      color: #8B4513;
-      margin-bottom: 20px;
-      font-weight: 500;
-    }
-    .message {
-      font-size: 16px;
-      color: #2c2c2c;
-      margin-bottom: 25px;
-      line-height: 1.8;
-    }
-    .invite-button-wrapper {
-      text-align: center;
-      margin: 30px 0;
-    }
-    .invite-link {
-      display: inline-block;
-      padding: 16px 40px;
-      background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
-      color: #ffffff;
+    img {
+      border: 0;
+      height: auto;
+      line-height: 100%;
+      outline: none;
       text-decoration: none;
-      border-radius: 50px;
-      font-weight: 600;
-      font-size: 16px;
-      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-      transition: all 0.3s ease;
-    }
-    .invite-link:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
-    }
-    .link-text {
-      text-align: center;
-      word-break: break-all;
-      color: #666;
-      font-size: 12px;
-      margin-top: 15px;
-      padding: 0 20px;
-    }
-    .rsvp-note {
-      background: linear-gradient(135deg, #FFFEF7 0%, #FFF9E6 100%);
-      border-left: 5px solid #D4AF37;
-      padding: 20px;
-      margin: 30px 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .rsvp-note strong {
-      color: #8B4513;
-      font-size: 16px;
-    }
-    .footer {
-      background: linear-gradient(135deg, #f8f6f2 0%, #f5f0e8 100%);
-      padding: 30px;
-      border-top: 2px solid #e8e0d0;
-    }
-    .signature {
-      text-align: center;
-      color: #2c2c2c;
-      font-size: 15px;
-      line-height: 2;
-      margin-bottom: 20px;
-    }
-    .signature-name {
-      font-weight: 600;
-      color: #8B4513;
-      margin-top: 5px;
+      -ms-interpolation-mode: bicubic;
     }
     @media only screen and (max-width: 600px) {
-      .content {
-        padding: 25px 20px;
+      .email-container {
+        width: 100% !important;
+        max-width: 100% !important;
       }
-      .header {
-        padding: 25px 20px 20px;
+      .content-cell {
+        padding: 30px 20px !important;
       }
-      .header h1 {
-        font-size: 24px;
+      .header-cell {
+        padding: 40px 20px 30px !important;
       }
-      .greeting {
-        font-size: 18px;
+      .header-title {
+        font-size: 26px !important;
       }
-      .message {
-        font-size: 15px;
+      .greeting-text {
+        font-size: 19px !important;
       }
-      .invite-link {
-        padding: 14px 30px;
-        font-size: 15px;
+      .message-text {
+        font-size: 15px !important;
+      }
+      .button-link {
+        padding: 14px 32px !important;
+        font-size: 15px !important;
+      }
+      .footer-cell {
+        padding: 30px 20px !important;
       }
     }
   </style>
 </head>
-<body>
-  <div class="email-wrapper">
-    <div class="header">
-      <h1>Wedding Invitation</h1>
-    </div>
-    <div class="content">
-      <div class="greeting">Dear {{params.guestName}},</div>
-      <div class="message">You are invited to Jay and Ankita's wedding celebration! Below is your personalized invitation link to RSVP:</div>
-      <div class="invite-button-wrapper">
-        <a href="{{params.inviteLink}}" class="invite-link">View Your Invitation</a>
-      </div>
-      <div class="link-text">{{params.inviteLink}}</div>
-      <div class="rsvp-note">
-        <strong>Please RSVP latest by January 10, 2026.</strong>
-      </div>
-      <div class="footer">
-        <div class="signature">
-          With love and warm regards,<br>
-          <span class="signature-name">Bhavan & Nina Mehta</span><br>
-          <span class="signature-name">Brijesh Kumar & Ruchira Sharma</span>
-        </div>
-      </div>
-    </div>
-  </div>
+<body style="margin: 0; padding: 0; background-color: #faf8f5;">
+  <!-- Main Container -->
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #faf8f5; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="email-container" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.08);">
+          
+          <!-- Decorative Top Border -->
+          <tr>
+            <td style="background: linear-gradient(90deg, #D4AF37 0%, #F5E6D3 50%, #D4AF37 100%); height: 6px;"></td>
+          </tr>
+          
+          <!-- Header Section -->
+          <tr>
+            <td class="header-cell" style="background: linear-gradient(135deg, #D4AF37 0%, #C9A030 100%); padding: 50px 40px 40px; text-align: center; position: relative;">
+              <!-- Decorative Pattern Background -->
+              <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px;"></div>
+              <h1 class="header-title" style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1; font-family: 'Georgia', serif;">${headerTitle}</h1>
+              <div style="width: 80px; height: 2px; background-color: rgba(255,255,255,0.6); margin: 20px auto 0; position: relative; z-index: 1;"></div>
+            </td>
+          </tr>
+          
+          <!-- Main Content -->
+          <tr>
+            <td class="content-cell" style="padding: 50px 40px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                
+                <!-- Greeting -->
+                <tr>
+                  <td style="padding-bottom: 25px;">
+                    <p class="greeting-text" style="margin: 0; font-size: 22px; color: #8B4513; font-weight: 600; font-family: 'Georgia', serif; letter-spacing: 0.5px;">Dear {{params.guestName}},</p>
+                  </td>
+                </tr>
+                
+                <!-- Main Message -->
+                <tr>
+                  <td style="padding-bottom: 35px;">
+                    <p class="message-text" style="margin: 0; font-size: 17px; color: #3d3d3d; line-height: 1.9; font-family: 'Georgia', serif;">${messageText}</p>
+                  </td>
+                </tr>
+                
+                <!-- Button Container with Decorative Elements -->
+                <tr>
+                  <td style="padding-bottom: 30px; text-align: center;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+                      <tr>
+                        <td style="background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%); border-radius: 50px; box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35), 0 2px 8px rgba(212, 175, 55, 0.2);">
+                          <a href="{{params.inviteLink}}" class="button-link" style="display: inline-block; padding: 18px 48px; color: #ffffff !important; text-decoration: none; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; font-family: 'Georgia', serif; text-transform: uppercase;">View Your Invitation</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Invitation Link -->
+                <tr>
+                  <td style="padding-bottom: 40px; text-align: center;">
+                    <p style="margin: 0; font-size: 13px; color: #888888; word-break: break-all; line-height: 1.6; font-family: Arial, sans-serif;">{{params.inviteLink}}</p>
+                  </td>
+                </tr>
+                
+                <!-- RSVP Deadline Box -->
+                <tr>
+                  <td style="padding-bottom: 30px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(135deg, #FFF9E8 0%, #FFF4DC 100%); border-left: 6px solid #D4AF37; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                      <tr>
+                        <td style="padding: 24px 28px;">
+                          <p style="margin: 0; font-size: 17px; color: #8B4513; font-weight: 700; font-family: 'Georgia', serif; line-height: 1.6;">Please RSVP latest by January 10, 2026.</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Footer Section -->
+          <tr>
+            <td class="footer-cell" style="background: linear-gradient(180deg, #faf8f5 0%, #f5f0e8 100%); padding: 45px 40px; border-top: 1px solid #e8e0d0;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="text-align: center;">
+                    <!-- Decorative Separator -->
+                    <div style="width: 60px; height: 1px; background: linear-gradient(90deg, transparent, #D4AF37, transparent); margin: 0 auto 30px;"></div>
+                    
+                    <!-- Signature -->
+                    <p style="margin: 0 0 20px 0; font-size: 16px; color: #5a5a5a; line-height: 1.8; font-family: 'Georgia', serif; font-style: italic;">With love and warm regards,</p>
+                    
+                    <p style="margin: 0 0 8px 0; font-size: 17px; color: #8B4513; font-weight: 700; font-family: 'Georgia', serif; letter-spacing: 0.3px;">Bhavan & Nina Mehta</p>
+                    
+                    <p style="margin: 0; font-size: 17px; color: #8B4513; font-weight: 700; font-family: 'Georgia', serif; letter-spacing: 0.3px;">Brijesh Kumar & Ruchira Sharma</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Bottom Decorative Border -->
+          <tr>
+            <td style="background: linear-gradient(90deg, #D4AF37 0%, #F5E6D3 50%, #D4AF37 100%); height: 6px;"></td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`
 }
@@ -281,8 +301,13 @@ export function getDefaultInvitationHTML(eventAccess: string[] = ['mehndi', 'wed
  * @param eventAccess - Array of event slugs the guest has access to
  */
 export function getDefaultInvitationText(eventAccess: string[] = ['mehndi', 'wedding', 'reception']): string {
+  const isAllEvents = isAllEventsGuest(eventAccess)
+  const messageText = isAllEvents 
+    ? "You are invited to Jay and Ankita's wedding celebration!"
+    : "You are invited to Jay and Ankita's Wedding Reception Invitation."
+  
   return `Dear {{params.guestName}},
-You are invited to Jay and Ankita's wedding celebration! 
+${messageText} 
 Below is your personalized invitation link to RSVP: 
 
 {{params.inviteLink}}
