@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { formatPhoneForWhatsApp } from '@/lib/utils'
 
@@ -81,115 +82,118 @@ export default function WhatsAppShare({
         </span>
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-            onClick={() => setIsOpen(false)}
-          >
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isOpen && (
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+              onClick={() => setIsOpen(false)}
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
-                  WhatsApp Invitation
-                </h2>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Phone Number Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Guest Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+91 8103073510 or 8103073510 (India) or +1 2345678900 (US)"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Enter with country code (e.g., +91 for India, +1 for US) or just the number for Indian numbers
-                  </p>
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl sm:text-3xl font-display text-wedding-navy">
+                    WhatsApp Invitation
+                  </h2>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
                 </div>
 
-                {/* Message Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    rows={8}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent resize-none"
-                  />
-                </div>
-
-                {/* Invite Link Display */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Invitation Link
-                  </label>
-                  <div className="flex gap-2">
+                <div className="space-y-6">
+                  {/* Phone Number Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Guest Phone Number
+                    </label>
                     <input
-                      type="text"
-                      value={inviteLink}
-                      readOnly
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+91 8103073510 or 8103073510 (India) or +1 2345678900 (US)"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent"
                     />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Enter with country code (e.g., +91 for India, +1 for US) or just the number for Indian numbers
+                    </p>
+                  </div>
+
+                  {/* Message Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Message
+                    </label>
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      rows={8}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-gold focus:border-transparent resize-none"
+                    />
+                  </div>
+
+                  {/* Invite Link Display */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Invitation Link
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={inviteLink}
+                        readOnly
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                      />
+                      <button
+                        onClick={handleCopyLink}
+                        className="bg-wedding-gold hover:bg-wedding-gold/90 text-white px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap"
+                      >
+                        {copied ? '✓ Copied' : 'Copy Link'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
                     <button
-                      onClick={handleCopyLink}
-                      className="bg-wedding-gold hover:bg-wedding-gold/90 text-white px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap"
+                      onClick={handleCopyMessage}
+                      className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors"
                     >
-                      {copied ? '✓ Copied' : 'Copy Link'}
+                      {copied ? '✓ Message Copied' : 'Copy Message'}
+                    </button>
+                    <button
+                      onClick={handleOpenWhatsApp}
+                      className="flex-1 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <span>💬</span>
+                      Open WhatsApp
                     </button>
                   </div>
+                  
+                  {/* Debug info (can be removed in production) */}
+                  {phone && (
+                    <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+                      <p><strong>Formatted Phone:</strong> {formatPhoneForWhatsApp(phone)}</p>
+                      <p className="mt-1 break-all"><strong>WhatsApp URL:</strong> https://api.whatsapp.com/send?phone={formatPhoneForWhatsApp(phone).replace(/\D/g, '')}&text={encodeURIComponent(message).substring(0, 50)}...</p>
+                    </div>
+                  )}
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <button
-                    onClick={handleCopyMessage}
-                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors"
-                  >
-                    {copied ? '✓ Message Copied' : 'Copy Message'}
-                  </button>
-                  <button
-                    onClick={handleOpenWhatsApp}
-                    className="flex-1 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
-                  >
-                    <span>💬</span>
-                    Open WhatsApp
-                  </button>
-                </div>
-                
-                {/* Debug info (can be removed in production) */}
-                {phone && (
-                  <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
-                    <p><strong>Formatted Phone:</strong> {formatPhoneForWhatsApp(phone)}</p>
-                    <p className="mt-1 break-all"><strong>WhatsApp URL:</strong> https://api.whatsapp.com/send?phone={formatPhoneForWhatsApp(phone).replace(/\D/g, '')}&text={encodeURIComponent(message).substring(0, 50)}...</p>
-                  </div>
-                )}
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }
