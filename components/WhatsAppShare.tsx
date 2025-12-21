@@ -71,10 +71,10 @@ export default function WhatsAppShare({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="group relative bg-green-500 hover:bg-green-600 text-white px-2.5 py-1.5 rounded text-xs font-semibold transition-colors flex items-center gap-1.5 justify-center whitespace-nowrap w-full"
+        className="group relative bg-green-500 hover:bg-green-600 text-white px-2.5 sm:px-2 py-2 sm:py-1.5 rounded text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1 sm:gap-1.5 min-w-[44px] min-h-[44px] sm:min-w-[70px] sm:min-h-0 justify-center whitespace-nowrap touch-manipulation"
         title="Generate WhatsApp Message"
       >
-        <span>💬</span>
+        <span className="text-base sm:text-base">💬</span>
         <span>WhatsApp</span>
         <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
           Generate WhatsApp Message
