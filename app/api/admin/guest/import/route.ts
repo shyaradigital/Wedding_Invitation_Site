@@ -139,11 +139,13 @@ export async function POST(request: NextRequest) {
 
         // Parse max devices (optional, default 10)
         let maxDevicesAllowed = 10
-        if (row.maxDevicesAllowed) {
-          const parsed = parseInt(String(row.maxDevicesAllowed), 10)
+        // Explicitly check for valid non-empty values (not null, undefined, empty string, or 0)
+        if (row.maxDevicesAllowed != null && row.maxDevicesAllowed !== '' && String(row.maxDevicesAllowed).trim() !== '') {
+          const parsed = parseInt(String(row.maxDevicesAllowed).trim(), 10)
           if (!isNaN(parsed) && parsed >= 1 && parsed <= 10) {
             maxDevicesAllowed = parsed
           }
+          // If parsed value is invalid (NaN, 0, or out of range), keep default of 10
         }
 
         // Check if guest with same name already exists (optional check)
